@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ComponentType } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ComponentType } from "react";
 import { motion } from "framer-motion";
 import useEmblaCarousel from "embla-carousel-react";
 import {
@@ -13,6 +13,8 @@ import {
   Users,
   Video,
   MessageCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 import brighthireAsset from "@/assets/brighthire.webp.asset.json";
@@ -63,6 +65,8 @@ export function ShowcaseCarousel() {
     duration: 28,
   });
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const isHoveringRef = useRef(false);
+  const [, force] = useState(0);
 
   const syncSelected = useCallback(() => {
     if (!emblaApi) return;
@@ -82,11 +86,17 @@ export function ShowcaseCarousel() {
 
   useEffect(() => {
     if (!emblaApi) return;
-    const timer = window.setInterval(() => emblaApi.scrollNext(), 3000);
+    const timer = window.setInterval(() => {
+      if (!isHoveringRef.current) emblaApi.scrollNext();
+    }, 3000);
     return () => window.clearInterval(timer);
   }, [emblaApi]);
 
   const cards = useMemo(() => CARDS, []);
+
+  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
+  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+  const scrollTo = useCallback((i: number) => emblaApi?.scrollTo(i), [emblaApi]);
 
   return (
     <section id="product-carousel" className="relative z-20 -mt-[176px] overflow-hidden px-0 pb-18 md:-mt-[196px] md:pb-22 lg:-mt-[214px] lg:pb-24">
@@ -96,6 +106,8 @@ export function ShowcaseCarousel() {
         viewport={{ once: true, amount: 0.35 }}
         transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
         className="mx-auto max-w-[1920px]"
+        onMouseEnter={() => { isHoveringRef.current = true; force((n) => n + 1); }}
+        onMouseLeave={() => { isHoveringRef.current = false; force((n) => n + 1); }}
       >
         <div ref={emblaRef} className="overflow-hidden px-2 sm:px-4 md:px-6 lg:px-8">
           <div className="-ml-4 flex items-end md:-ml-5 lg:-ml-6">
@@ -116,17 +128,47 @@ export function ShowcaseCarousel() {
                   >
                     <img src={card.image} alt={card.alt} loading="lazy" className="absolute inset-0 h-full w-full object-cover" />
                     <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,18,59,0.12)_0%,rgba(4,18,59,0.02)_26%,rgba(4,18,59,0.0)_45%,rgba(0,0,0,0.08)_100%)]" />
-                    <div className="absolute inset-x-0 top-0 h-24 bg-[linear-gradient(180deg,rgba(0,0,0,0.36)_0%,rgba(0,0,0,0)_100%)]" />
-                    <div className="relative z-10 flex items-center gap-2 px-5 pt-5 text-white lg:px-6 lg:pt-6">
-                      <card.icon className="h-5 w-5 shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]" />
-                      <h2 className="text-[18px] font-semibold lg:text-[19px]">{card.title}</h2>
-                    </div>
                     <div className="absolute inset-0 rounded-[28px] ring-1 ring-inset ring-white/12" />
+                    <span className="sr-only">{card.title}</span>
                   </article>
                 </div>
               );
             })}
           </div>
+        </div>
+
+        {/* Controls */}
+        <div className="mt-8 flex items-center justify-center gap-4">
+          <button
+            aria-label="Previous"
+            onClick={scrollPrev}
+            className="grid h-11 w-11 place-items-center rounded-full bg-white text-navy-deep shadow-[0_8px_24px_-8px_rgba(15,23,42,0.3)] ring-1 ring-black/5 transition hover:scale-105 hover:shadow-[0_12px_28px_-8px_rgba(15,23,42,0.45)]"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <div className="flex items-center gap-2">
+            {cards.map((c, i) => (
+              <button
+                key={c.id}
+                aria-label={`Go to ${c.title}`}
+                onClick={() => scrollTo(i)}
+                className="group/dot p-1"
+              >
+                <span
+                  className={`block rounded-full transition-all duration-300 ${
+                    i === selectedIndex ? "h-2 w-6 bg-zoom-blue" : "h-2 w-2 bg-slate-300 group-hover/dot:bg-slate-400"
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
+          <button
+            aria-label="Next"
+            onClick={scrollNext}
+            className="grid h-11 w-11 place-items-center rounded-full bg-white text-navy-deep shadow-[0_8px_24px_-8px_rgba(15,23,42,0.3)] ring-1 ring-black/5 transition hover:scale-105 hover:shadow-[0_12px_28px_-8px_rgba(15,23,42,0.45)]"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
         </div>
       </motion.div>
     </section>
