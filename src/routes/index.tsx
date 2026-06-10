@@ -4,6 +4,9 @@ import { Hero } from "@/components/site/Hero";
 import { Footer } from "@/components/site/Footer";
 import { ShowcaseCarousel } from "@/components/site/ShowcaseCarousel";
 import { NotesShowcase } from "@/components/site/NotesShowcase";
+import { AnalystReports } from "@/components/site/AnalystReports";
+import { PlatformTabs } from "@/components/site/PlatformTabs";
+import { TrustedBy } from "@/components/site/TrustedBy";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,6 +27,9 @@ function Index() {
       <Hero />
       <ShowcaseCarousel />
       <NotesShowcase />
+      <AnalystReports />
+      <PlatformTabs />
+      <TrustedBy />
       <Footer />
     </div>
   );
