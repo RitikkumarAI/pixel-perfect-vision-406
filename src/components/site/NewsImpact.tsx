@@ -1,15 +1,15 @@
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
 import notesAsset from "@/assets/my-notes-hp-card.webp.asset.json";
 import aiAsset from "@/assets/ai-suite.webp.asset.json";
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 28 },
   show: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.55, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.55, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
 
