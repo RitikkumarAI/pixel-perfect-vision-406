@@ -7,6 +7,9 @@ import { NotesShowcase } from "@/components/site/NotesShowcase";
 import { AnalystReports } from "@/components/site/AnalystReports";
 import { PlatformTabs } from "@/components/site/PlatformTabs";
 import { TrustedBy } from "@/components/site/TrustedBy";
+import { CustomerStories } from "@/components/site/CustomerStories";
+import { NewsImpact } from "@/components/site/NewsImpact";
+import { FinalCta } from "@/components/site/FinalCta";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -30,6 +33,9 @@ function Index() {
       <AnalystReports />
       <PlatformTabs />
       <TrustedBy />
+      <CustomerStories />
+      <NewsImpact />
+      <FinalCta />
       <Footer />
     </div>
   );
