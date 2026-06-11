@@ -133,6 +133,7 @@ model Workspace {
   documents   Document[]
   agents      Agent[]
   tasks       Task[]
+  webhooks    Webhook[]
 
   @@index([teamId])
 }
@@ -365,6 +366,20 @@ model Agent {
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workflows   Workflow[]
+
+  @@index([workspaceId])
+}
+
+model Webhook {
+  id          String    @id @default(uuid())
+  workspaceId String
+  url         String
+  events      Json      @default("[\"all\"]") // e.g. ["task.created", "message.sent"]
+  secret      String    // used to sign payloads
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
 }

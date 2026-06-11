@@ -18,6 +18,7 @@ import searchRoutes from './routes/search.routes';
 import aiRoutes from './routes/ai.routes';
 import billingRoutes from './routes/billing.routes';
 import deviceRoutes from './routes/device.routes';
+import webhookRoutes from './routes/webhook.routes';
 import { globalLimiter } from './middlewares/rateLimiter';
 
 dotenv.config();
@@ -52,6 +53,7 @@ app.use('/api/v1/search', searchRoutes);
 app.use('/api/v1/ai', aiRoutes);
 app.use('/api/v1/billing', billingRoutes);
 app.use('/api/v1/devices', deviceRoutes);
+app.use('/api/v1/webhooks', webhookRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Nexus API is running securely' });
