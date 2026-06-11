@@ -20,6 +20,7 @@ import billingRoutes from './routes/billing.routes';
 import deviceRoutes from './routes/device.routes';
 import webhookRoutes from './routes/webhook.routes';
 import adminRoutes from './routes/admin.routes';
+import securityRoutes from './routes/security.routes';
 import { globalLimiter } from './middlewares/rateLimiter';
 
 dotenv.config();
@@ -56,6 +57,7 @@ app.use('/api/v1/billing', billingRoutes);
 app.use('/api/v1/devices', deviceRoutes);
 app.use('/api/v1/webhooks', webhookRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/security', securityRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Nexus API is running securely' });
