@@ -321,7 +321,7 @@ function AIMega() {
     { icon: StickyNote, label: "My Notes" },
   ];
   const suite = [
-    { icon: FileText, label: "Canvas" },
+    { icon: FileText, label: "Docs", link: "/docs/new" },
     { icon: Sheet, label: "Sheets" },
     { icon: Presentation, label: "Slides" },
     { icon: FileText, label: "Paper" },
