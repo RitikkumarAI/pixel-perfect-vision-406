@@ -15,6 +15,7 @@ import schedulingRoutes from './routes/scheduling.routes';
 import uploadRoutes from './routes/upload.routes';
 import { createVideoRoutes } from './routes/video.routes';
 import searchRoutes from './routes/search.routes';
+import aiRoutes from './routes/ai.routes';
 import { globalLimiter } from './middlewares/rateLimiter';
 
 dotenv.config();
@@ -46,6 +47,7 @@ app.use('/api/v1/scheduling', schedulingRoutes);
 app.use('/api/v1/upload', uploadRoutes);
 app.use('/api/v1/video', createVideoRoutes(io));
 app.use('/api/v1/search', searchRoutes);
+app.use('/api/v1/ai', aiRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Nexus API is running securely' });
