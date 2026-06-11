@@ -1,29 +1,52 @@
 import prisma from '../utils/prisma';
+import OpenAI from 'openai';
 
 export class AIService {
+  private openai: OpenAI;
+
+  constructor() {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      console.warn('[AIService] WARNING: OPENAI_API_KEY is not set. Real AI calls will fail.');
+    }
+    this.openai = new OpenAI({ apiKey: apiKey || 'missing-key' });
+  }
+
   /**
-   * Mocks a call to an LLM provider (OpenAI/Anthropic) to generate subtasks for a given task description.
+   * Calls OpenAI to generate subtasks for a given task description.
    */
   public async generateSubtasks(taskId: string, context: string) {
-    console.log(`[AIService] Generating subtasks for: ${context}`);
-    // In production, this would call LangChain/OpenAI
-    const mockGeneratedTasks = [
-      { title: 'Research architectural patterns', priority: 'HIGH' },
-      { title: 'Draft implementation plan', priority: 'MEDIUM' },
-      { title: 'Execute initial scaffolding', priority: 'URGENT' }
-    ];
-
+    if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY environment variable is missing.');
+    
+    console.log(`[AIService] Generating real subtasks via OpenAI for: ${context}`);
+    
     const parentTask = await prisma.task.findUnique({ where: { id: taskId } });
     if (!parentTask) throw new Error('Parent task not found');
 
+    const completion = await this.openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: "You are a project manager AI. Given a task context, generate exactly 3 logical subtasks in JSON array format: [{ \"title\": \"string\", \"priority\": \"HIGH|MEDIUM|LOW\" }]" },
+        { role: "user", content: context }
+      ],
+      response_format: { type: "json_object" }
+    });
+
+    const responseContent = completion.choices[0]?.message?.content;
+    if (!responseContent) throw new Error('Failed to generate response from OpenAI');
+
+    const parsedResponse = JSON.parse(responseContent);
+    const subtasks = parsedResponse.subtasks || parsedResponse; // Handle varying JSON wrapper
+    const generatedTasks = Array.isArray(subtasks) ? subtasks : [];
+
     const createdTasks = await Promise.all(
-      mockGeneratedTasks.map(sub => 
+      generatedTasks.slice(0, 3).map((sub: any) => 
         prisma.task.create({
           data: {
             workspaceId: parentTask.workspaceId,
             parentId: taskId,
-            title: sub.title,
-            priority: sub.priority,
+            title: sub.title || 'Untitled Subtask',
+            priority: sub.priority || 'MEDIUM',
             status: 'TODO'
           }
         })
@@ -34,37 +57,51 @@ export class AIService {
   }
 
   /**
-   * Mocks an audio transcription + summarization pipeline for a completed meeting.
+   * Uses OpenAI to summarize a meeting transcript.
    */
-  public async summarizeMeeting(meetingId: string) {
-    console.log(`[AIService] Summarizing meeting ${meetingId}`);
+  public async summarizeMeeting(meetingId: string, transcriptText: string = "Meeting transcript placeholder") {
+    if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY environment variable is missing.');
+    console.log(`[AIService] Summarizing meeting ${meetingId} via OpenAI`);
     
-    // Simulate an AI-generated summary document
     const meeting = await prisma.meeting.findUnique({ where: { id: meetingId } });
     if (!meeting) throw new Error('Meeting not found');
+
+    const completion = await this.openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: "You are an executive assistant. Summarize the following meeting transcript into a concise paragraph with action items." },
+        { role: "user", content: transcriptText }
+      ]
+    });
+
+    const summaryText = completion.choices[0]?.message?.content || "Summary could not be generated.";
 
     const summaryContent = {
       type: "doc",
       content: [
         { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: `Summary: ${meeting.title}` }] },
-        { type: "paragraph", content: [{ type: "text", text: "The team discussed the upcoming Q3 roadmap and finalized the AI integration timeline. Action items assigned." }] }
+        { type: "paragraph", content: [{ type: "text", text: summaryText }] }
       ]
     };
 
-    // We can save this summary as a Document in the workspace
-    // Assuming the meeting is linked to a workspace, or we return the payload directly
     return summaryContent;
   }
 
   /**
-   * Streaming or batch completion for the Notion-style document editor.
+   * Completes text using OpenAI for the document editor.
    */
   public async assistWriting(prompt: string, context: string) {
-    console.log(`[AIService] Assisting writing with prompt: ${prompt}`);
+    if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY environment variable is missing.');
+    console.log(`[AIService] Assisting writing via OpenAI with prompt: ${prompt}`);
     
-    // Simulate AI text generation
-    const generatedText = `Based on your request "${prompt}", here is a generated expansion of the topic: The implementation of realtime features using Redis pub/sub dramatically reduces the load on the primary Postgres database while maintaining sub-50ms latency across thousands of connected clients.`;
+    const completion = await this.openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: "You are a writing assistant. Continue the user's text based on their context." },
+        { role: "user", content: `Context: ${context}\n\nPrompt: ${prompt}` }
+      ]
+    });
 
-    return { text: generatedText };
+    return { text: completion.choices[0]?.message?.content || "" };
   }
 }

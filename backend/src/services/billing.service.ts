@@ -1,62 +1,112 @@
 import prisma from '../utils/prisma';
+import Stripe from 'stripe';
 
 export class BillingService {
+  private stripe: Stripe;
+
+  constructor() {
+    const secretKey = process.env.STRIPE_SECRET_KEY;
+    if (!secretKey) {
+      console.warn('[BillingService] WARNING: STRIPE_SECRET_KEY is not set. Real billing calls will fail.');
+    }
+    this.stripe = new Stripe(secretKey || 'sk_test_missing_key', {
+      apiVersion: '2025-01-27.acacia' // using an expected valid version
+    });
+  }
+
   /**
-   * Mocks a Stripe Checkout Session generation.
+   * Generates a real Stripe Checkout Session URL for subscription purchase.
    */
   public async createCheckoutSession(orgId: string, plan: string) {
+    if (!process.env.STRIPE_SECRET_KEY) throw new Error('STRIPE_SECRET_KEY environment variable is missing.');
+    
     // Check if organization exists
     const org = await prisma.organization.findUnique({ where: { id: orgId } });
     if (!org) throw new Error('Organization not found');
 
-    // In a real application, we would call stripe.checkout.sessions.create()
-    console.log(`[BillingService] Creating mock Stripe checkout for org ${orgId} to plan ${plan}`);
+    console.log(`[BillingService] Creating real Stripe checkout for org ${orgId} to plan ${plan}`);
 
-    // Mock response URL
-    return {
-      url: `https://checkout.stripe.com/pay/mock_${orgId}_${Date.now()}`
+    // Map your plans to real Stripe Price IDs in a real application
+    const priceIdMap: Record<string, string> = {
+      'PRO': process.env.STRIPE_PRICE_PRO || 'price_mock_pro',
+      'ENTERPRISE': process.env.STRIPE_PRICE_ENTERPRISE || 'price_mock_enterprise'
     };
+
+    const priceId = priceIdMap[plan.toUpperCase()];
+    if (!priceId) throw new Error(`Invalid plan: ${plan}`);
+
+    const session = await this.stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      mode: 'subscription',
+      success_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard/billing/cancel`,
+      client_reference_id: orgId, // Crucial to link back to the Organization
+    });
+
+    return { url: session.url };
   }
 
   /**
    * Handles webhook lifecycle events sent by Stripe.
    */
-  public async handleWebhook(eventType: string, data: any) {
-    // Ensure we handle basic lifecycle events securely
-    switch (eventType) {
-      case 'checkout.session.completed':
-        const orgId = data.client_reference_id; // Passed when creating the session
-        const stripeSubId = data.subscription;
-        
-        await prisma.subscription.upsert({
-          where: { organizationId: orgId },
-          create: {
-            organizationId: orgId,
-            stripeSubId,
-            planTier: 'PRO',
-            status: 'ACTIVE',
-            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-          },
-          update: {
-            stripeSubId,
-            planTier: 'PRO',
-            status: 'ACTIVE',
-            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-          }
-        });
-        break;
+  public async handleWebhook(signature: string, payload: Buffer) {
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      throw new Error('STRIPE_WEBHOOK_SECRET environment variable is missing.');
+    }
 
-      case 'customer.subscription.deleted':
-        const canceledSubId = data.id;
-        await prisma.subscription.update({
-          // In a real app we'd search by stripeSubId, assuming it's uniquely indexed
-          where: { organizationId: orgId }, // Simplified for mock
+    let event: Stripe.Event;
+
+    try {
+      // Verify signature to prevent spoofing
+      event = this.stripe.webhooks.constructEvent(payload, signature, webhookSecret);
+    } catch (err: any) {
+      console.error(`[BillingService] Webhook Error: ${err.message}`);
+      throw new Error(`Webhook Error: ${err.message}`);
+    }
+
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object as Stripe.Checkout.Session;
+        const orgId = session.client_reference_id;
+        const stripeSubId = session.subscription as string;
+
+        if (orgId && stripeSubId) {
+          await prisma.subscription.upsert({
+            where: { organizationId: orgId },
+            create: {
+              organizationId: orgId,
+              stripeSubId,
+              planTier: 'PRO',
+              status: 'ACTIVE',
+              currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+            },
+            update: {
+              stripeSubId,
+              planTier: 'PRO',
+              status: 'ACTIVE',
+              currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+            }
+          });
+        }
+        break;
+      }
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object as Stripe.Subscription;
+        await prisma.subscription.updateMany({
+          where: { stripeSubId: subscription.id },
           data: { status: 'CANCELED' }
         });
         break;
-      
+      }
       default:
-        console.log(`[BillingService] Unhandled event type: ${eventType}`);
+        console.log(`[BillingService] Unhandled event type: ${event.type}`);
     }
   }
 
