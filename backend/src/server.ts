@@ -63,6 +63,12 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Nexus API is running securely' });
 });
 
+// Global Error Handler
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error('[Error Handler]', err.stack);
+  res.status(500).json({ error: 'Internal Server Error' });
+});
+
 server.listen(PORT, () => {
   console.log(`Server is running securely on port ${PORT}`);
 });
