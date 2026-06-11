@@ -1,14 +1,23 @@
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { MagneticButton } from "./MagneticButton";
+import { useMeeting } from "../../hooks/useMeeting";
 
 export function Hero() {
+  const { createMeeting, isLoading } = useMeeting();
+
   return (
     <section className="relative overflow-hidden bg-[linear-gradient(180deg,#0c1f66_0%,#18307f_14%,#2648b1_52%,#6f81db_84%,#f6f8ff_100%)] pt-24 text-white md:pt-28">
       <div className="absolute inset-x-0 top-[72px] z-10 mx-auto hidden max-w-[1320px] px-6 lg:block">
         <div className="flex items-center justify-center rounded-[20px] bg-white/10 px-6 py-3 text-center text-[17px] font-medium text-white/92 ring-1 ring-white/10 backdrop-blur-sm">
           <span>Introducing ZoomMate, your AI teammate.</span>
-          <span className="ml-6 rounded-full bg-[linear-gradient(90deg,#2f72ff_0%,#ff4a84_100%)] px-5 py-1.5 font-semibold">Explore ZoomMate</span>
+          <button 
+            onClick={() => createMeeting("Instant Team Meeting")}
+            disabled={isLoading}
+            className="ml-6 rounded-full bg-[linear-gradient(90deg,#2f72ff_0%,#ff4a84_100%)] px-5 py-1.5 font-semibold hover:opacity-90 transition disabled:opacity-50"
+          >
+            {isLoading ? "Starting Secure Room..." : "Start an Instant Meeting"}
+          </button>
         </div>
       </div>
 

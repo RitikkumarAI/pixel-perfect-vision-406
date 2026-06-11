@@ -30,6 +30,7 @@ export function useMeeting() {
       if (!res.ok) throw new Error(data.error || 'Failed to get meeting token');
 
       setMeetingToken(data.token);
+      window.location.href = `/meet/${meetingId}`; // Navigate to the meeting room
       return data.token;
     } catch (err: any) {
       setError(err.message);
@@ -42,5 +43,32 @@ export function useMeeting() {
     setMeetingToken(null);
   };
 
-  return { meetingToken, isLoading, error, joinMeeting, leaveMeeting };
+  const createMeeting = async (title: string) => {
+    if (!isAuthenticated) {
+      window.location.href = "/signin";
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/v1/meetings', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to create meeting');
+      
+      // Automatically join the meeting after creation
+      await joinMeeting(data.meeting.id);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { meetingToken, isLoading, error, joinMeeting, leaveMeeting, createMeeting };
 }
