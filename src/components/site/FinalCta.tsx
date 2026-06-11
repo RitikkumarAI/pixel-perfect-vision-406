@@ -21,7 +21,7 @@ export function FinalCta() {
             Get started today
           </a>
           <a
-            href="#"
+            href="/pricing"
             className="inline-flex h-12 items-center rounded-full bg-zoom-blue/10 px-7 font-semibold text-navy-deep transition hover:-translate-y-0.5 hover:bg-zoom-blue/15"
           >
             Find your plan

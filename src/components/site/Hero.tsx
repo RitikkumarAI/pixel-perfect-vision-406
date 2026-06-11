@@ -40,7 +40,7 @@ export function Hero() {
           <MagneticButton href="#product-carousel" className="inline-block rounded-[18px] bg-navy-deep px-7 py-3.5 text-[15px] font-semibold text-white shadow-[0_16px_40px_-18px_rgba(0,0,0,0.6)]">
             Explore products
           </MagneticButton>
-          <MagneticButton href="/products" className="inline-block rounded-[18px] bg-white px-7 py-3.5 text-[15px] font-semibold text-navy-deep shadow-[0_12px_30px_-20px_rgba(7,18,58,0.45)]">
+          <MagneticButton href="/pricing" className="inline-block rounded-[18px] bg-white px-7 py-3.5 text-[15px] font-semibold text-navy-deep shadow-[0_12px_30px_-20px_rgba(7,18,58,0.45)]">
             Find your plan
           </MagneticButton>
         </motion.div>
