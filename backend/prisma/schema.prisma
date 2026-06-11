@@ -31,6 +31,9 @@ model User {
   messages      Message[]
   tasks         Task[]       @relation("AssignedTasks")
   recordings    Recording[]  @relation("Uploader")
+  bookings      Booking[]    @relation("BookingsHost")
+  availabilityRules AvailabilityRule[]
+  calendarIntegrations CalendarIntegration[]
 }
 
 model UserSettings {
@@ -294,6 +297,55 @@ model Recording {
   uploader    User      @relation("Uploader", fields: [uploaderId], references: [id])
 
   @@index([meetingId])
+}
+
+// -----------------------------------------------------------------------------
+// SCHEDULING PLATFORM
+// -----------------------------------------------------------------------------
+
+model Booking {
+  id          String    @id @default(uuid())
+  hostId      String
+  guestEmail  String
+  guestName   String
+  startTime   DateTime
+  endTime     DateTime
+  status      String    @default("CONFIRMED") // CONFIRMED, CANCELED, RESCHEDULED
+  meetingUrl  String?
+  createdAt   DateTime  @default(now())
+
+  host        User      @relation("BookingsHost", fields: [hostId], references: [id], onDelete: Cascade)
+
+  @@index([hostId])
+}
+
+model AvailabilityRule {
+  id          String    @id @default(uuid())
+  userId      String
+  dayOfWeek   Int       // 0-6
+  startTime   String    // HH:mm format
+  endTime     String    // HH:mm format
+  timezone    String    @default("UTC")
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model CalendarIntegration {
+  id           String    @id @default(uuid())
+  userId       String
+  provider     String    // google, outlook
+  accessToken  String    @db.Text
+  refreshToken String    @db.Text
+  expiresAt    DateTime
+  syncStatus   String    @default("ACTIVE")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, provider])
 }
 
 // -----------------------------------------------------------------------------

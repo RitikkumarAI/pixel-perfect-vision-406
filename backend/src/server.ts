@@ -11,6 +11,7 @@ import meetingRoutes from './routes/meeting.routes';
 import { createChatRoutes } from './routes/chat.routes';
 import documentRoutes from './routes/document.routes';
 import taskRoutes from './routes/task.routes';
+import schedulingRoutes from './routes/scheduling.routes';
 import { globalLimiter } from './middlewares/rateLimiter';
 
 dotenv.config();
@@ -38,6 +39,7 @@ app.use('/api/v1/meetings', meetingRoutes);
 app.use('/api/v1/chat', createChatRoutes(io));
 app.use('/api/v1/documents', documentRoutes);
 app.use('/api/v1/tasks', taskRoutes);
+app.use('/api/v1/scheduling', schedulingRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Nexus API is running securely' });
