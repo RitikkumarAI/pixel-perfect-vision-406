@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
+import { useBilling } from "@/hooks/useBilling";
+import { useWorkspaces } from "@/hooks/useWorkspace";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -260,7 +262,19 @@ function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [addonIdx, setAddonIdx] = useState(0);
 
-  const category = useMemo(() => CATEGORIES.find((c) => c.id === activeId)!, [activeId]);
+  const { createCheckoutSession, isLoading: isCheckoutLoading } = useBilling();
+  const { activeWorkspace } = useWorkspaces();
+
+  const handleCheckout = (planName: string) => {
+    if (!activeWorkspace) {
+      alert("Please sign in and select a workspace to purchase a plan.");
+      window.location.href = "/signin";
+      return;
+    }
+    createCheckoutSession(activeWorkspace.id, planName.toUpperCase());
+  };
+
+  const category = useMemo(() => CATEGORIES.find((c) => c.id === activeWorkspace?.id || c.id === activeId) || CATEGORIES[0], [activeId, activeWorkspace]);
   const factor = annual ? 0.8 : 1;
 
   const price = (m: Plan["monthly"]) => {
@@ -374,12 +388,19 @@ function PricingPage() {
                             <div className="text-xs text-navy-deep/60">/user per month · billed {annual ? "annually" : "monthly"}</div>
                           )}
                         </div>
-                        <Link
-                          to={p.cta === "Contact sales" ? "/contact-sales" : "/pricing"}
+                        <button
+                          onClick={() => {
+                            if (p.cta === "Buy now") {
+                              handleCheckout(p.name);
+                            } else {
+                              window.location.href = p.cta === "Contact sales" ? "/contact-sales" : "/pricing";
+                            }
+                          }}
+                          disabled={isCheckoutLoading && p.cta === "Buy now"}
                           className={`mt-5 inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition ${
                             p.popular ? "bg-zoom-blue text-white hover:bg-zoom-blue/90" : "bg-zoom-blue/10 text-navy-deep hover:bg-zoom-blue/15"
-                          }`}
-                        >{p.cta}</Link>
+                          } ${isCheckoutLoading && p.cta === "Buy now" ? "opacity-50 cursor-not-allowed" : ""}`}
+                        >{isCheckoutLoading && p.cta === "Buy now" ? "Redirecting to Stripe..." : p.cta}</button>
                         <div className="mt-6 border-t border-navy-deep/10 pt-5">
                           <div className="mb-3 text-xs font-bold uppercase tracking-wider text-navy-deep/70">Highlights</div>
                           <ul className="space-y-2.5 text-sm">
@@ -468,7 +489,7 @@ function PricingPage() {
                             <h3 className="text-lg font-bold">{a.title}</h3>
                             <p className="mt-1 text-sm text-navy-deep/70">{a.desc}</p>
                             <div className="mt-4 text-lg font-black">{a.price}</div>
-                            <button className="mt-4 inline-flex items-center rounded-lg bg-zoom-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-zoom-blue/90">Buy now</button>
+                            <button onClick={() => handleCheckout("PRO")} disabled={isCheckoutLoading} className={`mt-4 inline-flex items-center rounded-lg bg-zoom-blue px-4 py-2 text-sm font-semibold text-white transition hover:bg-zoom-blue/90 ${isCheckoutLoading ? 'opacity-50' : ''}`}>{isCheckoutLoading ? "Loading..." : "Buy now"}</button>
                           </div>
                         ))}
                       </motion.div>

@@ -166,6 +166,12 @@ function SignInPage() {
               ].map((p) => (
                 <button
                   key={p.label}
+                  onClick={(e) => {
+                    if (p.label === "SSO") {
+                      e.preventDefault();
+                      window.location.href = "http://localhost:5000/api/v1/auth/saml";
+                    }
+                  }}
                   className="flex flex-col items-center gap-2 group"
                 >
                   <span className="w-14 h-14 rounded-2xl border border-black/10 grid place-items-center shadow-sm group-hover:shadow-md group-hover:-translate-y-0.5 transition-all bg-white">
