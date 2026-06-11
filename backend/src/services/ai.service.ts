@@ -1,42 +1,31 @@
 import prisma from '../utils/prisma';
-import OpenAI from 'openai';
+import { AIGateway } from './ai/ai.gateway';
+import { MemoryService } from './ai/memory.service';
+import { PromptTemplates } from './ai/templates';
 
 export class AIService {
-  private openai: OpenAI;
+  private gateway: AIGateway;
+  private memory: MemoryService;
 
   constructor() {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      console.warn('[AIService] WARNING: OPENAI_API_KEY is not set. Real AI calls will fail.');
-    }
-    this.openai = new OpenAI({ apiKey: apiKey || 'missing-key' });
+    this.gateway = new AIGateway();
+    this.memory = new MemoryService();
   }
 
   /**
-   * Calls OpenAI to generate subtasks for a given task description.
+   * Calls AI to generate subtasks using the JSON Gateway method.
    */
-  public async generateSubtasks(taskId: string, context: string) {
-    if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY environment variable is missing.');
-    
-    console.log(`[AIService] Generating real subtasks via OpenAI for: ${context}`);
+  public async generateSubtasks(taskId: string, context: string, providerName?: string) {
+    console.log(`[AIService] Generating subtasks for: ${context}`);
+    const provider = this.gateway.getProvider(providerName);
     
     const parentTask = await prisma.task.findUnique({ where: { id: taskId } });
     if (!parentTask) throw new Error('Parent task not found');
 
-    const completion = await this.openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: "You are a project manager AI. Given a task context, generate exactly 3 logical subtasks in JSON array format: [{ \"title\": \"string\", \"priority\": \"HIGH|MEDIUM|LOW\" }]" },
-        { role: "user", content: context }
-      ],
-      response_format: { type: "json_object" }
-    });
-
-    const responseContent = completion.choices[0]?.message?.content;
-    if (!responseContent) throw new Error('Failed to generate response from OpenAI');
-
-    const parsedResponse = JSON.parse(responseContent);
-    const subtasks = parsedResponse.subtasks || parsedResponse; // Handle varying JSON wrapper
+    const prompt = PromptTemplates.GENERATE_SUBTASKS(context);
+    const parsedResponse = await provider.generateJSON(prompt);
+    
+    const subtasks = parsedResponse.subtasks || parsedResponse; 
     const generatedTasks = Array.isArray(subtasks) ? subtasks : [];
 
     const createdTasks = await Promise.all(
@@ -57,24 +46,17 @@ export class AIService {
   }
 
   /**
-   * Uses OpenAI to summarize a meeting transcript.
+   * Summarizes meeting transcript via the standard text completion Gateway method.
    */
-  public async summarizeMeeting(meetingId: string, transcriptText: string = "Meeting transcript placeholder") {
-    if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY environment variable is missing.');
-    console.log(`[AIService] Summarizing meeting ${meetingId} via OpenAI`);
+  public async summarizeMeeting(meetingId: string, transcriptText: string = "Meeting transcript placeholder", providerName?: string) {
+    console.log(`[AIService] Summarizing meeting ${meetingId}`);
+    const provider = this.gateway.getProvider(providerName);
     
     const meeting = await prisma.meeting.findUnique({ where: { id: meetingId } });
     if (!meeting) throw new Error('Meeting not found');
 
-    const completion = await this.openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: "You are an executive assistant. Summarize the following meeting transcript into a concise paragraph with action items." },
-        { role: "user", content: transcriptText }
-      ]
-    });
-
-    const summaryText = completion.choices[0]?.message?.content || "Summary could not be generated.";
+    const prompt = PromptTemplates.SUMMARIZE_MEETING(transcriptText);
+    const summaryText = await provider.generateText(prompt);
 
     const summaryContent = {
       type: "doc",
@@ -88,20 +70,29 @@ export class AIService {
   }
 
   /**
-   * Completes text using OpenAI for the document editor.
+   * Completes text using the gateway with conversation memory awareness.
    */
-  public async assistWriting(prompt: string, context: string) {
-    if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY environment variable is missing.');
-    console.log(`[AIService] Assisting writing via OpenAI with prompt: ${prompt}`);
+  public async assistWriting(userId: string, prompt: string, context: string, providerName?: string) {
+    console.log(`[AIService] Assisting writing with prompt: ${prompt}`);
+    const provider = this.gateway.getProvider(providerName);
     
-    const completion = await this.openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        { role: "system", content: "You are a writing assistant. Continue the user's text based on their context." },
-        { role: "user", content: `Context: ${context}\n\nPrompt: ${prompt}` }
-      ]
-    });
+    // Retrieve past conversation memory for this specific user/doc context
+    const memoryContextId = `assist_${userId}`;
+    const history = await this.memory.getHistory(memoryContextId);
+    
+    // Inject history into system context
+    let systemContext = "You are an AI writing assistant. Continue or rewrite the user's text. Do not include pleasantries.";
+    if (history.length > 0) {
+      systemContext += "\n\nPrevious Conversation History:\n" + history.map(h => `${h.role}: ${h.content}`).join('\n');
+    }
 
-    return { text: completion.choices[0]?.message?.content || "" };
+    const fullPrompt = PromptTemplates.ASSIST_WRITING(context, prompt);
+    const responseText = await provider.generateText(fullPrompt, systemContext);
+
+    // Store new memory
+    await this.memory.addMessage(memoryContextId, 'user', prompt);
+    await this.memory.addMessage(memoryContextId, 'assistant', responseText);
+
+    return { text: responseText };
   }
 }
