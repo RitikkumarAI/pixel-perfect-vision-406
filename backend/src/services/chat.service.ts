@@ -14,9 +14,35 @@ export class ChatService {
     });
   }
 
-  public async getWorkspaceChannels(workspaceId: string) {
+  public async createDM(workspaceId: string, userIds: string[]) {
+    return prisma.channel.create({
+      data: {
+        workspaceId,
+        name: 'DM',
+        isPrivate: true,
+        members: {
+          create: userIds.map(userId => ({ userId }))
+        }
+      },
+      include: {
+        members: { include: { user: { select: { id: true, name: true, avatarUrl: true } } } }
+      }
+    });
+  }
+
+  public async getWorkspaceChannels(workspaceId: string, userId: string) {
     return prisma.channel.findMany({
-      where: { workspaceId, deletedAt: null }
+      where: {
+        workspaceId,
+        deletedAt: null,
+        OR: [
+          { isPrivate: false },
+          { members: { some: { userId } } }
+        ]
+      },
+      include: {
+        members: { include: { user: { select: { id: true, name: true, avatarUrl: true } } } }
+      }
     });
   }
 
@@ -30,12 +56,13 @@ export class ChatService {
       include: {
         sender: { select: { id: true, name: true, avatarUrl: true } },
         reactions: true,
+        attachments: true,
         replies: { select: { id: true }, take: 1 } // To indicate if it has a thread
       }
     });
   }
 
-  public async sendMessage(channelId: string, senderId: string, content: string, parentId?: string) {
+  public async sendMessage(channelId: string, senderId: string, content: string, parentId?: string, attachments?: { url: string, filename: string, fileType: string, size: number }[]) {
     const isThread = !!parentId;
 
     const message = await prisma.message.create({
@@ -45,9 +72,13 @@ export class ChatService {
         content,
         isThread,
         parentId,
+        attachments: attachments ? {
+          create: attachments
+        } : undefined
       },
       include: {
         sender: { select: { id: true, name: true, avatarUrl: true } },
+        attachments: true
       }
     });
 
@@ -75,5 +106,14 @@ export class ChatService {
     
     this.io.to(`message:${messageId}`).emit('reaction:added', reaction);
     return { action: 'added', reaction };
+  }
+
+  public async markChannelRead(channelId: string, userId: string, messageId: string) {
+    const receipt = await prisma.readReceipt.upsert({
+      where: { channelId_userId: { channelId, userId } },
+      create: { channelId, userId, messageId },
+      update: { messageId, readAt: new Date() }
+    });
+    return receipt;
   }
 }

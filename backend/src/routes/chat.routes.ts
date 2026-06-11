@@ -14,6 +14,7 @@ export const createChatRoutes = (io: Server) => {
   // Workspace channels
   router.get('/workspaces/:workspaceId/channels', chatController.getChannels);
   router.post('/workspaces/:workspaceId/channels', chatController.createChannel);
+  router.post('/workspaces/:workspaceId/dms', chatController.createDM);
 
   // Channel messages
   router.get('/channels/:channelId/messages', chatController.getMessages);
@@ -21,6 +22,7 @@ export const createChatRoutes = (io: Server) => {
 
   // Message interactions
   router.post('/messages/:messageId/reactions', chatController.toggleReaction);
+  router.post('/channels/:channelId/read', chatController.markRead);
 
   return router;
 };

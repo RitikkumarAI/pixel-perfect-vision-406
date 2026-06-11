@@ -18,7 +18,7 @@ export const createChatController = (chatService: ChatService) => {
     getChannels: async (req: AuthRequest, res: Response): Promise<void> => {
       try {
         const { workspaceId } = req.params;
-        const channels = await chatService.getWorkspaceChannels(workspaceId);
+        const channels = await chatService.getWorkspaceChannels(workspaceId, req.user!.userId);
         res.status(200).json(channels);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -39,8 +39,8 @@ export const createChatController = (chatService: ChatService) => {
     sendMessage: async (req: AuthRequest, res: Response): Promise<void> => {
       try {
         const { channelId } = req.params;
-        const { content, parentId } = req.body;
-        const message = await chatService.sendMessage(channelId, req.user!.userId, content, parentId);
+        const { content, parentId, attachments } = req.body;
+        const message = await chatService.sendMessage(channelId, req.user!.userId, content, parentId, attachments);
         res.status(201).json(message);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -53,6 +53,29 @@ export const createChatController = (chatService: ChatService) => {
         const { emoji } = req.body;
         const result = await chatService.toggleReaction(messageId, req.user!.userId, emoji);
         res.status(200).json(result);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    },
+
+    createDM: async (req: AuthRequest, res: Response): Promise<void> => {
+      try {
+        const { workspaceId } = req.params;
+        const { userIds } = req.body;
+        if (!userIds.includes(req.user!.userId)) userIds.push(req.user!.userId);
+        const channel = await chatService.createDM(workspaceId, userIds);
+        res.status(201).json(channel);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
+    },
+
+    markRead: async (req: AuthRequest, res: Response): Promise<void> => {
+      try {
+        const { channelId } = req.params;
+        const { messageId } = req.body;
+        const receipt = await chatService.markChannelRead(channelId, req.user!.userId, messageId);
+        res.status(200).json(receipt);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
       }

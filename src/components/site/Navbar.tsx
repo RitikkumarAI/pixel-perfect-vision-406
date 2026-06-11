@@ -322,6 +322,7 @@ function AIMega() {
   ];
   const suite = [
     { icon: FileText, label: "Docs", link: "/docs/new" },
+    { icon: Users, label: "Chat", link: "/chat" },
     { icon: Sheet, label: "Sheets" },
     { icon: Presentation, label: "Slides" },
     { icon: FileText, label: "Tasks", link: "/tasks" },

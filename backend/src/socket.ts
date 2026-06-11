@@ -49,6 +49,28 @@ export function setupSocketIO(httpServer: HttpServer) {
         io.emit('presence:offline', { userId });
       }
     });
+
+    // Chat Events
+    socket.on('joinChannel', (channelId: string) => {
+      socket.join(`channel:${channelId}`);
+    });
+
+    socket.on('leaveChannel', (channelId: string) => {
+      socket.leave(`channel:${channelId}`);
+    });
+
+    socket.on('typing:start', (channelId: string) => {
+      socket.to(`channel:${channelId}`).emit('typing:start', { userId, channelId });
+    });
+
+    socket.on('typing:stop', (channelId: string) => {
+      socket.to(`channel:${channelId}`).emit('typing:stop', { userId, channelId });
+    });
+
+    socket.on('message:read', (data: { channelId: string, messageId: string }) => {
+      // In a full implementation, this could call chatService.markChannelRead
+      socket.to(`channel:${data.channelId}`).emit('message:read', { userId, channelId: data.channelId, messageId: data.messageId });
+    });
   });
 
   return io;

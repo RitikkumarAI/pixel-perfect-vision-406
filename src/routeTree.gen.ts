@@ -12,8 +12,19 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SigninRouteImport } from './routes/signin'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactSalesRouteImport } from './routes/contact-sales'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TasksIndexRouteImport } from './routes/tasks/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as ChatIndexRouteImport } from './routes/chat/index'
+import { Route as MeetRoomIdRouteImport } from './routes/meet/$roomId'
+import { Route as DocsNewRouteImport } from './routes/docs/new'
+import { Route as DocsDocIdRouteImport } from './routes/docs/$docId'
+import { Route as DashboardMeetingsRouteImport } from './routes/dashboard/meetings'
+import { Route as DashboardKanbanRouteImport } from './routes/dashboard/kanban'
+import { Route as DashboardDocsRouteImport } from './routes/dashboard/docs'
+import { Route as DashboardChatRouteImport } from './routes/dashboard/chat'
 
 const SigninRoute = SigninRouteImport.update({
   id: '/signin',
@@ -30,6 +41,11 @@ const PricingRoute = PricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactSalesRoute = ContactSalesRouteImport.update({
   id: '/contact-sales',
   path: '/contact-sales',
@@ -40,13 +56,74 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TasksIndexRoute = TasksIndexRouteImport.update({
+  id: '/tasks/',
+  path: '/tasks/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const ChatIndexRoute = ChatIndexRouteImport.update({
+  id: '/chat/',
+  path: '/chat/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MeetRoomIdRoute = MeetRoomIdRouteImport.update({
+  id: '/meet/$roomId',
+  path: '/meet/$roomId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsNewRoute = DocsNewRouteImport.update({
+  id: '/docs/new',
+  path: '/docs/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsDocIdRoute = DocsDocIdRouteImport.update({
+  id: '/docs/$docId',
+  path: '/docs/$docId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardMeetingsRoute = DashboardMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardKanbanRoute = DashboardKanbanRouteImport.update({
+  id: '/kanban',
+  path: '/kanban',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardDocsRoute = DashboardDocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardChatRoute = DashboardChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/contact-sales': typeof ContactSalesRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/pricing': typeof PricingRoute
   '/products': typeof ProductsRoute
   '/signin': typeof SigninRoute
+  '/dashboard/chat': typeof DashboardChatRoute
+  '/dashboard/docs': typeof DashboardDocsRoute
+  '/dashboard/kanban': typeof DashboardKanbanRoute
+  '/dashboard/meetings': typeof DashboardMeetingsRoute
+  '/docs/$docId': typeof DocsDocIdRoute
+  '/docs/new': typeof DocsNewRoute
+  '/meet/$roomId': typeof MeetRoomIdRoute
+  '/chat/': typeof ChatIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/tasks/': typeof TasksIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,29 +131,104 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/products': typeof ProductsRoute
   '/signin': typeof SigninRoute
+  '/dashboard/chat': typeof DashboardChatRoute
+  '/dashboard/docs': typeof DashboardDocsRoute
+  '/dashboard/kanban': typeof DashboardKanbanRoute
+  '/dashboard/meetings': typeof DashboardMeetingsRoute
+  '/docs/$docId': typeof DocsDocIdRoute
+  '/docs/new': typeof DocsNewRoute
+  '/meet/$roomId': typeof MeetRoomIdRoute
+  '/chat': typeof ChatIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/tasks': typeof TasksIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/contact-sales': typeof ContactSalesRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/pricing': typeof PricingRoute
   '/products': typeof ProductsRoute
   '/signin': typeof SigninRoute
+  '/dashboard/chat': typeof DashboardChatRoute
+  '/dashboard/docs': typeof DashboardDocsRoute
+  '/dashboard/kanban': typeof DashboardKanbanRoute
+  '/dashboard/meetings': typeof DashboardMeetingsRoute
+  '/docs/$docId': typeof DocsDocIdRoute
+  '/docs/new': typeof DocsNewRoute
+  '/meet/$roomId': typeof MeetRoomIdRoute
+  '/chat/': typeof ChatIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/tasks/': typeof TasksIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/contact-sales' | '/pricing' | '/products' | '/signin'
+  fullPaths:
+    | '/'
+    | '/contact-sales'
+    | '/dashboard'
+    | '/pricing'
+    | '/products'
+    | '/signin'
+    | '/dashboard/chat'
+    | '/dashboard/docs'
+    | '/dashboard/kanban'
+    | '/dashboard/meetings'
+    | '/docs/$docId'
+    | '/docs/new'
+    | '/meet/$roomId'
+    | '/chat/'
+    | '/dashboard/'
+    | '/tasks/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/contact-sales' | '/pricing' | '/products' | '/signin'
-  id: '__root__' | '/' | '/contact-sales' | '/pricing' | '/products' | '/signin'
+  to:
+    | '/'
+    | '/contact-sales'
+    | '/pricing'
+    | '/products'
+    | '/signin'
+    | '/dashboard/chat'
+    | '/dashboard/docs'
+    | '/dashboard/kanban'
+    | '/dashboard/meetings'
+    | '/docs/$docId'
+    | '/docs/new'
+    | '/meet/$roomId'
+    | '/chat'
+    | '/dashboard'
+    | '/tasks'
+  id:
+    | '__root__'
+    | '/'
+    | '/contact-sales'
+    | '/dashboard'
+    | '/pricing'
+    | '/products'
+    | '/signin'
+    | '/dashboard/chat'
+    | '/dashboard/docs'
+    | '/dashboard/kanban'
+    | '/dashboard/meetings'
+    | '/docs/$docId'
+    | '/docs/new'
+    | '/meet/$roomId'
+    | '/chat/'
+    | '/dashboard/'
+    | '/tasks/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ContactSalesRoute: typeof ContactSalesRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   PricingRoute: typeof PricingRoute
   ProductsRoute: typeof ProductsRoute
   SigninRoute: typeof SigninRoute
+  DocsDocIdRoute: typeof DocsDocIdRoute
+  DocsNewRoute: typeof DocsNewRoute
+  MeetRoomIdRoute: typeof MeetRoomIdRoute
+  ChatIndexRoute: typeof ChatIndexRoute
+  TasksIndexRoute: typeof TasksIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -102,6 +254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact-sales': {
       id: '/contact-sales'
       path: '/contact-sales'
@@ -116,16 +275,122 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tasks/': {
+      id: '/tasks/'
+      path: '/tasks'
+      fullPath: '/tasks/'
+      preLoaderRoute: typeof TasksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/chat/': {
+      id: '/chat/'
+      path: '/chat'
+      fullPath: '/chat/'
+      preLoaderRoute: typeof ChatIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/meet/$roomId': {
+      id: '/meet/$roomId'
+      path: '/meet/$roomId'
+      fullPath: '/meet/$roomId'
+      preLoaderRoute: typeof MeetRoomIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/new': {
+      id: '/docs/new'
+      path: '/docs/new'
+      fullPath: '/docs/new'
+      preLoaderRoute: typeof DocsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/$docId': {
+      id: '/docs/$docId'
+      path: '/docs/$docId'
+      fullPath: '/docs/$docId'
+      preLoaderRoute: typeof DocsDocIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/meetings': {
+      id: '/dashboard/meetings'
+      path: '/meetings'
+      fullPath: '/dashboard/meetings'
+      preLoaderRoute: typeof DashboardMeetingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/kanban': {
+      id: '/dashboard/kanban'
+      path: '/kanban'
+      fullPath: '/dashboard/kanban'
+      preLoaderRoute: typeof DashboardKanbanRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/docs': {
+      id: '/dashboard/docs'
+      path: '/docs'
+      fullPath: '/dashboard/docs'
+      preLoaderRoute: typeof DashboardDocsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/chat': {
+      id: '/dashboard/chat'
+      path: '/chat'
+      fullPath: '/dashboard/chat'
+      preLoaderRoute: typeof DashboardChatRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
+
+interface DashboardRouteChildren {
+  DashboardChatRoute: typeof DashboardChatRoute
+  DashboardDocsRoute: typeof DashboardDocsRoute
+  DashboardKanbanRoute: typeof DashboardKanbanRoute
+  DashboardMeetingsRoute: typeof DashboardMeetingsRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardChatRoute: DashboardChatRoute,
+  DashboardDocsRoute: DashboardDocsRoute,
+  DashboardKanbanRoute: DashboardKanbanRoute,
+  DashboardMeetingsRoute: DashboardMeetingsRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ContactSalesRoute: ContactSalesRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   PricingRoute: PricingRoute,
   ProductsRoute: ProductsRoute,
   SigninRoute: SigninRoute,
+  DocsDocIdRoute: DocsDocIdRoute,
+  DocsNewRoute: DocsNewRoute,
+  MeetRoomIdRoute: MeetRoomIdRoute,
+  ChatIndexRoute: ChatIndexRoute,
+  TasksIndexRoute: TasksIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

@@ -29,6 +29,8 @@ model User {
   auditLogs     AuditLog[]
   meetingsHost  Meeting[]    @relation("Host")
   messages      Message[]
+  channelMembers ChannelMember[]
+  readReceipts  ReadReceipt[]
   tasks         Task[]       @relation("AssignedTasks")
   recordings    Recording[]  @relation("Uploader")
   bookings      Booking[]    @relation("BookingsHost")
@@ -175,8 +177,22 @@ model Channel {
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   messages    Message[]
+  members     ChannelMember[]
+  readReceipts ReadReceipt[]
 
   @@index([workspaceId])
+}
+
+model ChannelMember {
+  id        String   @id @default(uuid())
+  channelId String
+  userId    String
+  joinedAt  DateTime @default(now())
+
+  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([channelId, userId])
 }
 
 model Message {
@@ -195,8 +211,38 @@ model Message {
   parent      Message?  @relation("Thread", fields: [parentId], references: [id])
   replies     Message[] @relation("Thread")
   reactions   Reaction[]
+  attachments Attachment[]
+  readReceipts ReadReceipt[]
 
   @@index([channelId, createdAt])
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  messageId String
+  url       String
+  filename  String
+  fileType  String
+  size      Int
+  createdAt DateTime @default(now())
+
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+}
+
+model ReadReceipt {
+  id        String   @id @default(uuid())
+  channelId String
+  userId    String
+  messageId String
+  readAt    DateTime @default(now())
+
+  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@unique([channelId, userId])
 }
 
 model Reaction {
