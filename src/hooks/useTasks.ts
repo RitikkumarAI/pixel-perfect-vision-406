@@ -46,10 +46,30 @@ export function useTasks() {
     }
   });
 
+  const createTask = useMutation({
+    mutationFn: async ({ title, description }: { title: string; description?: string }) => {
+      if (!activeWorkspace) throw new Error('No active workspace');
+      const res = await fetch(`/api/v1/tasks`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title, description, status: 'TODO', workspaceId: activeWorkspace.id })
+      });
+      if (!res.ok) throw new Error('Failed to create task');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', activeWorkspace?.id] });
+    }
+  });
+
   return {
     tasks: query.data || [],
     isLoading: query.isLoading,
     error: query.error,
-    updateTaskStatus: updateTaskStatus.mutate
+    updateTaskStatus: updateTaskStatus.mutate,
+    createTask: createTask.mutateAsync
   };
 }

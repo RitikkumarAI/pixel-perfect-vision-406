@@ -324,7 +324,7 @@ function AIMega() {
     { icon: FileText, label: "Docs", link: "/docs/new" },
     { icon: Sheet, label: "Sheets" },
     { icon: Presentation, label: "Slides" },
-    { icon: FileText, label: "Paper" },
+    { icon: FileText, label: "Tasks", link: "/tasks" },
   ];
   return (
     <div className="grid grid-cols-[260px_1fr_360px] gap-8 p-8">
