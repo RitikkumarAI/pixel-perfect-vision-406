@@ -120,7 +120,7 @@ export function ShowcaseCarousel() {
               return (
                 <div key={card.id} className="min-w-0 shrink-0 grow-0 basis-[288px] pl-4 sm:basis-[296px] md:pl-5 lg:basis-[300px] lg:pl-6">
                   <article
-                    className="group relative h-[414px] overflow-hidden rounded-[28px] shadow-[0_24px_60px_-24px_rgba(15,23,42,0.35)] ring-1 ring-black/6 transition-transform duration-500 ease-out sm:h-[426px] lg:h-[430px]"
+                    className="group relative h-[414px] overflow-hidden rounded-[28px] shadow-[0_24px_60px_-24px_rgba(15,23,42,0.35)] ring-1 ring-black/6 transition-transform duration-500 ease-out sm:h-[426px] lg:h-[430px] hover-premium-card"
                     style={{
                       transform: `perspective(1500px) translateY(${translateY}px) scale(${scale}) rotateY(${distance === 0 ? 0 : rotateY}deg)`,
                       transformStyle: "preserve-3d",

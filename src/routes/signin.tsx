@@ -16,7 +16,26 @@ export const Route = createFileRoute("/signin")({
 
 function SignInPage() {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [banner, setBanner] = useState(true);
+  const [error, setError] = useState("");
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Login failed");
+      localStorage.setItem("token", data.token);
+      window.location.href = "/";
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white text-ink flex flex-col">
@@ -102,19 +121,35 @@ function SignInPage() {
           >
             <h1 className="text-[40px] font-bold text-center mb-8">Sign in</h1>
 
-            <label className="block">
-              <input
-                type="text"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email or phone number"
-                className="w-full px-4 py-3.5 rounded-md border border-black/20 text-[15px] focus:outline-none focus:border-zoom-blue focus:ring-2 focus:ring-zoom-blue/20 transition"
-              />
-            </label>
+            <form onSubmit={handleSignIn}>
+              <label className="block mb-4">
+                <input
+                  type="text"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Email or phone number"
+                  className="w-full px-4 py-3.5 rounded-md border border-black/20 text-[15px] focus:outline-none focus:border-zoom-blue focus:ring-2 focus:ring-zoom-blue/20 transition"
+                  required
+                />
+              </label>
+              
+              <label className="block mb-4">
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full px-4 py-3.5 rounded-md border border-black/20 text-[15px] focus:outline-none focus:border-zoom-blue focus:ring-2 focus:ring-zoom-blue/20 transition"
+                  required
+                />
+              </label>
+              
+              {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
-            <button className="w-full mt-4 py-3.5 rounded-md bg-zoom-blue text-white font-semibold text-[16px] hover:bg-zoom-blue-hover active:scale-[0.99] transition">
-              Next
-            </button>
+              <button type="submit" className="w-full mt-4 py-3.5 rounded-md bg-zoom-blue text-white font-semibold text-[16px] hover:bg-zoom-blue-hover active:scale-[0.99] transition">
+                Sign In
+              </button>
+            </form>
 
             <div className="relative my-7 text-center text-sm text-ink/60">
               <span className="bg-white px-3 relative z-10">Or sign in with</span>

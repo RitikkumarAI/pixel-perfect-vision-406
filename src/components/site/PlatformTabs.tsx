@@ -212,7 +212,7 @@ export function PlatformTabs() {
               transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
               className="order-1 lg:order-2"
             >
-              <div className="relative aspect-[5/4] overflow-hidden rounded-3xl bg-muted shadow-[0_30px_80px_-30px_rgba(15,23,42,0.45)]">
+              <div className="relative aspect-[5/4] overflow-hidden rounded-3xl bg-muted shadow-[0_30px_80px_-30px_rgba(15,23,42,0.45)] hover-premium-card">
                 <img
                   src={tab.image}
                   alt={tab.alt}

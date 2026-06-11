@@ -51,7 +51,7 @@ export function NewsImpact() {
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
             whileHover={{ y: -6 }}
-            className="group relative row-span-2 flex min-h-[520px] flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e6bff] to-[#0a3fb3] p-8 text-white shadow-lg transition-shadow hover:shadow-2xl"
+            className="group relative row-span-2 flex min-h-[520px] flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e6bff] to-[#0a3fb3] p-8 text-white shadow-lg transition-shadow hover:shadow-2xl hover-premium-card"
           >
             <div>
               <h3 className="text-2xl font-bold leading-tight md:text-3xl">
@@ -76,7 +76,7 @@ export function NewsImpact() {
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
             whileHover={{ y: -6 }}
-            className="group relative row-span-2 flex min-h-[520px] flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#2d7bff] to-[#0b3ea8] p-8 text-white shadow-lg transition-shadow hover:shadow-2xl"
+            className="group relative row-span-2 flex min-h-[520px] flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#2d7bff] to-[#0b3ea8] p-8 text-white shadow-lg transition-shadow hover:shadow-2xl hover-premium-card"
           >
             <div>
               <h3 className="text-2xl font-bold leading-tight md:text-3xl">
@@ -103,7 +103,7 @@ export function NewsImpact() {
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
             whileHover={{ y: -6 }}
-            className="group relative flex min-h-[250px] flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e6bff] to-[#1239a8] p-7 text-white shadow-lg transition-shadow hover:shadow-2xl"
+            className="group relative flex min-h-[250px] flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#1e6bff] to-[#1239a8] p-7 text-white shadow-lg transition-shadow hover:shadow-2xl hover-premium-card"
           >
             <h3 className="text-xl font-bold leading-tight md:text-2xl">
               Accessible AI: include AI tools for every business
@@ -125,7 +125,7 @@ export function NewsImpact() {
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
             whileHover={{ y: -6 }}
-            className="group relative flex min-h-[250px] flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#2873ff] to-[#0e3fa6] p-7 text-white shadow-lg transition-shadow hover:shadow-2xl"
+            className="group relative flex min-h-[250px] flex-col justify-between overflow-hidden rounded-3xl bg-gradient-to-br from-[#2873ff] to-[#0e3fa6] p-7 text-white shadow-lg transition-shadow hover:shadow-2xl hover-premium-card"
           >
             <h3 className="text-xl font-bold leading-tight md:text-2xl">
               A new AI app built for frontline workers

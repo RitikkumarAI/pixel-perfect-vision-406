@@ -109,7 +109,7 @@ export function CustomerStories() {
                 onClick={() => setActive(i)}
                 layout
                 transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="relative overflow-hidden rounded-3xl text-left focus:outline-none"
+                className="relative overflow-hidden rounded-3xl text-left focus:outline-none hover-premium-card"
                 style={{ flex: isActive ? "1 1 0%" : "0 0 110px" }}
               >
                 <motion.img
