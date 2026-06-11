@@ -33,6 +33,8 @@ import {
   X,
 } from "lucide-react";
 import { Logo } from "./Logo";
+import { useAuth } from "../../hooks/useAuth";
+import { useWorkspaces } from "../../hooks/useWorkspace";
 
 type MenuKey = "products" | "ai" | "solutions" | "meet" | "launcher" | null;
 
@@ -43,6 +45,8 @@ export function Navbar() {
   const [open, setOpen] = useState<MenuKey>(null);
   const [scrolled, setScrolled] = useState(false);
   const closeTimer = useRef<number | null>(null);
+  const { isAuthenticated, logout } = useAuth();
+  const { activeWorkspace } = useWorkspaces();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -113,20 +117,36 @@ export function Navbar() {
           >
             Meet <ChevronDown className="w-4 h-4" />
           </button>
-          <Link to="/signin" className={navItem}>Sign In</Link>
-          <a className={navItem} href="#">Support</a>
-          <Link
-            to="/contact-sales"
-            className="ml-2 px-4 py-2 rounded-full text-[14px] font-semibold bg-white text-navy-deep hover:bg-white/90 transition"
-          >
-            Contact Sales
-          </Link>
-          <Link
-            to="/signin"
-            className="px-4 py-2 rounded-full text-[14px] font-semibold bg-zoom-blue text-white hover:bg-zoom-blue-hover transition shadow-[0_0_0_0_rgba(96,165,250,0.6)] hover:shadow-[0_0_24px_0_rgba(96,165,250,0.5)]"
-          >
-            Sign Up Free
-          </Link>
+          
+          {isAuthenticated ? (
+            <>
+              <button onClick={logout} className={navItem}>Log Out</button>
+              <Link
+                to="/"
+                className="ml-2 px-4 py-2 rounded-full text-[14px] font-semibold bg-white text-navy-deep hover:bg-white/90 transition"
+              >
+                {activeWorkspace ? `Dashboard (${activeWorkspace.name})` : 'Dashboard'}
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/signin" className={navItem}>Sign In</Link>
+              <a className={navItem} href="#">Support</a>
+              <Link
+                to="/contact-sales"
+                className="ml-2 px-4 py-2 rounded-full text-[14px] font-semibold bg-white text-navy-deep hover:bg-white/90 transition"
+              >
+                Contact Sales
+              </Link>
+              <Link
+                to="/signin"
+                className="px-4 py-2 rounded-full text-[14px] font-semibold bg-zoom-blue text-white hover:bg-zoom-blue-hover transition shadow-[0_0_0_0_rgba(96,165,250,0.6)] hover:shadow-[0_0_24px_0_rgba(96,165,250,0.5)]"
+              >
+                Sign Up Free
+              </Link>
+            </>
+          )}
+
           <button
             className="ml-1 p-2 text-white/90 hover:text-white"
             aria-label="App launcher"
