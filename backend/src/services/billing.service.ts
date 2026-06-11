@@ -10,23 +10,48 @@ export class BillingService {
       console.warn('[BillingService] WARNING: STRIPE_SECRET_KEY is not set. Real billing calls will fail.');
     }
     this.stripe = new Stripe(secretKey || 'sk_test_missing_key', {
-      apiVersion: '2025-01-27.acacia' // using an expected valid version
+      apiVersion: '2025-01-27.acacia'
     });
+  }
+
+  /**
+   * Ensures a Stripe Customer exists for the Organization
+   */
+  public async getOrCreateCustomer(orgId: string): Promise<string> {
+    if (!process.env.STRIPE_SECRET_KEY) throw new Error('STRIPE_SECRET_KEY missing.');
+
+    const org = await prisma.organization.findUnique({ where: { id: orgId } });
+    if (!org) throw new Error('Organization not found');
+
+    if (org.stripeCustId) {
+      return org.stripeCustId;
+    }
+
+    // Create a new customer in Stripe
+    console.log(`[BillingService] Creating new Stripe Customer for Org ${orgId}`);
+    const customer = await this.stripe.customers.create({
+      name: org.name,
+      metadata: { organizationId: org.id }
+    });
+
+    // Save back to DB
+    await prisma.organization.update({
+      where: { id: orgId },
+      data: { stripeCustId: customer.id }
+    });
+
+    return customer.id;
   }
 
   /**
    * Generates a real Stripe Checkout Session URL for subscription purchase.
    */
   public async createCheckoutSession(orgId: string, plan: string) {
-    if (!process.env.STRIPE_SECRET_KEY) throw new Error('STRIPE_SECRET_KEY environment variable is missing.');
+    if (!process.env.STRIPE_SECRET_KEY) throw new Error('STRIPE_SECRET_KEY missing.');
     
-    // Check if organization exists
-    const org = await prisma.organization.findUnique({ where: { id: orgId } });
-    if (!org) throw new Error('Organization not found');
+    console.log(`[BillingService] Initializing real checkout session for org ${orgId}`);
+    const customerId = await this.getOrCreateCustomer(orgId);
 
-    console.log(`[BillingService] Creating real Stripe checkout for org ${orgId} to plan ${plan}`);
-
-    // Map your plans to real Stripe Price IDs in a real application
     const priceIdMap: Record<string, string> = {
       'PRO': process.env.STRIPE_PRICE_PRO || 'price_mock_pro',
       'ENTERPRISE': process.env.STRIPE_PRICE_ENTERPRISE || 'price_mock_enterprise'
@@ -36,38 +61,32 @@ export class BillingService {
     if (!priceId) throw new Error(`Invalid plan: ${plan}`);
 
     const session = await this.stripe.checkout.sessions.create({
+      customer: customerId,
       payment_method_types: ['card'],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
       success_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard/billing/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard/billing/cancel`,
-      client_reference_id: orgId, // Crucial to link back to the Organization
+      client_reference_id: orgId, // Linking back to Organization for webhook safety
     });
 
     return { url: session.url };
   }
 
   /**
-   * Handles webhook lifecycle events sent by Stripe.
+   * Handles webhook lifecycle events sent by Stripe with cryptographic verification.
    */
   public async handleWebhook(signature: string, payload: Buffer) {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    if (!webhookSecret) {
-      throw new Error('STRIPE_WEBHOOK_SECRET environment variable is missing.');
-    }
+    if (!webhookSecret) throw new Error('STRIPE_WEBHOOK_SECRET missing.');
 
     let event: Stripe.Event;
 
     try {
-      // Verify signature to prevent spoofing
+      // Cryptographically verify payload
       event = this.stripe.webhooks.constructEvent(payload, signature, webhookSecret);
     } catch (err: any) {
-      console.error(`[BillingService] Webhook Error: ${err.message}`);
+      console.error(`[BillingService] Webhook Signature Error: ${err.message}`);
       throw new Error(`Webhook Error: ${err.message}`);
     }
 
@@ -78,6 +97,7 @@ export class BillingService {
         const stripeSubId = session.subscription as string;
 
         if (orgId && stripeSubId) {
+          console.log(`[BillingService] Session completed for org ${orgId}. Activating subscription.`);
           await prisma.subscription.upsert({
             where: { organizationId: orgId },
             create: {
@@ -99,6 +119,7 @@ export class BillingService {
       }
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
+        console.log(`[BillingService] Subscription ${subscription.id} canceled. Syncing DB.`);
         await prisma.subscription.updateMany({
           where: { stripeSubId: subscription.id },
           data: { status: 'CANCELED' }
@@ -106,7 +127,7 @@ export class BillingService {
         break;
       }
       default:
-        console.log(`[BillingService] Unhandled event type: ${event.type}`);
+        console.log(`[BillingService] Ignored event type: ${event.type}`);
     }
   }
 
