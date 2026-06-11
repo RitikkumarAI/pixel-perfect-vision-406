@@ -64,8 +64,8 @@ export function Footer() {
           ))}
         </div>
       </div>
-      <div className="border-t border-white/10 py-6 text-center text-xs text-white/50">
-        © 2026 · Designed with care.
+      <div className="border-t border-white/10 py-6 text-center text-xs text-white/60">
+        © 2026 · The website is built by <span className="font-semibold text-white">Infinite Technologies</span>.
       </div>
     </footer>
   );
