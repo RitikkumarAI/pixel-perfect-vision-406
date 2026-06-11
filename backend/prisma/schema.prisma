@@ -34,6 +34,7 @@ model User {
   bookings      Booking[]    @relation("BookingsHost")
   availabilityRules AvailabilityRule[]
   calendarIntegrations CalendarIntegration[]
+  devices       Device[]
 }
 
 model UserSettings {
@@ -426,6 +427,25 @@ model Payment {
   subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
   @@index([subscriptionId])
+}
+
+// -----------------------------------------------------------------------------
+// MOBILE & DESKTOP (DEVICES & PUSH)
+// -----------------------------------------------------------------------------
+
+model Device {
+  id          String    @id @default(uuid())
+  userId      String
+  pushToken   String    @unique // FCM or APNS token
+  platform    String    // ios, android, web, macos, windows
+  deviceModel String?
+  appVersion  String?
+  lastActive  DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // -----------------------------------------------------------------------------
