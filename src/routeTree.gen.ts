@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TasksIndexRouteImport } from './routes/tasks/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as ChatIndexRouteImport } from './routes/chat/index'
+import { Route as AgentsIndexRouteImport } from './routes/agents/index'
 import { Route as MeetRoomIdRouteImport } from './routes/meet/$roomId'
 import { Route as DocsNewRouteImport } from './routes/docs/new'
 import { Route as DocsDocIdRouteImport } from './routes/docs/$docId'
@@ -71,6 +72,11 @@ const ChatIndexRoute = ChatIndexRouteImport.update({
   path: '/chat/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgentsIndexRoute = AgentsIndexRouteImport.update({
+  id: '/agents/',
+  path: '/agents/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MeetRoomIdRoute = MeetRoomIdRouteImport.update({
   id: '/meet/$roomId',
   path: '/meet/$roomId',
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/docs/$docId': typeof DocsDocIdRoute
   '/docs/new': typeof DocsNewRoute
   '/meet/$roomId': typeof MeetRoomIdRoute
+  '/agents/': typeof AgentsIndexRoute
   '/chat/': typeof ChatIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/tasks/': typeof TasksIndexRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/docs/$docId': typeof DocsDocIdRoute
   '/docs/new': typeof DocsNewRoute
   '/meet/$roomId': typeof MeetRoomIdRoute
+  '/agents': typeof AgentsIndexRoute
   '/chat': typeof ChatIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/tasks': typeof TasksIndexRoute
@@ -157,6 +165,7 @@ export interface FileRoutesById {
   '/docs/$docId': typeof DocsDocIdRoute
   '/docs/new': typeof DocsNewRoute
   '/meet/$roomId': typeof MeetRoomIdRoute
+  '/agents/': typeof AgentsIndexRoute
   '/chat/': typeof ChatIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/tasks/': typeof TasksIndexRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/docs/$docId'
     | '/docs/new'
     | '/meet/$roomId'
+    | '/agents/'
     | '/chat/'
     | '/dashboard/'
     | '/tasks/'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/docs/$docId'
     | '/docs/new'
     | '/meet/$roomId'
+    | '/agents'
     | '/chat'
     | '/dashboard'
     | '/tasks'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/docs/$docId'
     | '/docs/new'
     | '/meet/$roomId'
+    | '/agents/'
     | '/chat/'
     | '/dashboard/'
     | '/tasks/'
@@ -227,6 +239,7 @@ export interface RootRouteChildren {
   DocsDocIdRoute: typeof DocsDocIdRoute
   DocsNewRoute: typeof DocsNewRoute
   MeetRoomIdRoute: typeof MeetRoomIdRoute
+  AgentsIndexRoute: typeof AgentsIndexRoute
   ChatIndexRoute: typeof ChatIndexRoute
   TasksIndexRoute: typeof TasksIndexRoute
 }
@@ -294,6 +307,13 @@ declare module '@tanstack/react-router' {
       path: '/chat'
       fullPath: '/chat/'
       preLoaderRoute: typeof ChatIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents/': {
+      id: '/agents/'
+      path: '/agents'
+      fullPath: '/agents/'
+      preLoaderRoute: typeof AgentsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/meet/$roomId': {
@@ -378,6 +398,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocsDocIdRoute: DocsDocIdRoute,
   DocsNewRoute: DocsNewRoute,
   MeetRoomIdRoute: MeetRoomIdRoute,
+  AgentsIndexRoute: AgentsIndexRoute,
   ChatIndexRoute: ChatIndexRoute,
   TasksIndexRoute: TasksIndexRoute,
 }

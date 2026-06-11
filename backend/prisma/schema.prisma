@@ -37,6 +37,8 @@ model User {
   availabilityRules AvailabilityRule[]
   calendarIntegrations CalendarIntegration[]
   devices       Device[]
+  agentRuns     AgentRun[]
+  agentMemories AgentMemory[]
 }
 
 model UserSettings {
@@ -412,6 +414,9 @@ model Agent {
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workflows   Workflow[]
+  runs        AgentRun[]
+  memories    AgentMemory[]
+  agentTasks  AgentTask[]
 
   @@index([workspaceId])
 }
@@ -441,6 +446,67 @@ model Workflow {
   agent       Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
 
   @@index([agentId])
+}
+
+model AgentRun {
+  id          String    @id @default(uuid())
+  agentId     String
+  userId      String
+  status      String    @default("RUNNING") // RUNNING, COMPLETED, FAILED
+  input       String    @db.Text
+  result      String?   @db.Text
+  error       String?   @db.Text
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+
+  agent       Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs        AgentLog[]
+
+  @@index([agentId])
+  @@index([userId])
+}
+
+model AgentMemory {
+  id          String    @id @default(uuid())
+  agentId     String
+  userId      String
+  key         String
+  value       String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  agent       Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([agentId, userId, key])
+}
+
+model AgentTask {
+  id          String    @id @default(uuid())
+  agentId     String
+  description String    @db.Text
+  status      String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, FAILED
+  result      String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  agent       Agent     @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
+}
+
+model AgentLog {
+  id          String    @id @default(uuid())
+  runId       String
+  level       String    @default("INFO") // INFO, WARN, ERROR, THOUGHT, ACTION
+  message     String    @db.Text
+  metadata    Json      @default("{}")
+  createdAt   DateTime  @default(now())
+
+  run         AgentRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId])
 }
 
 // -----------------------------------------------------------------------------
