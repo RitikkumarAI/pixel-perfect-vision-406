@@ -97,7 +97,7 @@ export function Navbar() {
           >
             Solutions <ChevronDown className="w-4 h-4" />
           </button>
-          <Link to="/products" className={navItem} onMouseEnter={() => setOpen(null)}>
+          <Link to="/pricing" className={navItem} onMouseEnter={() => setOpen(null)}>
             Pricing
           </Link>
         </nav>
@@ -113,7 +113,7 @@ export function Navbar() {
           >
             Meet <ChevronDown className="w-4 h-4" />
           </button>
-          <a className={navItem} href="#">Sign In</a>
+          <Link to="/signin" className={navItem}>Sign In</Link>
           <a className={navItem} href="#">Support</a>
           <Link
             to="/contact-sales"
@@ -121,12 +121,12 @@ export function Navbar() {
           >
             Contact Sales
           </Link>
-          <a
-            href="#"
+          <Link
+            to="/signin"
             className="px-4 py-2 rounded-full text-[14px] font-semibold bg-zoom-blue text-white hover:bg-zoom-blue-hover transition shadow-[0_0_0_0_rgba(96,165,250,0.6)] hover:shadow-[0_0_24px_0_rgba(96,165,250,0.5)]"
           >
             Sign Up Free
-          </a>
+          </Link>
           <button
             className="ml-1 p-2 text-white/90 hover:text-white"
             aria-label="App launcher"
