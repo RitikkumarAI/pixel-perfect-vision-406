@@ -11,6 +11,7 @@ import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { useBilling } from "@/hooks/useBilling";
 import { useWorkspaces } from "@/hooks/useWorkspace";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -264,8 +265,10 @@ function PricingPage() {
 
   const { createCheckoutSession, isLoading: isCheckoutLoading } = useBilling();
   const { activeWorkspace } = useWorkspaces();
+  const { trackEvent } = useAnalytics();
 
   const handleCheckout = (planName: string) => {
+    trackEvent('checkout_started', { plan: planName, workspaceId: activeWorkspace?.id });
     if (!activeWorkspace) {
       alert("Please sign in and select a workspace to purchase a plan.");
       window.location.href = "/signin";
