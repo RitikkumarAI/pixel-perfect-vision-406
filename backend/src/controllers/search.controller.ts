@@ -15,7 +15,7 @@ export class SearchController {
         return;
       }
 
-      const results = await this.searchService.globalSearch(workspaceId, q);
+      const results = await this.searchService.globalSearch(workspaceId as string, q);
       res.status(200).json(results);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

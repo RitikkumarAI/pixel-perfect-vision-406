@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nexus-prod
+  labels:
+    name: nexus-prod
+    environment: production

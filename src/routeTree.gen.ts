@@ -18,14 +18,17 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TasksIndexRouteImport } from './routes/tasks/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as ChatIndexRouteImport } from './routes/chat/index'
-import { Route as AgentsIndexRouteImport } from './routes/agents/index'
 import { Route as MeetRoomIdRouteImport } from './routes/meet/$roomId'
 import { Route as DocsNewRouteImport } from './routes/docs/new'
 import { Route as DocsDocIdRouteImport } from './routes/docs/$docId'
+import { Route as DashboardVideoRouteImport } from './routes/dashboard/video'
+import { Route as DashboardSecurityRouteImport } from './routes/dashboard/security'
+import { Route as DashboardSchedulingRouteImport } from './routes/dashboard/scheduling'
 import { Route as DashboardMeetingsRouteImport } from './routes/dashboard/meetings'
 import { Route as DashboardKanbanRouteImport } from './routes/dashboard/kanban'
 import { Route as DashboardDocsRouteImport } from './routes/dashboard/docs'
 import { Route as DashboardChatRouteImport } from './routes/dashboard/chat'
+import { Route as DashboardAgentsRouteImport } from './routes/dashboard/agents'
 
 const SigninRoute = SigninRouteImport.update({
   id: '/signin',
@@ -72,11 +75,6 @@ const ChatIndexRoute = ChatIndexRouteImport.update({
   path: '/chat/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AgentsIndexRoute = AgentsIndexRouteImport.update({
-  id: '/agents/',
-  path: '/agents/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MeetRoomIdRoute = MeetRoomIdRouteImport.update({
   id: '/meet/$roomId',
   path: '/meet/$roomId',
@@ -91,6 +89,21 @@ const DocsDocIdRoute = DocsDocIdRouteImport.update({
   id: '/docs/$docId',
   path: '/docs/$docId',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardVideoRoute = DashboardVideoRouteImport.update({
+  id: '/video',
+  path: '/video',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSecurityRoute = DashboardSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSchedulingRoute = DashboardSchedulingRouteImport.update({
+  id: '/scheduling',
+  path: '/scheduling',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardMeetingsRoute = DashboardMeetingsRouteImport.update({
   id: '/meetings',
@@ -112,6 +125,11 @@ const DashboardChatRoute = DashboardChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardAgentsRoute = DashboardAgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => DashboardRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -120,14 +138,17 @@ export interface FileRoutesByFullPath {
   '/pricing': typeof PricingRoute
   '/products': typeof ProductsRoute
   '/signin': typeof SigninRoute
+  '/dashboard/agents': typeof DashboardAgentsRoute
   '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/docs': typeof DashboardDocsRoute
   '/dashboard/kanban': typeof DashboardKanbanRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
+  '/dashboard/scheduling': typeof DashboardSchedulingRoute
+  '/dashboard/security': typeof DashboardSecurityRoute
+  '/dashboard/video': typeof DashboardVideoRoute
   '/docs/$docId': typeof DocsDocIdRoute
   '/docs/new': typeof DocsNewRoute
   '/meet/$roomId': typeof MeetRoomIdRoute
-  '/agents/': typeof AgentsIndexRoute
   '/chat/': typeof ChatIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/tasks/': typeof TasksIndexRoute
@@ -138,14 +159,17 @@ export interface FileRoutesByTo {
   '/pricing': typeof PricingRoute
   '/products': typeof ProductsRoute
   '/signin': typeof SigninRoute
+  '/dashboard/agents': typeof DashboardAgentsRoute
   '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/docs': typeof DashboardDocsRoute
   '/dashboard/kanban': typeof DashboardKanbanRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
+  '/dashboard/scheduling': typeof DashboardSchedulingRoute
+  '/dashboard/security': typeof DashboardSecurityRoute
+  '/dashboard/video': typeof DashboardVideoRoute
   '/docs/$docId': typeof DocsDocIdRoute
   '/docs/new': typeof DocsNewRoute
   '/meet/$roomId': typeof MeetRoomIdRoute
-  '/agents': typeof AgentsIndexRoute
   '/chat': typeof ChatIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/tasks': typeof TasksIndexRoute
@@ -158,14 +182,17 @@ export interface FileRoutesById {
   '/pricing': typeof PricingRoute
   '/products': typeof ProductsRoute
   '/signin': typeof SigninRoute
+  '/dashboard/agents': typeof DashboardAgentsRoute
   '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/docs': typeof DashboardDocsRoute
   '/dashboard/kanban': typeof DashboardKanbanRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
+  '/dashboard/scheduling': typeof DashboardSchedulingRoute
+  '/dashboard/security': typeof DashboardSecurityRoute
+  '/dashboard/video': typeof DashboardVideoRoute
   '/docs/$docId': typeof DocsDocIdRoute
   '/docs/new': typeof DocsNewRoute
   '/meet/$roomId': typeof MeetRoomIdRoute
-  '/agents/': typeof AgentsIndexRoute
   '/chat/': typeof ChatIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/tasks/': typeof TasksIndexRoute
@@ -179,14 +206,17 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/products'
     | '/signin'
+    | '/dashboard/agents'
     | '/dashboard/chat'
     | '/dashboard/docs'
     | '/dashboard/kanban'
     | '/dashboard/meetings'
+    | '/dashboard/scheduling'
+    | '/dashboard/security'
+    | '/dashboard/video'
     | '/docs/$docId'
     | '/docs/new'
     | '/meet/$roomId'
-    | '/agents/'
     | '/chat/'
     | '/dashboard/'
     | '/tasks/'
@@ -197,14 +227,17 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/products'
     | '/signin'
+    | '/dashboard/agents'
     | '/dashboard/chat'
     | '/dashboard/docs'
     | '/dashboard/kanban'
     | '/dashboard/meetings'
+    | '/dashboard/scheduling'
+    | '/dashboard/security'
+    | '/dashboard/video'
     | '/docs/$docId'
     | '/docs/new'
     | '/meet/$roomId'
-    | '/agents'
     | '/chat'
     | '/dashboard'
     | '/tasks'
@@ -216,14 +249,17 @@ export interface FileRouteTypes {
     | '/pricing'
     | '/products'
     | '/signin'
+    | '/dashboard/agents'
     | '/dashboard/chat'
     | '/dashboard/docs'
     | '/dashboard/kanban'
     | '/dashboard/meetings'
+    | '/dashboard/scheduling'
+    | '/dashboard/security'
+    | '/dashboard/video'
     | '/docs/$docId'
     | '/docs/new'
     | '/meet/$roomId'
-    | '/agents/'
     | '/chat/'
     | '/dashboard/'
     | '/tasks/'
@@ -239,7 +275,6 @@ export interface RootRouteChildren {
   DocsDocIdRoute: typeof DocsDocIdRoute
   DocsNewRoute: typeof DocsNewRoute
   MeetRoomIdRoute: typeof MeetRoomIdRoute
-  AgentsIndexRoute: typeof AgentsIndexRoute
   ChatIndexRoute: typeof ChatIndexRoute
   TasksIndexRoute: typeof TasksIndexRoute
 }
@@ -309,13 +344,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ChatIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/agents/': {
-      id: '/agents/'
-      path: '/agents'
-      fullPath: '/agents/'
-      preLoaderRoute: typeof AgentsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/meet/$roomId': {
       id: '/meet/$roomId'
       path: '/meet/$roomId'
@@ -336,6 +364,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/docs/$docId'
       preLoaderRoute: typeof DocsDocIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/video': {
+      id: '/dashboard/video'
+      path: '/video'
+      fullPath: '/dashboard/video'
+      preLoaderRoute: typeof DashboardVideoRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/security': {
+      id: '/dashboard/security'
+      path: '/security'
+      fullPath: '/dashboard/security'
+      preLoaderRoute: typeof DashboardSecurityRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/scheduling': {
+      id: '/dashboard/scheduling'
+      path: '/scheduling'
+      fullPath: '/dashboard/scheduling'
+      preLoaderRoute: typeof DashboardSchedulingRouteImport
+      parentRoute: typeof DashboardRoute
     }
     '/dashboard/meetings': {
       id: '/dashboard/meetings'
@@ -365,22 +414,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardChatRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/agents': {
+      id: '/dashboard/agents'
+      path: '/agents'
+      fullPath: '/dashboard/agents'
+      preLoaderRoute: typeof DashboardAgentsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
   }
 }
 
 interface DashboardRouteChildren {
+  DashboardAgentsRoute: typeof DashboardAgentsRoute
   DashboardChatRoute: typeof DashboardChatRoute
   DashboardDocsRoute: typeof DashboardDocsRoute
   DashboardKanbanRoute: typeof DashboardKanbanRoute
   DashboardMeetingsRoute: typeof DashboardMeetingsRoute
+  DashboardSchedulingRoute: typeof DashboardSchedulingRoute
+  DashboardSecurityRoute: typeof DashboardSecurityRoute
+  DashboardVideoRoute: typeof DashboardVideoRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAgentsRoute: DashboardAgentsRoute,
   DashboardChatRoute: DashboardChatRoute,
   DashboardDocsRoute: DashboardDocsRoute,
   DashboardKanbanRoute: DashboardKanbanRoute,
   DashboardMeetingsRoute: DashboardMeetingsRoute,
+  DashboardSchedulingRoute: DashboardSchedulingRoute,
+  DashboardSecurityRoute: DashboardSecurityRoute,
+  DashboardVideoRoute: DashboardVideoRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
@@ -398,7 +462,6 @@ const rootRouteChildren: RootRouteChildren = {
   DocsDocIdRoute: DocsDocIdRoute,
   DocsNewRoute: DocsNewRoute,
   MeetRoomIdRoute: MeetRoomIdRoute,
-  AgentsIndexRoute: AgentsIndexRoute,
   ChatIndexRoute: ChatIndexRoute,
   TasksIndexRoute: TasksIndexRoute,
 }

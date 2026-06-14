@@ -1,4 +1,4 @@
-import { redis } from '../../utils/redis'; // Assuming ioredis is exported from here
+import { redisClient } from '../../utils/redis';
 
 export class MemoryService {
   private static readonly TTL_SECONDS = 60 * 60 * 24; // 24 hours
@@ -8,8 +8,8 @@ export class MemoryService {
    */
   public async getHistory(contextId: string, limit: number = 10): Promise<{role: string, content: string}[]> {
     try {
-      const data = await redis.lrange(`memory:${contextId}`, 0, limit - 1);
-      return data.map(str => JSON.parse(str)).reverse();
+      const data = await redisClient.lrange(`memory:${contextId}`, 0, limit - 1);
+      return data.map((str: string) => JSON.parse(str)).reverse();
     } catch (e) {
       console.error('[MemoryService] Failed to retrieve history:', e);
       return [];
@@ -22,9 +22,9 @@ export class MemoryService {
   public async addMessage(contextId: string, role: 'user' | 'assistant' | 'system', content: string) {
     try {
       const key = `memory:${contextId}`;
-      await redis.lpush(key, JSON.stringify({ role, content }));
-      await redis.ltrim(key, 0, 49); // Keep last 50 messages
-      await redis.expire(key, MemoryService.TTL_SECONDS);
+      await redisClient.lpush(key, JSON.stringify({ role, content }));
+      await redisClient.ltrim(key, 0, 49); // Keep last 50 messages
+      await redisClient.expire(key, MemoryService.TTL_SECONDS);
     } catch (e) {
       console.error('[MemoryService] Failed to save memory:', e);
     }
@@ -35,7 +35,7 @@ export class MemoryService {
    */
   public async clearMemory(contextId: string) {
     try {
-      await redis.del(`memory:${contextId}`);
+      await redisClient.del(`memory:${contextId}`);
     } catch (e) {
       console.error('[MemoryService] Failed to clear memory:', e);
     }

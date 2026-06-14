@@ -28,7 +28,7 @@ export class OrgController {
     try {
       const { id: orgId } = req.params;
       const { name, description } = req.body;
-      const team = await this.orgService.createTeam(req.user!.userId, orgId, name, description);
+      const team = await this.orgService.createTeam(req.user!.userId, orgId as string, name, description);
       res.status(201).json(team);
     } catch (error: any) {
       res.status(403).json({ error: error.message });
@@ -39,7 +39,7 @@ export class OrgController {
     try {
       const { teamId } = req.params;
       const { name } = req.body;
-      const workspace = await this.orgService.createWorkspace(req.user!.userId, teamId, name);
+      const workspace = await this.orgService.createWorkspace(req.user!.userId, teamId as string, name);
       res.status(201).json(workspace);
     } catch (error: any) {
       res.status(403).json({ error: error.message });
@@ -50,7 +50,7 @@ export class OrgController {
     try {
       const { id: orgId } = req.params;
       const { email, role, teamId } = req.body;
-      const membership = await this.orgService.inviteMember(req.user!.userId, orgId, email, role, teamId);
+      const membership = await this.orgService.inviteMember(req.user!.userId, orgId as string, email, role, teamId as string);
       res.status(201).json({ message: 'User invited successfully', membership });
     } catch (error: any) {
       res.status(400).json({ error: error.message });

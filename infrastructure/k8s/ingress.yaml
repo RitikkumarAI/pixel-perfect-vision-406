@@ -1,0 +1,58 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nexus-ingress
+  namespace: nexus-prod
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:1234567890:certificate/xxxx
+spec:
+  rules:
+    - host: api.nexus-workspace.com
+      http:
+        paths:
+          - path: /api/v1/auth
+            pathType: Prefix
+            backend:
+              service:
+                name: nexus-auth-svc
+                port:
+                  number: 5000
+          - path: /api/v1/ai
+            pathType: Prefix
+            backend:
+              service:
+                name: nexus-ai-svc
+                port:
+                  number: 5000
+          - path: /api/v1/meetings
+            pathType: Prefix
+            backend:
+              service:
+                name: nexus-meetings-svc
+                port:
+                  number: 5000
+          - path: /api/v1/chat
+            pathType: Prefix
+            backend:
+              service:
+                name: nexus-chat-svc
+                port:
+                  number: 5000
+          - path: /api/v1/billing
+            pathType: Prefix
+            backend:
+              service:
+                name: nexus-billing-svc
+                port:
+                  number: 5000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nexus-api-svc
+                port:
+                  number: 5000

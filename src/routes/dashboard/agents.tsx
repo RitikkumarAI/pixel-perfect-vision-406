@@ -1,11 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
-import { Navbar } from "@/components/site/Navbar";
-import { Footer } from "@/components/site/Footer";
+
 import { useAgents } from "../../hooks/useAgents";
 import { Bot, Terminal, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 
-export const Route = createFileRoute("/agents/")({
+export const Route = createFileRoute("/dashboard/agents")({
   component: AgentsPage,
 });
 
@@ -48,9 +47,7 @@ function AgentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-navy flex flex-col">
-      <Navbar />
-      <main className="flex-1 max-w-[1400px] mx-auto w-full flex pt-24 pb-8 px-6 gap-6 h-[90vh]">
+    <div className="flex h-full gap-6">
         
         {/* Sidebar: Agent Registry */}
         <div className="w-80 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col overflow-hidden shadow-sm shrink-0">
@@ -181,8 +178,6 @@ function AgentsPage() {
             </>
           ) : null}
         </div>
-      </main>
-      <Footer />
     </div>
   );
 }

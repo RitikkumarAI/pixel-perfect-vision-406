@@ -25,7 +25,7 @@ export class OrgService {
         organizationId: org.id,
         name: 'General',
         members: {
-          connect: { id: org.memberships[0].id }
+          connect: { id: org.memberships[0]!.id }
         }
       }
     });

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Sparkles, Headphones, Megaphone, TrendingUp, Heart, MessageSquare, Bot, BarChart3, Award } from "lucide-react";
-import aiSuite from "@/assets/ai-suite.webp.asset.json";
-import contactCenter from "@/assets/contact-center.jpg.asset.json";
-import webinars from "@/assets/webinars.jpg.asset.json";
-import sales from "@/assets/sales-meeting.jpg.asset.json";
-import engagement from "@/assets/engagement.jpg.asset.json";
+import aiSuite from "@/assets/ai-suite.webp";
+import contactCenter from "@/assets/contact-center.jpg";
+import webinars from "@/assets/webinars.jpg";
+import sales from "@/assets/sales-meeting.jpg";
+import engagement from "@/assets/engagement.jpg";
 
 type Bullet = { title: string; body: string };
 type Tab = {
@@ -23,7 +23,7 @@ const TABS: Tab[] = [
     id: "collab",
     label: "Collaboration",
     icon: Sparkles,
-    image: aiSuite.url,
+    image: aiSuite,
     alt: "AI productivity suite workspace",
     bullets: [
       { title: "One workspace, less app switching:", body: "Meetings, chat, docs, and tasks live side by side." },
@@ -40,7 +40,7 @@ const TABS: Tab[] = [
     id: "support",
     label: "Customer Support",
     icon: Headphones,
-    image: contactCenter.url,
+    image: contactCenter,
     alt: "Customer support agent with AI overlays",
     bullets: [
       { title: "One platform, full context:", body: "Phone, chat, email, SMS, social, and video unified in a single view." },
@@ -60,7 +60,7 @@ const TABS: Tab[] = [
     id: "marketing",
     label: "Marketing",
     icon: Megaphone,
-    image: webinars.url,
+    image: webinars,
     alt: "Marketing webinar and event experience",
     bullets: [
       { title: "Keep audiences engaged:", body: "Capture leads with branded webinars and events that build pipeline." },
@@ -77,7 +77,7 @@ const TABS: Tab[] = [
     id: "sales",
     label: "Sales",
     icon: TrendingUp,
-    image: sales.url,
+    image: sales,
     alt: "Sales rep in a meeting with deal insights",
     bullets: [
       { title: "Make selling easier:", body: "Eliminate admin work so reps can focus on building relationships." },
@@ -93,7 +93,7 @@ const TABS: Tab[] = [
     id: "engagement",
     label: "Employee Engagement",
     icon: Heart,
-    image: engagement.url,
+    image: engagement,
     alt: "Remote employees connecting on a video call",
     bullets: [
       { title: "Foster community in hybrid teams:", body: "Company-wide updates, recognition, and social feeds that connect remote employees." },

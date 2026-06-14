@@ -31,6 +31,8 @@ import {
   Mic2,
   ChevronRight,
   X,
+  Users,
+  Bot
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { useAuth } from "../../hooks/useAuth";
@@ -324,6 +326,8 @@ function AIMega() {
     { icon: FileText, label: "Docs", link: "/docs/new" },
     { icon: Users, label: "Chat", link: "/chat" },
     { icon: Bot, label: "AI Agents", link: "/agents" },
+    { icon: Calendar, label: "Scheduling", link: "/scheduling" },
+    { icon: Video, label: "Videos", link: "/video" },
     { icon: Sheet, label: "Sheets" },
     { icon: Presentation, label: "Slides" },
     { icon: FileText, label: "Tasks", link: "/tasks" },

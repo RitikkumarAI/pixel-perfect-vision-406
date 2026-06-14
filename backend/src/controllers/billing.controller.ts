@@ -32,7 +32,7 @@ export class BillingController {
   public getStatus = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { orgId } = req.params;
-      const status = await this.billingService.getSubscriptionStatus(orgId);
+      const status = await this.billingService.getSubscriptionStatus(orgId as string);
       res.status(200).json(status);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

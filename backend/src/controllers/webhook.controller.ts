@@ -18,7 +18,7 @@ export class WebhookController {
   public getWebhooks = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { workspaceId } = req.params;
-      const webhooks = await this.webhookService.getWebhooks(workspaceId);
+      const webhooks = await this.webhookService.getWebhooks(workspaceId as string);
       res.status(200).json(webhooks);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -28,7 +28,7 @@ export class WebhookController {
   public deleteWebhook = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      await this.webhookService.deleteWebhook(id);
+      await this.webhookService.deleteWebhook(id as string);
       res.status(204).send();
     } catch (error: any) {
       res.status(500).json({ error: error.message });

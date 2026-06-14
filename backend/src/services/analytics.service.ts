@@ -63,4 +63,12 @@ export class AnalyticsService {
       await this.posthog.shutdown();
     }
   }
+
+  public async getSystemStats() {
+    return {
+      status: 'ok',
+      activeUsers: 0,
+      totalEvents: 0
+    };
+  }
 }

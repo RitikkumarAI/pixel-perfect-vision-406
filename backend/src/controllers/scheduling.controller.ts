@@ -10,10 +10,30 @@ export class SchedulingController {
   public getAvailability = async (req: Request, res: Response): Promise<void> => {
     try {
       const { hostId } = req.params;
-      const rules = await this.schedulingService.getAvailability(hostId);
+      const rules = await this.schedulingService.getAvailability(hostId as string);
       res.status(200).json(rules);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
+    }
+  };
+
+  // Event Types
+  public getEventTypes = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const types = await this.schedulingService.getEventTypes(req.user!.userId);
+      res.status(200).json(types);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  public createEventType = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { title, description, durationMin, slug } = req.body;
+      const type = await this.schedulingService.createEventType(req.user!.userId, title, description, durationMin, slug);
+      res.status(201).json(type);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
     }
   };
 
@@ -21,8 +41,8 @@ export class SchedulingController {
   public createBooking = async (req: Request, res: Response): Promise<void> => {
     try {
       const { hostId } = req.params;
-      const { guestName, guestEmail, startTime, endTime } = req.body;
-      const booking = await this.schedulingService.createBooking(hostId, guestName, guestEmail, new Date(startTime), new Date(endTime));
+      const { eventTypeId, guestName, guestEmail, startTime, endTime } = req.body;
+      const booking = await this.schedulingService.createBooking(hostId as string, eventTypeId, guestName, guestEmail, new Date(startTime), new Date(endTime));
       res.status(201).json(booking);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
@@ -41,10 +61,31 @@ export class SchedulingController {
   };
 
   // Protected endpoint for hosts to view their upcoming schedule
-  public getUpcomingBookings = async (req: AuthRequest, res: Response): Promise<void> => {
+  public getBookings = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-      const bookings = await this.schedulingService.getHostUpcomingBookings(req.user!.userId);
+      const bookings = await this.schedulingService.getHostBookings(req.user!.userId);
       res.status(200).json(bookings);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  // Calendar Auth
+  public connectGoogle = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { accessToken, refreshToken } = req.body;
+      const account = await this.schedulingService.connectCalendar(req.user!.userId, 'google', accessToken, refreshToken || "mock-refresh");
+      res.status(200).json(account);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  public connectOutlook = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { accessToken, refreshToken } = req.body;
+      const account = await this.schedulingService.connectCalendar(req.user!.userId, 'outlook', accessToken, refreshToken || "mock-refresh");
+      res.status(200).json(account);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

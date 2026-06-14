@@ -8,7 +8,7 @@ export const createChatController = (chatService: ChatService) => {
       try {
         const { workspaceId } = req.params;
         const { name, isPrivate } = req.body;
-        const channel = await chatService.createChannel(workspaceId, name, isPrivate);
+        const channel = await chatService.createChannel(workspaceId as string, name, isPrivate);
         res.status(201).json(channel);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -18,7 +18,7 @@ export const createChatController = (chatService: ChatService) => {
     getChannels: async (req: AuthRequest, res: Response): Promise<void> => {
       try {
         const { workspaceId } = req.params;
-        const channels = await chatService.getWorkspaceChannels(workspaceId, req.user!.userId);
+        const channels = await chatService.getWorkspaceChannels(workspaceId as string, req.user!.userId);
         res.status(200).json(channels);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -29,7 +29,7 @@ export const createChatController = (chatService: ChatService) => {
       try {
         const { channelId } = req.params;
         const { limit, cursor } = req.query;
-        const messages = await chatService.getChannelMessages(channelId, Number(limit) || 50, cursor as string);
+        const messages = await chatService.getChannelMessages(channelId as string, Number(limit) || 50, cursor as string);
         res.status(200).json(messages);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -40,7 +40,7 @@ export const createChatController = (chatService: ChatService) => {
       try {
         const { channelId } = req.params;
         const { content, parentId, attachments } = req.body;
-        const message = await chatService.sendMessage(channelId, req.user!.userId, content, parentId, attachments);
+        const message = await chatService.sendMessage(channelId as string, req.user!.userId, content, parentId, attachments);
         res.status(201).json(message);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -51,7 +51,7 @@ export const createChatController = (chatService: ChatService) => {
       try {
         const { messageId } = req.params;
         const { emoji } = req.body;
-        const result = await chatService.toggleReaction(messageId, req.user!.userId, emoji);
+        const result = await chatService.toggleReaction(messageId as string, req.user!.userId, emoji);
         res.status(200).json(result);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -63,7 +63,7 @@ export const createChatController = (chatService: ChatService) => {
         const { workspaceId } = req.params;
         const { userIds } = req.body;
         if (!userIds.includes(req.user!.userId)) userIds.push(req.user!.userId);
-        const channel = await chatService.createDM(workspaceId, userIds);
+        const channel = await chatService.createDM(workspaceId as string, userIds);
         res.status(201).json(channel);
       } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -74,7 +74,7 @@ export const createChatController = (chatService: ChatService) => {
       try {
         const { channelId } = req.params;
         const { messageId } = req.body;
-        const receipt = await chatService.markChannelRead(channelId, req.user!.userId, messageId);
+        const receipt = await chatService.markChannelRead(channelId as string, req.user!.userId, messageId);
         res.status(200).json(receipt);
       } catch (error: any) {
         res.status(500).json({ error: error.message });

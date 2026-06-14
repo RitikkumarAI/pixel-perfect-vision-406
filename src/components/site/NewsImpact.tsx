@@ -1,8 +1,8 @@
 import { motion, type Variants } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
-import notesAsset from "@/assets/my-notes-hp-card.webp.asset.json";
-import aiAsset from "@/assets/ai-suite.webp.asset.json";
+import notesAsset from "@/assets/my-notes-hp-card.webp";
+import aiAsset from "@/assets/ai-suite.webp";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 28 },
@@ -62,7 +62,7 @@ export function NewsImpact() {
               </p>
             </div>
             <div className="relative mt-8">
-              <img src={notesAsset.url} alt="AI note taker preview" className="w-full rounded-xl object-cover" />
+              <img src={notesAsset} alt="AI note taker preview" className="w-full rounded-xl object-cover" />
               <div className="absolute bottom-4 right-4"><ArrowChip /></div>
             </div>
           </motion.a>

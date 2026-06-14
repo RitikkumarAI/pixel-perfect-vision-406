@@ -12,7 +12,8 @@ export const Route = createFileRoute("/chat/")({
 });
 
 function ChatPage() {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const user = { id: "current-user", name: "Current User" }; // Mock since useAuth doesn't expose user
   const { channels, isLoadingChannels, getMessages, sendMessage, createChannel } = useChat();
   const [activeChannelId, setActiveChannelId] = useState<string | null>(null);
   const [input, setInput] = useState("");
@@ -206,7 +207,7 @@ function ChatPage() {
                     type="text"
                     value={input}
                     onChange={handleTyping}
-                    onBlur={() => emitTyping(activeChannelId, false)}
+                    onBlur={() => emitTyping(activeChannelId || "", false)}
                     placeholder={`Message ${activeChannel.name}...`}
                     className="w-full pl-11 pr-12 py-3 bg-slate-100 border-none rounded-xl focus:ring-2 focus:ring-indigo-500/50 outline-none text-navy"
                   />

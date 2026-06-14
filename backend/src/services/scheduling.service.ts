@@ -31,10 +31,24 @@ export class SchedulingService {
   }
 
   /**
-   * Creates a new booking. For MVP we assume times are pre-validated by the frontend against the availability rules.
+  /**
+   * Event Types
    */
-  public async createBooking(hostId: string, guestName: string, guestEmail: string, startTime: Date, endTime: Date) {
-    // In a fully robust system, check for overlapping bookings here:
+  public async getEventTypes(userId: string) {
+    return prisma.eventType.findMany({ where: { userId } });
+  }
+
+  public async createEventType(userId: string, title: string, description: string, durationMin: number, slug: string) {
+    return prisma.eventType.create({
+      data: { userId, title, description, durationMin, slug }
+    });
+  }
+
+  /**
+   * Bookings & Meetings
+   */
+  public async createBooking(hostId: string, eventTypeId: string, guestName: string, guestEmail: string, startTime: Date, endTime: Date) {
+    // Basic overlap check
     const overlapping = await prisma.booking.findFirst({
       where: {
         hostId,
@@ -47,29 +61,70 @@ export class SchedulingService {
 
     if (overlapping) throw new Error('Time slot is already booked.');
 
-    // Create booking and mock a generated meeting URL
-    return prisma.booking.create({
+    // 1. Create the database booking & attendees
+    const booking = await prisma.booking.create({
       data: {
         hostId,
+        eventTypeId,
         guestName,
         guestEmail,
         startTime,
         endTime,
-        meetingUrl: `https://nexus.local/m/book-${Date.now()}`
+        attendees: {
+          create: [{ name: guestName, email: guestEmail }]
+        }
       }
+    });
+
+    // 2. Generate the LiveKit Meeting explicitly via MeetingService logic
+    const meetingTitle = `Meeting with ${guestName}`;
+    const meeting = await prisma.meeting.create({
+      data: {
+        hostId,
+        title: meetingTitle,
+        startTime,
+        endTime,
+        status: 'SCHEDULED'
+      }
+    });
+
+    // Mock LiveKit room allocation and Meeting update
+    const livekitRoomName = `booking-${booking.id}`;
+    await prisma.meeting.update({
+      where: { id: meeting.id },
+      data: { livekitRoom: livekitRoomName }
+    });
+
+    // 3. Associate URL to the booking
+    const updatedBooking = await prisma.booking.update({
+      where: { id: booking.id },
+      data: { meetingUrl: `https://nexus.local/meet/${livekitRoomName}` }
+    });
+
+    return updatedBooking;
+  }
+
+  public async getHostBookings(hostId: string) {
+    return prisma.booking.findMany({
+      where: { hostId },
+      orderBy: { startTime: 'asc' },
+      include: { attendees: true, eventType: true }
     });
   }
 
   /**
-   * Retrieves all upcoming bookings for a host.
+   * Calendar Integrations
    */
-  public async getHostUpcomingBookings(hostId: string) {
-    return prisma.booking.findMany({
-      where: { 
-        hostId, 
-        startTime: { gte: new Date() }
-      },
-      orderBy: { startTime: 'asc' }
+  public async connectCalendar(userId: string, provider: string, accessToken: string, refreshToken: string) {
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1); // Mock 1h expiry
+
+    return prisma.calendarAccount.upsert({
+      where: { userId_provider: { userId, provider } },
+      update: { accessToken, refreshToken, expiresAt, syncStatus: "ACTIVE" },
+      create: { userId, provider, accessToken, refreshToken, expiresAt }
     });
   }
+
+
 }

@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 
-import salesAsset from "@/assets/sales-meeting.jpg.asset.json";
-import engagementAsset from "@/assets/engagement.jpg.asset.json";
-import meetingsAsset from "@/assets/meetings.jpg.asset.json";
-import contactCenterAsset from "@/assets/contact-center.jpg.asset.json";
-import roomsAsset from "@/assets/rooms.jpg.asset.json";
+import salesAsset from "@/assets/sales-meeting.jpg";
+import engagementAsset from "@/assets/engagement.jpg";
+import meetingsAsset from "@/assets/meetings.jpg";
+import contactCenterAsset from "@/assets/contact-center.jpg";
+import roomsAsset from "@/assets/rooms.jpg";
 
 type Story = {
   id: string;
@@ -22,7 +22,7 @@ const STORIES: Story[] = [
   {
     id: "northwind",
     brand: "Northwind Athletics",
-    image: engagementAsset.url,
+    image: engagementAsset,
     title: "Northwind Athletics expands the fan and employee experience",
     quote: "Our platform lets us stay close to fans and our teams without compromising on the production quality our brand stands for.",
     author: "Jordan Avery",
@@ -31,7 +31,7 @@ const STORIES: Story[] = [
   {
     id: "lumen",
     brand: "Lumen Wellness",
-    image: meetingsAsset.url,
+    image: meetingsAsset,
     title: "Lumen Wellness scales mental health support with video SDKs",
     quote: "The flexibility of the SDK helped us deliver a real-world quality session inside a mobile-first product.",
     author: "Priya Sharma",
@@ -40,7 +40,7 @@ const STORIES: Story[] = [
   {
     id: "atlas",
     brand: "Atlas Retail",
-    image: contactCenterAsset.url,
+    image: contactCenterAsset,
     title: "Atlas Retail cut call abandonment by 90%",
     quote: "We replaced a stack of disconnected tools with one workflow — every call, transcript, and follow-up lives in one place.",
     author: "Marcus Lee",
@@ -49,7 +49,7 @@ const STORIES: Story[] = [
   {
     id: "vanta",
     brand: "Vanta Financial",
-    image: salesAsset.url,
+    image: salesAsset,
     title: "A connected, collaborative workforce drives innovation at Vanta",
     quote: "We're people-centered and highly collaborative — the platform reflects the culture we want to build.",
     author: "Noor Patel",
@@ -58,7 +58,7 @@ const STORIES: Story[] = [
   {
     id: "harbor",
     brand: "Harbor Studios",
-    image: roomsAsset.url,
+    image: roomsAsset,
     title: "Harbor Studios unifies hybrid production rooms",
     quote: "Every room feels the same — creatives walk in and start working, no setup, no friction.",
     author: "Sam Rivera",

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 const JWT_SECRET = process.env.JWT_SECRET || 'nexus_super_secret_key';
 
 export interface AuthRequest extends Request {
-  user?: { userId: string };
+  user?: any;
 }
 
 export const authGuard = (req: AuthRequest, res: Response, next: NextFunction): void => {

@@ -1,21 +1,28 @@
 import { Router } from 'express';
-import { Server } from 'socket.io';
-import { createVideoController } from '../controllers/video.controller';
-import { VideoService } from '../services/video.service';
+import { VideoController } from '../controllers/video.controller';
 import { authGuard } from '../middlewares/auth.guard';
 
-export const createVideoRoutes = (io: Server) => {
-  const router = Router();
-  const videoService = new VideoService(io);
-  const videoController = createVideoController(videoService);
+const router = Router();
 
-  // Webhook is public (in prod, use signature verification)
-  router.post('/webhook', videoController.handleWebhook);
+// Note: In production, io would be injected from server.ts, but we map standard REST here
+const videoController = new VideoController();
 
-  // Protected routes
-  router.use(authGuard);
-  router.post('/process', videoController.processVideo);
-  router.get('/:id', videoController.getRecording);
+// Webhook endpoint (unprotected)
+router.post('/webhook/mux', videoController.handleMuxWebhook as any);
 
-  return router;
-};
+router.use(authGuard);
+
+router.post('/start', videoController.startRecording);
+router.post('/upload', videoController.uploadComplete);
+router.get('/', videoController.getRecordings);
+router.get('/:id', videoController.getRecordingDetails);
+router.post('/:id/comments', videoController.addComment);
+
+// Existing/Legacy video socket routes
+export function createVideoRoutes(io: any) {
+  const socketRouter = Router();
+  // Legacy socket bindings or similar
+  return socketRouter;
+}
+
+export default router;

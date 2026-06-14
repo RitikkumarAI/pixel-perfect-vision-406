@@ -2,16 +2,14 @@ import prisma from '../utils/prisma';
 import Stripe from 'stripe';
 
 export class BillingService {
-  private stripe: Stripe;
+  private stripe: any;
 
   constructor() {
     const secretKey = process.env.STRIPE_SECRET_KEY;
     if (!secretKey) {
       console.warn('[BillingService] WARNING: STRIPE_SECRET_KEY is not set. Real billing calls will fail.');
     }
-    this.stripe = new Stripe(secretKey || 'sk_test_missing_key', {
-      apiVersion: '2025-01-27.acacia'
-    });
+    this.stripe = new Stripe(secretKey || 'sk_test_missing_key');
   }
 
   /**
@@ -70,6 +68,16 @@ export class BillingService {
       client_reference_id: orgId, // Linking back to Organization for webhook safety
     });
 
+    await prisma.auditLog.create({
+      data: {
+        userId: 'system',
+        action: 'BILLING_CHECKOUT_INITIATED',
+        resourceType: 'Organization',
+        resourceId: orgId,
+        metadata: { plan }
+      }
+    });
+
     return { url: session.url };
   }
 
@@ -80,7 +88,7 @@ export class BillingService {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
     if (!webhookSecret) throw new Error('STRIPE_WEBHOOK_SECRET missing.');
 
-    let event: Stripe.Event;
+    let event: any;
 
     try {
       // Cryptographically verify payload
@@ -92,7 +100,7 @@ export class BillingService {
 
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.Checkout.Session;
+        const session = event.data.object as any;
         const orgId = session.client_reference_id;
         const stripeSubId = session.subscription as string;
 
@@ -114,15 +122,33 @@ export class BillingService {
               currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
             }
           });
+          
+          await prisma.auditLog.create({
+            data: {
+              userId: 'system',
+              action: 'BILLING_SUBSCRIPTION_ACTIVATED',
+              resourceType: 'Organization',
+              resourceId: orgId,
+              metadata: { stripeSubId }
+            }
+          });
         }
         break;
       }
       case 'customer.subscription.deleted': {
-        const subscription = event.data.object as Stripe.Subscription;
+        const subscription = event.data.object as any;
         console.log(`[BillingService] Subscription ${subscription.id} canceled. Syncing DB.`);
         await prisma.subscription.updateMany({
           where: { stripeSubId: subscription.id },
           data: { status: 'CANCELED' }
+        });
+        await prisma.auditLog.create({
+          data: {
+            userId: 'system',
+            action: 'BILLING_SUBSCRIPTION_CANCELED',
+            resourceType: 'Subscription',
+            metadata: { stripeSubId: subscription.id }
+          }
         });
         break;
       }

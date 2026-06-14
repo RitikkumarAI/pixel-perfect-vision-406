@@ -1,0 +1,37 @@
+# Values for Prometheus Helm Chart
+server:
+  global:
+    scrape_interval: 15s
+    evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'nexus-api'
+    kubernetes_sd_configs:
+      - role: endpoints
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name]
+        action: keep
+        regex: nexus-api-svc
+  - job_name: 'nexus-workers'
+    kubernetes_sd_configs:
+      - role: endpoints
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name]
+        action: keep
+        regex: nexus-workers-svc
+
+# Grafana Dashboards mapped in ConfigMap
+grafana:
+  enabled: true
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default

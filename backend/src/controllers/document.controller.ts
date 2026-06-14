@@ -9,7 +9,7 @@ export class DocumentController {
     try {
       const { workspaceId } = req.params;
       const { title, content, isPublic } = req.body;
-      const doc = await this.documentService.createDocument(workspaceId, title, content, isPublic);
+      const doc = await this.documentService.createDocument(workspaceId as string, title, content, isPublic);
       res.status(201).json(doc);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -19,7 +19,7 @@ export class DocumentController {
   public getWorkspaceDocuments = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { workspaceId } = req.params;
-      const docs = await this.documentService.getWorkspaceDocuments(workspaceId);
+      const docs = await this.documentService.getWorkspaceDocuments(workspaceId as string);
       res.status(200).json(docs);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -29,7 +29,7 @@ export class DocumentController {
   public getDocument = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const doc = await this.documentService.getDocument(id);
+      const doc = await this.documentService.getDocument(id as string);
       res.status(200).json(doc);
     } catch (error: any) {
       res.status(404).json({ error: error.message });
@@ -40,7 +40,7 @@ export class DocumentController {
     try {
       const { id } = req.params;
       const { title, content, isPublic } = req.body;
-      const doc = await this.documentService.updateDocument(id, title, content, isPublic);
+      const doc = await this.documentService.updateDocument(id as string, title, content, isPublic);
       res.status(200).json(doc);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -50,7 +50,7 @@ export class DocumentController {
   public deleteDocument = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      await this.documentService.deleteDocument(id);
+      await this.documentService.deleteDocument(id as string);
       res.status(204).send();
     } catch (error: any) {
       res.status(500).json({ error: error.message });

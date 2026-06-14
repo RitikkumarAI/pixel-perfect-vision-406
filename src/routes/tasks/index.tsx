@@ -103,7 +103,8 @@ function TasksPage() {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className={`bg-white p-4 rounded-xl shadow-sm border border-slate-200 group transition-shadow ${snapshot.isDragging ? 'shadow-xl ring-2 ring-zoom-blue/50' : 'hover:shadow-md'}`}
+                                  style={provided.draggableProps.style as React.CSSProperties}
+                                  className={`p-3 rounded-lg border bg-white shadow-sm hover:shadow transition-shadow ${snapshot.isDragging ? 'shadow-xl ring-2 ring-zoom-blue/50' : 'hover:shadow-md'}`}
                                 >
                                   <div className="font-semibold text-[15px]">{task.title}</div>
                                   <div className="text-xs text-slate-500 mt-1">{task.id.split('-')[0]}</div>

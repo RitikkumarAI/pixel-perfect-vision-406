@@ -1,0 +1,222 @@
+# ---------------------------------------------------------
+# NEXUS MICROSERVICES DEPLOYMENTS & AUTOSCALING (HPA)
+# ---------------------------------------------------------
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-api
+  namespace: nexus-prod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nexus-api
+  template:
+    metadata:
+      labels:
+        app: nexus-api
+    spec:
+      containers:
+        - name: api
+          image: ghcr.io/nexus/backend:latest
+          env:
+            - name: SERVICE_MODE
+              value: "api"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "1Gi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nexus-api-hpa
+  namespace: nexus-prod
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nexus-api
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-auth
+  namespace: nexus-prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nexus-auth
+  template:
+    metadata:
+      labels:
+        app: nexus-auth
+    spec:
+      containers:
+        - name: auth
+          image: ghcr.io/nexus/backend:latest
+          env:
+            - name: SERVICE_MODE
+              value: "auth"
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-ai
+  namespace: nexus-prod
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: nexus-ai
+  template:
+    metadata:
+      labels:
+        app: nexus-ai
+    spec:
+      containers:
+        - name: ai
+          image: ghcr.io/nexus/backend:latest
+          env:
+            - name: SERVICE_MODE
+              value: "ai"
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-meetings
+  namespace: nexus-prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nexus-meetings
+  template:
+    metadata:
+      labels:
+        app: nexus-meetings
+    spec:
+      containers:
+        - name: meetings
+          image: ghcr.io/nexus/backend:latest
+          env:
+            - name: SERVICE_MODE
+              value: "meetings"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-chat
+  namespace: nexus-prod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nexus-chat
+  template:
+    metadata:
+      labels:
+        app: nexus-chat
+    spec:
+      containers:
+        - name: chat
+          image: ghcr.io/nexus/backend:latest
+          env:
+            - name: SERVICE_MODE
+              value: "chat"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-billing
+  namespace: nexus-prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nexus-billing
+  template:
+    metadata:
+      labels:
+        app: nexus-billing
+    spec:
+      containers:
+        - name: billing
+          image: ghcr.io/nexus/backend:latest
+          env:
+            - name: SERVICE_MODE
+              value: "billing"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-workers
+  namespace: nexus-prod
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: nexus-workers
+  template:
+    metadata:
+      labels:
+        app: nexus-workers
+    spec:
+      containers:
+        - name: workers
+          image: ghcr.io/nexus/backend:latest
+          env:
+            - name: SERVICE_MODE
+              value: "workers"
+          resources:
+            requests:
+              cpu: "1000m"
+              memory: "2Gi"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nexus-workers-hpa
+  namespace: nexus-prod
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nexus-workers
+  minReplicas: 5
+  maxReplicas: 30
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80

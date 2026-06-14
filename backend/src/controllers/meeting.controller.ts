@@ -22,7 +22,7 @@ export class MeetingController {
       const user = await prisma.user.findUnique({ where: { id: req.user!.userId }});
       const userName = user?.name || user?.email || 'Guest';
 
-      const tokenData = await this.meetingService.generateJoinToken(id, req.user!.userId, userName);
+      const tokenData = await this.meetingService.generateJoinToken(id as string, req.user!.userId, userName);
       res.status(200).json(tokenData);
     } catch (error: any) {
       res.status(403).json({ error: error.message });
@@ -32,7 +32,7 @@ export class MeetingController {
   public endMeeting = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const meeting = await this.meetingService.endMeeting(id, req.user!.userId);
+      const meeting = await this.meetingService.endMeeting(id as string, req.user!.userId);
       res.status(200).json(meeting);
     } catch (error: any) {
       res.status(403).json({ error: error.message });

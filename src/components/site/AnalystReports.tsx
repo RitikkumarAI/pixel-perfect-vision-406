@@ -1,8 +1,8 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import gartner from "@/assets/gartner-card.jpg.asset.json";
-import contactCenter from "@/assets/contact-center.jpg.asset.json";
-import forrester from "@/assets/forrester-card.jpg.asset.json";
+import gartner from "@/assets/gartner-card.jpg";
+import contactCenter from "@/assets/contact-center.jpg";
+import forrester from "@/assets/forrester-card.jpg";
 
 type Report = {
   image: string;
@@ -14,7 +14,7 @@ type Report = {
 
 const REPORTS: Report[] = [
   {
-    image: gartner.url,
+    image: gartner,
     alt: "Gartner Magic Quadrant leader badge",
     title: (
       <>
@@ -24,13 +24,13 @@ const REPORTS: Report[] = [
     cta: "Read the report",
   },
   {
-    image: contactCenter.url,
+    image: contactCenter,
     alt: "Customer support professional with headset",
     title: <>Recognized in the 2026 Gartner Voice of the Customer for CCaaS</>,
     cta: "Explore the report",
   },
   {
-    image: forrester.url,
+    image: forrester,
     alt: "Forrester Wave analyst graphic",
     title: <>The Forrester Wave™: Unified Communications as a Service Platforms</>,
     cta: "Read Forrester report",

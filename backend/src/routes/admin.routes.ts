@@ -9,5 +9,6 @@ router.use(authGuard);
 
 router.get('/stats', adminController.getStats);
 router.post('/track', adminController.trackEvent);
+router.post('/webhooks/replay/:id', adminController.replayWebhook);
 
 export default router;

@@ -1,54 +1,70 @@
-import { Strategy as SamlStrategy } from '@node-saml/passport-saml';
+import { MultiSamlStrategy } from '@node-saml/passport-saml';
 import prisma from '../utils/prisma';
 import passport from 'passport';
+import { parseStringPromise } from 'xml2js';
 
 export class SSOService {
-  public strategy: SamlStrategy | null = null;
+  public strategy: MultiSamlStrategy | null = null;
 
   constructor() {
     this.configureSaml();
   }
 
   private configureSaml() {
-    const entryPoint = process.env.SAML_ENTRY_POINT;
-    const issuer = process.env.SAML_ISSUER;
-    const cert = process.env.SAML_CERT;
-
-    if (!entryPoint || !issuer || !cert) {
-      console.warn('[SSOService] WARNING: SAML environment variables missing. SSO flows will fail.');
-      return;
-    }
-
-    this.strategy = new SamlStrategy(
+    this.strategy = new (MultiSamlStrategy as any)(
       {
-        path: '/api/v1/auth/saml/callback',
-        entryPoint: entryPoint,
-        issuer: issuer,
-        cert: cert, // Base64 encoded IdP public certificate
-        callbackUrl: process.env.SAML_CALLBACK_URL || 'http://localhost:5000/api/v1/auth/saml/callback',
-      },
-      async (profile: any, done: any) => {
-        try {
-          if (!profile) {
-            return done(new Error('SAML Profile is empty'), null);
+        passReqToCallback: true,
+        getSamlOptions: async (req: any, done: any) => {
+          try {
+            // Determine org from query, body, or session
+            const orgId = req.query.orgId || req.body.orgId || req.user?.orgId;
+            if (!orgId) return done(new Error('Missing orgId for SSO'));
+
+            const idpConfig = await prisma.idpConfig.findFirst({ where: { orgId } });
+            if (!idpConfig) return done(new Error('IdP not configured for org'));
+
+            return done(null, {
+              path: '/api/v1/sso/callback',
+              entryPoint: idpConfig.entryPoint,
+              issuer: idpConfig.issuer,
+              cert: idpConfig.cert,
+              logoutUrl: idpConfig.logoutUrl,
+              callbackUrl: process.env.SAML_CALLBACK_URL || 'http://localhost:5005/api/v1/sso/callback',
+            });
+          } catch (err) {
+            return done(err);
           }
+        }
+      },
+      async (req: any, profile: any, done: any) => {
+        try {
+          if (!profile) return done(new Error('SAML Profile is empty'), null);
 
           const email = profile.nameID || profile.email;
-          if (!email) {
-            return done(new Error('SAML Profile missing email or NameID'), null);
-          }
+          if (!email) return done(new Error('SAML Profile missing email or NameID'), null);
 
-          // In a real flow, find or create the user based on the IdP assertion
           let user = await prisma.user.findUnique({ where: { email } });
           if (!user) {
             user = await prisma.user.create({
               data: {
                 email,
                 name: profile.displayName || email.split('@')[0],
-                password: '', // SSO users don't have local passwords
+                ssoProvider: 'saml'
               }
             });
           }
+          
+          // Log SSO Login
+          await prisma.auditLog.create({
+            data: {
+              userId: user.id,
+              action: 'SSO_LOGIN',
+              resourceType: 'IdP',
+              resourceId: 'SAML',
+              ipAddress: req.ip,
+              userAgent: req.headers['user-agent']
+            }
+          });
 
           return done(null, user);
         } catch (err) {
@@ -57,19 +73,46 @@ export class SSOService {
       }
     );
 
-    passport.use('saml', this.strategy);
+    passport.use('saml', this.strategy as any);
   }
 
-  /**
-   * Generates a dynamic configuration for a specific organization's IdP
-   */
-  public async configureOrgIdP(orgId: string, entryPoint: string, cert: string) {
-    const org = await prisma.organization.findUnique({ where: { id: orgId } });
-    if (!org) throw new Error('Organization not found');
+  public async importMetadata(orgId: string, xmlString: string) {
+    try {
+      const parsed = await parseStringPromise(xmlString);
+      const entityDescriptor = parsed['EntityDescriptor'] || parsed['md:EntityDescriptor'];
+      const idpSSODescriptor = entityDescriptor['IDPSSODescriptor'] || entityDescriptor['md:IDPSSODescriptor'];
 
-    // Here we would dynamically register multi-tenant SAML strategies
-    // or store their config in the DB to construct dynamic SAML requests.
-    console.log(`[SSOService] Real configuration saved for org ${orgId}`);
-    return { status: 'configured', entryPoint };
+      const entityId = entityDescriptor.$.entityID;
+      
+      const ssoServices = idpSSODescriptor[0]['SingleSignOnService'] || idpSSODescriptor[0]['md:SingleSignOnService'];
+      const sloServices = idpSSODescriptor[0]['SingleLogoutService'] || idpSSODescriptor[0]['md:SingleLogoutService'];
+      
+      const entryPoint = ssoServices.find((s: any) => s.$.Binding.includes('HTTP-Redirect')).$.Location;
+      const logoutUrl = sloServices ? sloServices.find((s: any) => s.$.Binding.includes('HTTP-Redirect')).$.Location : null;
+
+      const keys = idpSSODescriptor[0]['KeyDescriptor'] || idpSSODescriptor[0]['md:KeyDescriptor'];
+      const x509Data = keys[0]['ds:KeyInfo'][0]['ds:X509Data'][0]['ds:X509Certificate'][0];
+      const cert = typeof x509Data === 'string' ? x509Data : x509Data._;
+
+      await prisma.idpConfig.create({
+        data: {
+          orgId,
+          provider: 'saml',
+          entryPoint,
+          logoutUrl,
+          issuer: entityId,
+          cert,
+          metadataXml: xmlString
+        }
+      });
+
+      return { success: true, entryPoint, logoutUrl, issuer: entityId };
+    } catch (err) {
+      throw new Error('Failed to parse SAML Metadata XML');
+    }
+  }
+
+  public async initiateSsoLogin(email: string) {
+    return { url: 'http://localhost:5005/api/v1/sso/mock?email=' + encodeURIComponent(email) };
   }
 }

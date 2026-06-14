@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-api-svc
+  namespace: nexus-prod
+spec:
+  selector:
+    app: nexus-api
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-auth-svc
+  namespace: nexus-prod
+spec:
+  selector:
+    app: nexus-auth
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-ai-svc
+  namespace: nexus-prod
+spec:
+  selector:
+    app: nexus-ai
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-meetings-svc
+  namespace: nexus-prod
+spec:
+  selector:
+    app: nexus-meetings
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-chat-svc
+  namespace: nexus-prod
+spec:
+  selector:
+    app: nexus-chat
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-billing-svc
+  namespace: nexus-prod
+spec:
+  selector:
+    app: nexus-billing
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-workers-svc
+  namespace: nexus-prod
+spec:
+  selector:
+    app: nexus-workers
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

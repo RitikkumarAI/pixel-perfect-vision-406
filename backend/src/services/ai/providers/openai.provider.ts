@@ -3,6 +3,7 @@ import OpenAI from 'openai';
 export interface AIProvider {
   generateText(prompt: string, systemContext?: string): Promise<string>;
   generateJSON(prompt: string): Promise<any>;
+  chatWithTools?(messages: any[], tools?: any[]): Promise<any>;
   name: string;
 }
 
@@ -44,5 +45,20 @@ export class OpenAIProvider implements AIProvider {
     } catch (e) {
       throw new Error(`Failed to parse OpenAI JSON response: ${content}`);
     }
+  }
+
+  async chatWithTools(messages: any[], tools?: any[]): Promise<any> {
+    const params: any = {
+      model: 'gpt-4o',
+      messages
+    };
+    
+    if (tools && tools.length > 0) {
+      params.tools = tools;
+      params.tool_choice = 'auto';
+    }
+
+    const completion = await this.client.chat.completions.create(params);
+    return completion.choices[0]?.message;
   }
 }

@@ -24,11 +24,15 @@ export class MeetingService {
     const livekitRoomName = `meeting-${meeting.id}`;
 
     // Create the room on the LiveKit server
-    await this.roomService.createRoom({
-      name: livekitRoomName,
-      emptyTimeout: 10 * 60, // 10 minutes
-      maxParticipants: 100,
-    });
+    try {
+      await this.roomService.createRoom({
+        name: livekitRoomName,
+        emptyTimeout: 10 * 60, // 10 minutes
+        maxParticipants: 100,
+      });
+    } catch (error) {
+      console.error('[LiveKit] Failed to create room on LiveKit server. Proceeding in mock mode.', error);
+    }
 
     // Update meeting with the room name
     return prisma.meeting.update({

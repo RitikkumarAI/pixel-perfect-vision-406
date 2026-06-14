@@ -17,17 +17,17 @@ import {
   ChevronRight,
 } from "lucide-react";
 
-import brighthireAsset from "@/assets/brighthire.webp.asset.json";
-import virtualAgentAsset from "@/assets/virtual-agent.jpg.asset.json";
-import contactCenterAsset from "@/assets/contact-center.jpg.asset.json";
-import meetingsAsset from "@/assets/meetings.jpg.asset.json";
-import myNotesAsset from "@/assets/my-notes-hp-card.webp.asset.json";
-import zoommateAsset from "@/assets/zoommate.webp.asset.json";
-import aiSuiteAsset from "@/assets/ai-suite.webp.asset.json";
-import phoneAsset from "@/assets/phone.jpg.asset.json";
-import webinarsAsset from "@/assets/webinars.jpg.asset.json";
-import bonsaiAsset from "@/assets/bonsai.webp.asset.json";
-import roomsAsset from "@/assets/rooms.jpg.asset.json";
+import brighthireAsset from "@/assets/brighthire.webp";
+import virtualAgentAsset from "@/assets/virtual-agent.jpg";
+import contactCenterAsset from "@/assets/contact-center.jpg";
+import meetingsAsset from "@/assets/meetings.jpg";
+import myNotesAsset from "@/assets/my-notes-hp-card.webp";
+import zoommateAsset from "@/assets/zoommate.webp";
+import aiSuiteAsset from "@/assets/ai-suite.webp";
+import phoneAsset from "@/assets/phone.jpg";
+import webinarsAsset from "@/assets/webinars.jpg";
+import bonsaiAsset from "@/assets/bonsai.webp";
+import roomsAsset from "@/assets/rooms.jpg";
 
 type Card = {
   id: string;
@@ -38,17 +38,17 @@ type Card = {
 };
 
 const CARDS: Card[] = [
-  { id: "brighthire", title: "BrightHire", icon: Brain, image: brighthireAsset.url, alt: "BrightHire recruiting workspace" },
-  { id: "virtual-agent", title: "Virtual Agent", icon: MessageCircle, image: virtualAgentAsset.url, alt: "Virtual Agent card with a person on a phone" },
-  { id: "contact-center", title: "Contact Center", icon: Headphones, image: contactCenterAsset.url, alt: "Contact Center support agent" },
-  { id: "meetings", title: "Meetings", icon: Video, image: meetingsAsset.url, alt: "Meetings collaboration interface" },
-  { id: "my-notes", title: "My Notes", icon: NotebookPen, image: myNotesAsset.url, alt: "My Notes transcript card" },
-  { id: "zoommate", title: "ZoomMate", icon: Sparkles, image: zoommateAsset.url, alt: "ZoomMate AI teammate card" },
-  { id: "ai-productivity-suite", title: "AI Productivity Suite", icon: LayoutGrid, image: aiSuiteAsset.url, alt: "AI productivity suite apps" },
-  { id: "phone", title: "Phone", icon: Phone, image: phoneAsset.url, alt: "Phone dialer product card" },
-  { id: "webinars", title: "Webinars", icon: Calendar, image: webinarsAsset.url, alt: "Webinars event product card" },
-  { id: "bonsai", title: "Bonsai", icon: Sparkles, image: bonsaiAsset.url, alt: "Bonsai workflow interface" },
-  { id: "rooms", title: "Rooms", icon: Building2, image: roomsAsset.url, alt: "Zoom Rooms conference room" },
+  { id: "brighthire", title: "BrightHire", icon: Brain, image: brighthireAsset, alt: "BrightHire recruiting workspace" },
+  { id: "virtual-agent", title: "Virtual Agent", icon: MessageCircle, image: virtualAgentAsset, alt: "Virtual Agent card with a person on a phone" },
+  { id: "contact-center", title: "Contact Center", icon: Headphones, image: contactCenterAsset, alt: "Contact Center support agent" },
+  { id: "meetings", title: "Meetings", icon: Video, image: meetingsAsset, alt: "Meetings collaboration interface" },
+  { id: "my-notes", title: "My Notes", icon: NotebookPen, image: myNotesAsset, alt: "My Notes transcript card" },
+  { id: "zoommate", title: "ZoomMate", icon: Sparkles, image: zoommateAsset, alt: "ZoomMate AI teammate card" },
+  { id: "ai-productivity-suite", title: "AI Productivity Suite", icon: LayoutGrid, image: aiSuiteAsset, alt: "AI productivity suite apps" },
+  { id: "phone", title: "Phone", icon: Phone, image: phoneAsset, alt: "Phone dialer product card" },
+  { id: "webinars", title: "Webinars", icon: Calendar, image: webinarsAsset, alt: "Webinars event product card" },
+  { id: "bonsai", title: "Bonsai", icon: Sparkles, image: bonsaiAsset, alt: "Bonsai workflow interface" },
+  { id: "rooms", title: "Rooms", icon: Building2, image: roomsAsset, alt: "Zoom Rooms conference room" },
 ];
 
 function cardDistance(index: number, selectedIndex: number) {

@@ -6,7 +6,7 @@ const analyticsService = new AnalyticsService();
 export const trackEvent = async (req: Request, res: Response) => {
   try {
     const { event, properties } = req.body;
-    const userId = req.user?.id; // from authenticate middleware
+    const userId = (req as any).user?.userId || (req as any).user?.id; // from authenticate middleware
 
     if (!userId || !event) {
       return res.status(400).json({ error: 'Missing userId or event name' });

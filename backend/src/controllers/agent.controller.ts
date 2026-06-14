@@ -36,7 +36,7 @@ export class AgentController {
   public getHistory = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { runId } = req.params;
-      const history = await this.engine.getHistory(runId);
+      const history = await this.engine.getHistory(runId as string);
       
       if (!history || history.userId !== req.user!.userId) {
         res.status(404).json({ error: "Run not found" });

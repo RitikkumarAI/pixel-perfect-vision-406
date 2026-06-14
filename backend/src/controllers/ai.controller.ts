@@ -28,7 +28,7 @@ export class AIController {
   public assistWriting = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { prompt, context } = req.body;
-      const completion = await this.aiService.assistWriting(prompt, context);
+      const completion = await this.aiService.assistWriting(req.user!.id, prompt, context);
       res.status(200).json(completion);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

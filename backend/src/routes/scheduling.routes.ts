@@ -7,11 +7,19 @@ const schedulingController = new SchedulingController();
 
 // Public routes for guests booking a time
 router.get('/public/:hostId/availability', schedulingController.getAvailability);
-router.post('/public/:hostId/book', schedulingController.createBooking);
+router.post('/bookings', schedulingController.createBooking);
 
 // Protected routes for hosts managing their schedules
 router.use(authGuard);
-router.get('/bookings/upcoming', schedulingController.getUpcomingBookings);
-router.post('/rules', schedulingController.setAvailabilityRule);
+
+router.get('/event-types', schedulingController.getEventTypes as any);
+router.post('/event-types', schedulingController.createEventType as any);
+
+router.get('/bookings', schedulingController.getBookings as any);
+
+router.post('/calendar/connect/google', schedulingController.connectGoogle as any);
+router.post('/calendar/connect/outlook', schedulingController.connectOutlook as any);
+
+router.post('/rules', schedulingController.setAvailabilityRule as any);
 
 export default router;

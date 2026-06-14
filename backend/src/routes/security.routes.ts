@@ -10,6 +10,7 @@ router.post('/sso/login', securityController.ssoLogin);
 
 // Protected routes for Enterprise Auditing
 router.use(authGuard);
+router.get('/dashboard', securityController.getDashboard);
 router.get('/audit-logs', securityController.getAuditLogs);
 
 export default router;
