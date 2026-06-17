@@ -6,6 +6,7 @@ import { useAI } from "../../hooks/useAI";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { Sparkles, Plus, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/tasks/")({
   component: TasksPage,
@@ -47,10 +48,10 @@ function TasksPage() {
       // Backend automatically saves them, we might need to invalidate/refetch
       // but for MVP, we just let the hook handle it if we wired it to refetch.
       // We can also just display a success alert.
-      alert(`AI generated subtasks: ${JSON.stringify(result.subtasks)}`);
+      toast.success(`AI generated ${result.subtasks?.length || 0} subtasks!`);
     } catch (e) {
       console.error(e);
-      alert("AI Generation failed.");
+      toast.error("AI Generation failed.");
     } finally {
       setActiveAI(null);
     }

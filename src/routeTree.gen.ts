@@ -21,13 +21,19 @@ import { Route as ChatIndexRouteImport } from './routes/chat/index'
 import { Route as MeetRoomIdRouteImport } from './routes/meet/$roomId'
 import { Route as DocsNewRouteImport } from './routes/docs/new'
 import { Route as DocsDocIdRouteImport } from './routes/docs/$docId'
+import { Route as DashboardWebhooksRouteImport } from './routes/dashboard/webhooks'
 import { Route as DashboardVideoRouteImport } from './routes/dashboard/video'
 import { Route as DashboardSecurityRouteImport } from './routes/dashboard/security'
 import { Route as DashboardSchedulingRouteImport } from './routes/dashboard/scheduling'
 import { Route as DashboardMeetingsRouteImport } from './routes/dashboard/meetings'
 import { Route as DashboardKanbanRouteImport } from './routes/dashboard/kanban'
+import { Route as DashboardIntegrationsRouteImport } from './routes/dashboard/integrations'
 import { Route as DashboardDocsRouteImport } from './routes/dashboard/docs'
 import { Route as DashboardChatRouteImport } from './routes/dashboard/chat'
+import { Route as DashboardCampaignsRouteImport } from './routes/dashboard/campaigns'
+import { Route as DashboardBrandVoiceRouteImport } from './routes/dashboard/brand-voice'
+import { Route as DashboardBillingRouteImport } from './routes/dashboard/billing'
+import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard/analytics'
 import { Route as DashboardAgentsRouteImport } from './routes/dashboard/agents'
 
 const SigninRoute = SigninRouteImport.update({
@@ -90,6 +96,11 @@ const DocsDocIdRoute = DocsDocIdRouteImport.update({
   path: '/docs/$docId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardWebhooksRoute = DashboardWebhooksRouteImport.update({
+  id: '/webhooks',
+  path: '/webhooks',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardVideoRoute = DashboardVideoRouteImport.update({
   id: '/video',
   path: '/video',
@@ -115,6 +126,11 @@ const DashboardKanbanRoute = DashboardKanbanRouteImport.update({
   path: '/kanban',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardIntegrationsRoute = DashboardIntegrationsRouteImport.update({
+  id: '/integrations',
+  path: '/integrations',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardDocsRoute = DashboardDocsRouteImport.update({
   id: '/docs',
   path: '/docs',
@@ -123,6 +139,26 @@ const DashboardDocsRoute = DashboardDocsRouteImport.update({
 const DashboardChatRoute = DashboardChatRouteImport.update({
   id: '/chat',
   path: '/chat',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardCampaignsRoute = DashboardCampaignsRouteImport.update({
+  id: '/campaigns',
+  path: '/campaigns',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardBrandVoiceRoute = DashboardBrandVoiceRouteImport.update({
+  id: '/brand-voice',
+  path: '/brand-voice',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardBillingRoute = DashboardBillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardAgentsRoute = DashboardAgentsRouteImport.update({
@@ -139,13 +175,19 @@ export interface FileRoutesByFullPath {
   '/products': typeof ProductsRoute
   '/signin': typeof SigninRoute
   '/dashboard/agents': typeof DashboardAgentsRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/brand-voice': typeof DashboardBrandVoiceRoute
+  '/dashboard/campaigns': typeof DashboardCampaignsRoute
   '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/docs': typeof DashboardDocsRoute
+  '/dashboard/integrations': typeof DashboardIntegrationsRoute
   '/dashboard/kanban': typeof DashboardKanbanRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
   '/dashboard/scheduling': typeof DashboardSchedulingRoute
   '/dashboard/security': typeof DashboardSecurityRoute
   '/dashboard/video': typeof DashboardVideoRoute
+  '/dashboard/webhooks': typeof DashboardWebhooksRoute
   '/docs/$docId': typeof DocsDocIdRoute
   '/docs/new': typeof DocsNewRoute
   '/meet/$roomId': typeof MeetRoomIdRoute
@@ -160,13 +202,19 @@ export interface FileRoutesByTo {
   '/products': typeof ProductsRoute
   '/signin': typeof SigninRoute
   '/dashboard/agents': typeof DashboardAgentsRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/brand-voice': typeof DashboardBrandVoiceRoute
+  '/dashboard/campaigns': typeof DashboardCampaignsRoute
   '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/docs': typeof DashboardDocsRoute
+  '/dashboard/integrations': typeof DashboardIntegrationsRoute
   '/dashboard/kanban': typeof DashboardKanbanRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
   '/dashboard/scheduling': typeof DashboardSchedulingRoute
   '/dashboard/security': typeof DashboardSecurityRoute
   '/dashboard/video': typeof DashboardVideoRoute
+  '/dashboard/webhooks': typeof DashboardWebhooksRoute
   '/docs/$docId': typeof DocsDocIdRoute
   '/docs/new': typeof DocsNewRoute
   '/meet/$roomId': typeof MeetRoomIdRoute
@@ -183,13 +231,19 @@ export interface FileRoutesById {
   '/products': typeof ProductsRoute
   '/signin': typeof SigninRoute
   '/dashboard/agents': typeof DashboardAgentsRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/billing': typeof DashboardBillingRoute
+  '/dashboard/brand-voice': typeof DashboardBrandVoiceRoute
+  '/dashboard/campaigns': typeof DashboardCampaignsRoute
   '/dashboard/chat': typeof DashboardChatRoute
   '/dashboard/docs': typeof DashboardDocsRoute
+  '/dashboard/integrations': typeof DashboardIntegrationsRoute
   '/dashboard/kanban': typeof DashboardKanbanRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
   '/dashboard/scheduling': typeof DashboardSchedulingRoute
   '/dashboard/security': typeof DashboardSecurityRoute
   '/dashboard/video': typeof DashboardVideoRoute
+  '/dashboard/webhooks': typeof DashboardWebhooksRoute
   '/docs/$docId': typeof DocsDocIdRoute
   '/docs/new': typeof DocsNewRoute
   '/meet/$roomId': typeof MeetRoomIdRoute
@@ -207,13 +261,19 @@ export interface FileRouteTypes {
     | '/products'
     | '/signin'
     | '/dashboard/agents'
+    | '/dashboard/analytics'
+    | '/dashboard/billing'
+    | '/dashboard/brand-voice'
+    | '/dashboard/campaigns'
     | '/dashboard/chat'
     | '/dashboard/docs'
+    | '/dashboard/integrations'
     | '/dashboard/kanban'
     | '/dashboard/meetings'
     | '/dashboard/scheduling'
     | '/dashboard/security'
     | '/dashboard/video'
+    | '/dashboard/webhooks'
     | '/docs/$docId'
     | '/docs/new'
     | '/meet/$roomId'
@@ -228,13 +288,19 @@ export interface FileRouteTypes {
     | '/products'
     | '/signin'
     | '/dashboard/agents'
+    | '/dashboard/analytics'
+    | '/dashboard/billing'
+    | '/dashboard/brand-voice'
+    | '/dashboard/campaigns'
     | '/dashboard/chat'
     | '/dashboard/docs'
+    | '/dashboard/integrations'
     | '/dashboard/kanban'
     | '/dashboard/meetings'
     | '/dashboard/scheduling'
     | '/dashboard/security'
     | '/dashboard/video'
+    | '/dashboard/webhooks'
     | '/docs/$docId'
     | '/docs/new'
     | '/meet/$roomId'
@@ -250,13 +316,19 @@ export interface FileRouteTypes {
     | '/products'
     | '/signin'
     | '/dashboard/agents'
+    | '/dashboard/analytics'
+    | '/dashboard/billing'
+    | '/dashboard/brand-voice'
+    | '/dashboard/campaigns'
     | '/dashboard/chat'
     | '/dashboard/docs'
+    | '/dashboard/integrations'
     | '/dashboard/kanban'
     | '/dashboard/meetings'
     | '/dashboard/scheduling'
     | '/dashboard/security'
     | '/dashboard/video'
+    | '/dashboard/webhooks'
     | '/docs/$docId'
     | '/docs/new'
     | '/meet/$roomId'
@@ -365,6 +437,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsDocIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/webhooks': {
+      id: '/dashboard/webhooks'
+      path: '/webhooks'
+      fullPath: '/dashboard/webhooks'
+      preLoaderRoute: typeof DashboardWebhooksRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/video': {
       id: '/dashboard/video'
       path: '/video'
@@ -400,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardKanbanRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/integrations': {
+      id: '/dashboard/integrations'
+      path: '/integrations'
+      fullPath: '/dashboard/integrations'
+      preLoaderRoute: typeof DashboardIntegrationsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/docs': {
       id: '/dashboard/docs'
       path: '/docs'
@@ -414,6 +500,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardChatRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/campaigns': {
+      id: '/dashboard/campaigns'
+      path: '/campaigns'
+      fullPath: '/dashboard/campaigns'
+      preLoaderRoute: typeof DashboardCampaignsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/brand-voice': {
+      id: '/dashboard/brand-voice'
+      path: '/brand-voice'
+      fullPath: '/dashboard/brand-voice'
+      preLoaderRoute: typeof DashboardBrandVoiceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/billing': {
+      id: '/dashboard/billing'
+      path: '/billing'
+      fullPath: '/dashboard/billing'
+      preLoaderRoute: typeof DashboardBillingRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/analytics': {
+      id: '/dashboard/analytics'
+      path: '/analytics'
+      fullPath: '/dashboard/analytics'
+      preLoaderRoute: typeof DashboardAnalyticsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/agents': {
       id: '/dashboard/agents'
       path: '/agents'
@@ -426,25 +540,37 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardAgentsRoute: typeof DashboardAgentsRoute
+  DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
+  DashboardBillingRoute: typeof DashboardBillingRoute
+  DashboardBrandVoiceRoute: typeof DashboardBrandVoiceRoute
+  DashboardCampaignsRoute: typeof DashboardCampaignsRoute
   DashboardChatRoute: typeof DashboardChatRoute
   DashboardDocsRoute: typeof DashboardDocsRoute
+  DashboardIntegrationsRoute: typeof DashboardIntegrationsRoute
   DashboardKanbanRoute: typeof DashboardKanbanRoute
   DashboardMeetingsRoute: typeof DashboardMeetingsRoute
   DashboardSchedulingRoute: typeof DashboardSchedulingRoute
   DashboardSecurityRoute: typeof DashboardSecurityRoute
   DashboardVideoRoute: typeof DashboardVideoRoute
+  DashboardWebhooksRoute: typeof DashboardWebhooksRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAgentsRoute: DashboardAgentsRoute,
+  DashboardAnalyticsRoute: DashboardAnalyticsRoute,
+  DashboardBillingRoute: DashboardBillingRoute,
+  DashboardBrandVoiceRoute: DashboardBrandVoiceRoute,
+  DashboardCampaignsRoute: DashboardCampaignsRoute,
   DashboardChatRoute: DashboardChatRoute,
   DashboardDocsRoute: DashboardDocsRoute,
+  DashboardIntegrationsRoute: DashboardIntegrationsRoute,
   DashboardKanbanRoute: DashboardKanbanRoute,
   DashboardMeetingsRoute: DashboardMeetingsRoute,
   DashboardSchedulingRoute: DashboardSchedulingRoute,
   DashboardSecurityRoute: DashboardSecurityRoute,
   DashboardVideoRoute: DashboardVideoRoute,
+  DashboardWebhooksRoute: DashboardWebhooksRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 

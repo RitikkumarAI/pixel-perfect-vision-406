@@ -71,7 +71,19 @@ export function setupSocketIO(httpServer: HttpServer) {
       // In a full implementation, this could call chatService.markChannelRead
       socket.to(`channel:${data.channelId}`).emit('message:read', { userId, channelId: data.channelId, messageId: data.messageId });
     });
+
+    // Realtime Infrastructure Channels
+    socket.on('joinWorkspace', (workspaceId: string) => {
+      socket.join(`workspace:${workspaceId}`);
+    });
+
+    socket.on('leaveWorkspace', (workspaceId: string) => {
+      socket.leave(`workspace:${workspaceId}`);
+    });
   });
+
+  // Attach io to global so services can emit events (e.g. AgentExecutionEngine)
+  (global as any).io = io;
 
   return io;
 }

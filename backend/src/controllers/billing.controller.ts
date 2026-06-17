@@ -17,13 +17,27 @@ export class BillingController {
 
   public handleWebhook = async (req: Request, res: Response): Promise<void> => {
     try {
-      const eventType = req.body.type;
-      const data = req.body.data?.object;
+      const signature = req.headers['stripe-signature'] as string;
+      // Use rawBody buffer (from Express JSON parser hook in server.ts) or fall back to body
+      const payload = req.rawBody || Buffer.from(JSON.stringify(req.body));
       
-      // Note: In prod, verify the Stripe signature header here before trusting the payload!
-      await this.billingService.handleWebhook(eventType, data);
-      
+      await this.billingService.handleWebhook(signature, payload);
       res.status(200).send('Webhook received');
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  };
+
+  public cancelSubscription = async (req: AuthRequest, res: Response): Promise<void> => {
+    try {
+      const { orgId } = req.body;
+      if (!orgId) {
+        res.status(400).json({ error: 'orgId is required' });
+        return;
+      }
+
+      const subscription = await this.billingService.cancelSubscription(orgId);
+      res.status(200).json(subscription);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

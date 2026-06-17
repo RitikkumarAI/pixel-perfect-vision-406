@@ -12,6 +12,7 @@ import { Footer } from "@/components/site/Footer";
 import { useBilling } from "@/hooks/useBilling";
 import { useWorkspaces } from "@/hooks/useWorkspace";
 import { useAnalytics } from "@/hooks/useAnalytics";
+import toast from "react-hot-toast";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -270,7 +271,7 @@ function PricingPage() {
   const handleCheckout = (planName: string) => {
     trackEvent('checkout_started', { plan: planName, workspaceId: activeWorkspace?.id });
     if (!activeWorkspace) {
-      alert("Please sign in and select a workspace to purchase a plan.");
+      toast.error("Please sign in and select a workspace to purchase a plan.");
       window.location.href = "/signin";
       return;
     }

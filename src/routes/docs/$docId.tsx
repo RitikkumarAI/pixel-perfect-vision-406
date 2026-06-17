@@ -8,6 +8,7 @@ import { Footer } from "@/components/site/Footer";
 import { useEffect, useState } from "react";
 import { useAI } from "../../hooks/useAI";
 import { Sparkles } from "lucide-react";
+import DOMPurify from "dompurify";
 
 export const Route = createFileRoute("/docs/$docId")({
   component: DocumentEditorPage,
@@ -42,7 +43,11 @@ function DocumentEditorPage() {
 
   useEffect(() => {
     if (doc && editor && editor.isEmpty) {
-      editor.commands.setContent(doc.content);
+      if (typeof doc.content === 'string') {
+        editor.commands.setContent(DOMPurify.sanitize(doc.content));
+      } else {
+        editor.commands.setContent(doc.content);
+      }
     }
   }, [doc, editor]);
 

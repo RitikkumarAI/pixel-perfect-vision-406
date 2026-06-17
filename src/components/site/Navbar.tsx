@@ -256,21 +256,21 @@ function ProductsMega() {
     { label: "Apps and Integrations" },
   ];
   const items = [
-    { icon: Video, label: "Meetings", featured: true },
-    { icon: Globe2, label: "Hub" },
-    { icon: MessageSquare, label: "Chat" },
-    { icon: Film, label: "Video Management" },
-    { icon: Phone, label: "Phone" },
-    { icon: Building2, label: "Rooms" },
-    { icon: Mail, label: "Mail & Calendar" },
-    { icon: Calendar, label: "Workspace Reservation" },
-    { icon: Calendar, label: "Scheduler" },
-    { icon: Radio, label: "Digital Signage" },
-    { icon: PenSquare, label: "Canvas" },
-    { icon: Headset, label: "Visitor Management" },
-    { icon: Layout, label: "Whiteboard" },
-    { icon: Mic2, label: "Workvivo" },
-    { icon: Film, label: "Clips" },
+    { icon: Video, label: "Meetings", featured: true, link: "/dashboard/video" },
+    { icon: Globe2, label: "Hub", link: "/dashboard" },
+    { icon: MessageSquare, label: "Chat", link: "/dashboard/chat" },
+    { icon: Film, label: "Video Management", link: "/dashboard/video" },
+    { icon: Phone, label: "Phone", link: "/dashboard/video" },
+    { icon: Building2, label: "Rooms", link: "/dashboard/video" },
+    { icon: Mail, label: "Mail & Calendar", link: "/dashboard/scheduling" },
+    { icon: Calendar, label: "Workspace Reservation", link: "/dashboard/scheduling" },
+    { icon: Calendar, label: "Scheduler", link: "/dashboard/scheduling" },
+    { icon: Radio, label: "Digital Signage", link: "/dashboard" },
+    { icon: PenSquare, label: "Canvas", link: "/dashboard/video" },
+    { icon: Headset, label: "Visitor Management", link: "/dashboard" },
+    { icon: Layout, label: "Whiteboard", link: "/dashboard/video" },
+    { icon: Mic2, label: "Workvivo", link: "/dashboard" },
+    { icon: Film, label: "Clips", link: "/dashboard/video" },
   ];
   return (
     <div className="grid grid-cols-[260px_1fr_360px] gap-8 p-8">
@@ -296,9 +296,9 @@ function ProductsMega() {
         </p>
         <div className="grid grid-cols-2 gap-x-6 gap-y-2 border-t border-black/5 pt-4">
           {items.map((it, i) => (
-            <a
+            <Link
               key={i}
-              href="#"
+              to={it.link}
               className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition ${
                 it.featured ? "ring-1 ring-zoom-blue/60" : "hover:bg-black/[0.03]"
               }`}
@@ -307,7 +307,7 @@ function ProductsMega() {
                 <it.icon className="w-4 h-4" />
               </span>
               <span className="font-semibold text-[15px]">{it.label}</span>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
@@ -318,18 +318,18 @@ function ProductsMega() {
 
 function AIMega() {
   const main = [
-    { icon: Sparkles, label: "ZoomMate", featured: true },
-    { icon: Code2, label: "API Services" },
-    { icon: StickyNote, label: "My Notes" },
+    { icon: Sparkles, label: "ZoomMate", featured: true, link: "/dashboard/agents" },
+    { icon: Code2, label: "API Services", link: "/dashboard/webhooks" },
+    { icon: StickyNote, label: "My Notes", link: "/dashboard/docs" },
   ];
   const suite = [
-    { icon: FileText, label: "Docs", link: "/docs/new" },
-    { icon: Users, label: "Chat", link: "/chat" },
-    { icon: Bot, label: "AI Agents", link: "/agents" },
-    { icon: Calendar, label: "Scheduling", link: "/scheduling" },
-    { icon: Video, label: "Videos", link: "/video" },
-    { icon: Sheet, label: "Sheets" },
-    { icon: Presentation, label: "Slides" },
+    { icon: FileText, label: "Docs", link: "/dashboard/docs" },
+    { icon: Users, label: "Chat", link: "/dashboard/chat" },
+    { icon: Bot, label: "AI Agents", link: "/dashboard/agents" },
+    { icon: Calendar, label: "Scheduling", link: "/dashboard/scheduling" },
+    { icon: Video, label: "Videos", link: "/dashboard/video" },
+    { icon: Sheet, label: "Sheets", link: "/dashboard/docs" },
+    { icon: Presentation, label: "Slides", link: "/dashboard/docs" },
     { icon: FileText, label: "Tasks", link: "/tasks" },
   ];
   return (
@@ -354,9 +354,9 @@ function AIMega() {
         </p>
         <div className="grid grid-cols-2 gap-x-6 gap-y-2 border-t border-black/5 pt-4">
           {main.map((it, i) => (
-            <a
+            <Link
               key={i}
-              href="#"
+              to={it.link}
               className={`group flex items-center gap-3 px-3 py-2.5 rounded-xl transition ${
                 it.featured ? "ring-1 ring-zoom-blue/60" : "hover:bg-black/[0.03]"
               }`}
@@ -365,7 +365,7 @@ function AIMega() {
                 <it.icon className="w-4 h-4" />
               </span>
               <span className="font-semibold text-[15px]">{it.label}</span>
-            </a>
+            </Link>
           ))}
         </div>
         <div className="mt-6">
@@ -381,12 +381,12 @@ function AIMega() {
           </p>
           <div className="grid grid-cols-2 gap-x-6 gap-y-2">
             {suite.map((it, i) => (
-              <a key={i} href="#" className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/[0.03]">
+              <Link key={i} to={it.link} className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/[0.03]">
                 <span className="w-8 h-8 rounded-lg bg-zoom-blue text-white grid place-items-center">
                   <it.icon className="w-4 h-4" />
                 </span>
                 <span className="font-semibold text-[15px]">{it.label}</span>
-              </a>
+              </Link>
             ))}
           </div>
         </div>
@@ -521,22 +521,22 @@ function LauncherPanel({
   onClose: () => void;
 }) {
   const workplace = [
-    { icon: Video, label: "Meetings" },
-    { icon: MessageSquare, label: "Chat" },
-    { icon: Phone, label: "Phone" },
-    { icon: Mail, label: "Mail & Calendar" },
-    { icon: Calendar, label: "Scheduler" },
-    { icon: Layout, label: "Whiteboard" },
-    { icon: Film, label: "Clips" },
-    { icon: Globe2, label: "Marketplace" },
+    { icon: Video, label: "Meetings", link: "/dashboard/video" },
+    { icon: MessageSquare, label: "Chat", link: "/dashboard/chat" },
+    { icon: Phone, label: "Phone", link: "/dashboard/video" },
+    { icon: Mail, label: "Mail & Calendar", link: "/dashboard/scheduling" },
+    { icon: Calendar, label: "Scheduler", link: "/dashboard/scheduling" },
+    { icon: Layout, label: "Whiteboard", link: "/dashboard/video" },
+    { icon: Film, label: "Clips", link: "/dashboard/video" },
+    { icon: Globe2, label: "Marketplace", link: "/dashboard" },
   ];
   const services = [
-    { icon: Headset, label: "Contact Center" },
-    { icon: Sparkles, label: "CX Insights" },
-    { icon: Mic2, label: "Virtual Agent" },
-    { icon: Calendar, label: "Webinars & Events" },
-    { icon: Sparkles, label: "Revenue Accelerator" },
-    { icon: Building2, label: "Workforce Engagement" },
+    { icon: Headset, label: "Contact Center", link: "/dashboard" },
+    { icon: Sparkles, label: "CX Insights", link: "/dashboard/analytics" },
+    { icon: Mic2, label: "Virtual Agent", link: "/dashboard/agents" },
+    { icon: Calendar, label: "Webinars & Events", link: "/dashboard/scheduling" },
+    { icon: Sparkles, label: "Revenue Accelerator", link: "/dashboard" },
+    { icon: Building2, label: "Workforce Engagement", link: "/dashboard" },
   ];
   return (
     <motion.div
@@ -557,19 +557,19 @@ function LauncherPanel({
         </div>
         <div className="grid grid-cols-3 gap-3 mt-4">
           {workplace.map((i) => (
-            <a key={i.label} href="#" className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-blue-50 transition">
+            <Link key={i.label} to={i.link} className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-blue-50 transition">
               <span className="w-10 h-10 rounded-lg bg-zoom-blue text-white grid place-items-center"><i.icon className="w-5 h-5" /></span>
               <span className="text-xs font-semibold text-center leading-tight">{i.label}</span>
-            </a>
+            </Link>
           ))}
         </div>
         <h4 className="font-bold text-lg mt-6">Business Services</h4>
         <div className="grid grid-cols-3 gap-3 mt-4">
           {services.map((i) => (
-            <a key={i.label} href="#" className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-blue-50 transition">
+            <Link key={i.label} to={i.link} className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-blue-50 transition">
               <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-500 text-white grid place-items-center"><i.icon className="w-5 h-5" /></span>
               <span className="text-xs font-semibold text-center leading-tight">{i.label}</span>
-            </a>
+            </Link>
           ))}
         </div>
         <Link to="/contact-sales" className="mt-6 block text-center py-3 rounded-full bg-zoom-blue text-white font-semibold hover:bg-zoom-blue-hover">

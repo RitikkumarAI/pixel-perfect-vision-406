@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 
 import { useAgents } from "../../hooks/useAgents";
 import { Bot, Terminal, Send, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 export const Route = createFileRoute("/dashboard/agents")({
   component: AgentsPage,
@@ -42,7 +43,7 @@ function AgentsPage() {
       setActiveRunId(result.runId);
       setInput("");
     } catch (e) {
-      console.error(e);
+      toast.error("Failed to run agent");
     }
   };
 

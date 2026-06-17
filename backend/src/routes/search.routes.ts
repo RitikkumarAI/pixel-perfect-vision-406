@@ -7,5 +7,6 @@ const searchController = new SearchController();
 
 router.use(authGuard);
 router.get('/workspaces/:workspaceId', searchController.globalSearch);
+router.get('/semantic/workspaces/:workspaceId', searchController.semanticSearch);
 
 export default router;

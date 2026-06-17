@@ -11,6 +11,7 @@ router.post('/webhook', billingController.handleWebhook);
 // Protected endpoints for the frontend application
 router.use(authGuard);
 router.post('/checkout', billingController.createCheckout);
+router.post('/cancel', billingController.cancelSubscription);
 router.get('/status/:orgId', billingController.getStatus);
 
 export default router;

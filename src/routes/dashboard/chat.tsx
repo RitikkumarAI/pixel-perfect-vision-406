@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSocket } from "../../hooks/useSocket";
 import { useChat } from "../../hooks/useChat";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -32,8 +32,6 @@ function ChatRoute() {
   const allMessages = [...(historicalMessages || []), ...liveMessages].filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i).sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
   const activeChannel = channels.find((c: any) => c.id === activeChannelId);
-  const { sendMessage } = useChat();
-  const [input, setInput] = useState("");
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();

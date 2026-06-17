@@ -1,5 +1,6 @@
 import express from 'express';
 import { createServer } from 'http';
+import path from 'path';
 import { setupSocketIO } from './socket';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -28,8 +29,14 @@ import ssoRoutes from './routes/sso.routes';
 import scimRoutes from './routes/scim.routes';
 import { globalLimiter } from './middlewares/rateLimiter';
 import { initVideoWorker } from './queues/video.queue';
+import { initAgentWorker } from './queues/agent.queue';
 import * as Sentry from '@sentry/node';
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
+import client from 'prom-client';
+
+// Prometheus Metrics Setup
+const collectDefaultMetrics = client.collectDefaultMetrics;
+collectDefaultMetrics({ register: client.register });
 
 dotenv.config();
 
@@ -52,8 +59,14 @@ const io = setupSocketIO(server);
 
 // Init Background Workers
 initVideoWorker();
+initAgentWorker();
 
-app.use(helmet());
+// Security Middleware
+app.use(helmet({
+  contentSecurityPolicy: false, // Too restrictive for dev/vite builds unless heavily configured
+  crossOriginEmbedderPolicy: false
+}));
+
 app.use(cors({
   origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
@@ -91,6 +104,24 @@ app.use('/scim/v2', scimRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Nexus API is running securely' });
+});
+
+// Prometheus Metrics Endpoint
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType);
+  res.end(await client.register.metrics());
+});
+
+// Serve frontend static files
+const distPath = path.join(__dirname, '../../dist');
+app.use(express.static(distPath));
+
+// Catch-all route to serve frontend index.html
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api/') || req.path.startsWith('/scim/')) {
+    return next();
+  }
+  res.sendFile(path.join(distPath, 'index.html'));
 });
 
 // Global Error Handler

@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 import { useScheduling } from "../../hooks/useScheduling";
 import { Calendar, Clock, Video, Plus, Link as LinkIcon, RefreshCw } from "lucide-react";
@@ -23,7 +24,7 @@ function SchedulingPage() {
   const handleConnectGoogle = async () => {
     // Simulated Google OAuth Flow returning a token
     await connectGoogle("mock_google_oauth_token_123");
-    alert("Google Calendar successfully synced!");
+    toast.success("Google Calendar successfully synced!");
   };
 
   return (
@@ -127,7 +128,7 @@ function SchedulingPage() {
           </div>
 
         </div>
-
+      </main>
     </div>
   );
 }

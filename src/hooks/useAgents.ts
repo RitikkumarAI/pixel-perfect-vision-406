@@ -30,7 +30,7 @@ export function useAgents() {
       return res.json();
     },
     enabled: isAuthenticated && !!runId,
-    refetchInterval: (data: any) => (data?.status === 'RUNNING' ? 2000 : false),
+    refetchInterval: (data: any) => (['QUEUED', 'IN_PROGRESS', 'RUNNING'].includes(data?.status) ? 2000 : false),
   });
 
   const runAgent = useMutation({

@@ -4,6 +4,7 @@ export interface AIProvider {
   generateText(prompt: string, systemContext?: string): Promise<string>;
   generateJSON(prompt: string): Promise<any>;
   chatWithTools?(messages: any[], tools?: any[]): Promise<any>;
+  generateEmbedding(text: string): Promise<number[]>;
   name: string;
 }
 
@@ -45,6 +46,14 @@ export class OpenAIProvider implements AIProvider {
     } catch (e) {
       throw new Error(`Failed to parse OpenAI JSON response: ${content}`);
     }
+  }
+
+  async generateEmbedding(text: string): Promise<number[]> {
+    const response = await this.client.embeddings.create({
+      model: 'text-embedding-3-small',
+      input: text
+    });
+    return response.data[0].embedding;
   }
 
   async chatWithTools(messages: any[], tools?: any[]): Promise<any> {

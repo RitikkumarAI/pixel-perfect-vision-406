@@ -3,27 +3,38 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { DollarSign, Users, Activity, AlertTriangle, TrendingUp, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// Note: In production, these states would be populated by fetch('/api/analytics/founder')
 export function FounderCommandCenter() {
   const [isInvestorMode, setIsInvestorMode] = useState(false);
   const [metrics, setMetrics] = useState({
-    mrr: 12450,
-    mrrGrowth: "+15%",
-    activationRate: 64,
-    highRiskWorkspaces: 12,
-    expansionLeads: 8,
-    ltv: 850,
-    cac: 120,
-    nrr: 112
+    mrr: 0,
+    mrrGrowth: "+0%",
+    activationRate: 0,
+    highRiskWorkspaces: 0,
+    expansionLeads: 0,
+    ltv: 0,
+    cac: 0,
+    nrr: 0
   });
 
-  const chartData = [
-    { name: 'Jan', mrr: 4000 },
-    { name: 'Feb', mrr: 5500 },
-    { name: 'Mar', mrr: 8200 },
-    { name: 'Apr', mrr: 10100 },
-    { name: 'May', mrr: 12450 }
-  ];
+  const [chartData, setChartData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const res = await fetch('/api/v1/analytics/founder', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('nexus_token')}`
+          }
+        });
+        const data = await res.json();
+        if (data.metrics) setMetrics(data.metrics);
+        if (data.chartData) setChartData(data.chartData);
+      } catch (e) {
+        console.error('Failed to fetch founder analytics', e);
+      }
+    };
+    fetchMetrics();
+  }, []);
 
   return (
     <div className="min-h-screen bg-zinc-950 p-8 text-zinc-100 font-sans">

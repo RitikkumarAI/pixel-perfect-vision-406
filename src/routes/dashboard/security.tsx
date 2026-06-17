@@ -1,180 +1,118 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useSecurity } from '@/hooks/useSecurity';
-import { Shield, Key, Fingerprint, Activity, Smartphone } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { createFileRoute } from "@tanstack/react-router";
+import { useState, useEffect } from "react";
+import { Navbar } from "@/components/site/Navbar";
+import { Footer } from "@/components/site/Footer";
+import { Shield, Key, FileText, AlertTriangle } from "lucide-react";
+import toast from "react-hot-toast";
 
-export const Route = createFileRoute('/dashboard/security')({
-  component: SecurityDashboard,
+export const Route = createFileRoute("/dashboard/security")({
+  component: SecurityRoute,
 });
 
-function SecurityDashboard() {
-  const { setupMfa, verifyMfa, registerPasskey, loading } = useSecurity();
-  const [qrCode, setQrCode] = useState<string | null>(null);
-  const [token, setToken] = useState('');
-  
-  const [dashboard, setDashboard] = useState<any>(null);
+function SecurityRoute() {
+  const [logs, setLogs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/v1/security/dashboard')
-      .then(r => r.json())
-      .then(data => setDashboard(data))
-      .catch(console.error);
+    const fetchLogs = async () => {
+      try {
+        const res = await fetch('/api/v1/security/audit-logs', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('nexus_token')}`
+          }
+        });
+        const data = await res.json();
+        if (data.logs) {
+          setLogs(data.logs);
+        }
+      } catch (e) {
+        toast.error("Failed to fetch audit logs");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLogs();
   }, []);
 
-  const handleMfaSetup = async () => {
-    try {
-      const res = await setupMfa();
-      setQrCode(res.qrCodeDataUrl);
-    } catch (err) {
-      alert('Failed to setup MFA');
-    }
-  };
-
-  const handleMfaVerify = async () => {
-    try {
-      const res = await verifyMfa(token);
-      alert('MFA Enabled successfully! Backup codes generated.');
-      setQrCode(null);
-    } catch (err) {
-      alert('Invalid code');
-    }
-  };
-
-  const handlePasskey = async () => {
-    try {
-      await registerPasskey();
-      alert('Passkey registered successfully');
-    } catch (err) {
-      alert('Passkey registration failed');
-    }
-  };
-
   return (
-    <div className="p-8 max-w-5xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <Shield className="w-8 h-8 text-primary" />
-          Enterprise Security
-        </h1>
-        <p className="text-slate-500 mt-2">Manage Multi-Factor Authentication, Passkeys, and Active Sessions.</p>
-      </div>
+    <div className="min-h-screen bg-slate-50 text-navy flex flex-col">
+      <Navbar />
+      <main className="flex-1 pt-24 pb-12 px-6 max-w-7xl mx-auto w-full">
+        <div className="mb-8 flex items-end justify-between">
+          <div>
+            <h1 className="text-4xl font-black tracking-tight">Security & Governance</h1>
+            <p className="mt-2 text-navy/70">Enterprise audit logs, MFA, and access control.</p>
+          </div>
+        </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        {/* MFA Card */}
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-              <Key className="w-5 h-5" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-4">
+            <div className="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
+              <Shield className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-lg">Authenticator App</h3>
-              <p className="text-sm text-slate-500">Protect your account with TOTP</p>
+              <h3 className="font-bold text-slate-800">MFA Status</h3>
+              <p className="text-sm text-slate-500 mt-1">Passkeys are not configured for your account.</p>
+              <button className="mt-3 text-sm text-indigo-600 font-medium">Configure Passkeys &rarr;</button>
             </div>
           </div>
-          
-          {qrCode ? (
-            <div className="space-y-4">
-              <img src={qrCode} alt="MFA QR Code" className="w-48 h-48 border rounded-lg" />
-              <input 
-                type="text" 
-                placeholder="Enter 6-digit code" 
-                className="w-full px-4 py-2 border rounded-lg"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-              />
-              <button 
-                onClick={handleMfaVerify}
-                disabled={loading}
-                className="w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90"
-              >
-                Verify & Enable
-              </button>
-            </div>
-          ) : (
-            <button 
-              onClick={handleMfaSetup}
-              disabled={loading}
-              className="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-slate-800"
-            >
-              Setup MFA
-            </button>
-          )}
-        </div>
-
-        {/* Passkeys Card */}
-        <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
-              <Fingerprint className="w-5 h-5" />
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-4">
+            <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+              <Key className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="font-semibold text-lg">WebAuthn Passkeys</h3>
-              <p className="text-sm text-slate-500">Login instantly with biometrics</p>
+              <h3 className="font-bold text-slate-800">SSO & SCIM</h3>
+              <p className="text-sm text-slate-500 mt-1">Enterprise identity provisioning is inactive.</p>
+              <button className="mt-3 text-sm text-blue-600 font-medium">Setup Okta/SAML &rarr;</button>
             </div>
           </div>
-          <p className="text-sm text-slate-600 mb-6">Passkeys provide the highest level of security against phishing attacks.</p>
-          <button 
-            onClick={handlePasskey}
-            disabled={loading}
-            className="w-full border border-slate-300 font-medium py-2 rounded-lg hover:bg-slate-50 transition"
-          >
-            Register New Passkey
-          </button>
+          <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-4">
+            <div className="p-3 bg-rose-50 text-rose-600 rounded-lg">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800">Risk Center</h3>
+              <p className="text-sm text-slate-500 mt-1">No anomalous access detected.</p>
+            </div>
+          </div>
         </div>
 
-      </div>
-
-      {/* Security Status Card */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-        <h3 className="font-semibold text-lg mb-4">Security Posture</h3>
-        {dashboard ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className={`p-4 rounded-lg text-center ${dashboard.riskScore >= 80 ? 'bg-green-50 text-green-700' : dashboard.riskScore >= 50 ? 'bg-yellow-50 text-yellow-700' : 'bg-red-50 text-red-700'}`}>
-              <div className="text-3xl font-bold">{dashboard.riskScore}</div>
-              <div className="text-sm mt-1">Risk Score</div>
-            </div>
-            <div className="p-4 rounded-lg text-center bg-slate-50 text-slate-700">
-              <div className="text-3xl font-bold">{dashboard.activeAlerts?.length || 0}</div>
-              <div className="text-sm mt-1">Active Alerts</div>
-            </div>
-            <div className="p-4 rounded-lg text-center bg-slate-50 text-slate-700">
-              <div className="text-3xl font-bold">{dashboard.recentEvents?.length || 0}</div>
-              <div className="text-sm mt-1">Recent Events</div>
-            </div>
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+          <div className="p-6 border-b border-slate-200 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-slate-500" />
+            <h2 className="text-xl font-bold text-slate-800">Audit Logs</h2>
           </div>
-        ) : (
-          <p className="text-slate-500">Loading metrics...</p>
-        )}
-      </div>
-
-      {/* Audit Log Stub */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
-            <Activity className="w-5 h-5" />
-          </div>
-          <h3 className="font-semibold text-lg">Recent Security Events</h3>
-        </div>
-        <div className="space-y-4">
-          {dashboard?.recentEvents?.length > 0 ? (
-            dashboard.recentEvents.map((event: any) => (
-              <div key={event.id} className="flex justify-between border-b pb-2">
-                <div className="flex flex-col">
-                  <span className="font-medium text-slate-800">{event.action}</span>
-                  <span className="text-xs text-slate-500">{event.ipAddress} | {new Date(event.createdAt).toLocaleString()}</span>
-                </div>
-              </div>
-            ))
+          {loading ? (
+            <div className="p-8 text-center text-slate-500">Loading audit trail...</div>
+          ) : logs.length === 0 ? (
+            <div className="p-8 text-center text-slate-500">No audit logs found.</div>
           ) : (
-            <div className="text-center py-8 text-slate-500">
-              <Smartphone className="w-8 h-8 mx-auto mb-3 opacity-50" />
-              <p>No suspicious activity detected recently.</p>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-600">
+                  <tr>
+                    <th className="px-6 py-3 font-semibold">Timestamp</th>
+                    <th className="px-6 py-3 font-semibold">Action</th>
+                    <th className="px-6 py-3 font-semibold">Resource</th>
+                    <th className="px-6 py-3 font-semibold">Details</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {logs.map((log) => (
+                    <tr key={log.id} className="hover:bg-slate-50 transition">
+                      <td className="px-6 py-4 text-slate-500">{new Date(log.createdAt).toLocaleString()}</td>
+                      <td className="px-6 py-4 font-medium text-slate-700">{log.action}</td>
+                      <td className="px-6 py-4 text-slate-600">{log.resourceType} ({log.resourceId})</td>
+                      <td className="px-6 py-4 text-slate-500 font-mono text-xs">{JSON.stringify(log.metadata)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
-      </div>
-
+      </main>
+      <Footer />
     </div>
   );
 }

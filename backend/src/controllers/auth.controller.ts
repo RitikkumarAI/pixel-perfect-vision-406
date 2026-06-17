@@ -3,6 +3,7 @@ import { AuthService } from '../services/auth.service';
 import { SecurityService } from '../services/security.service';
 import jwt from 'jsonwebtoken';
 import prisma from '../utils/prisma';
+import { pubClient } from '../utils/redis';
 
 export class AuthController {
   private authService = new AuthService();
@@ -29,7 +30,20 @@ export class AuthController {
     const ua = req.headers['user-agent'];
     try {
       const { email, password } = req.body;
+      
+      // Account Lockout Check
+      const lockKey = `lockout:${email}`;
+      const failedAttempts = await pubClient.get(lockKey);
+      if (failedAttempts && parseInt(failedAttempts) >= 5) {
+        res.status(429).json({ error: 'Account temporarily locked due to too many failed login attempts. Please try again in 15 minutes.' });
+        return;
+      }
+
       const result = await this.authService.login(email, password);
+      
+      // Clear lockout on success
+      await pubClient.del(lockKey);
+
       this.setCookies(res, result.accessToken, result.refreshToken);
 
       // Security Checks & Audit Log
@@ -71,6 +85,12 @@ export class AuthController {
           }
         });
       }
+
+      // Increment failed attempts
+      const lockKey = `lockout:${req.body.email}`;
+      await pubClient.incr(lockKey);
+      await pubClient.expire(lockKey, 15 * 60); // 15 minutes lock
+
       res.status(401).json({ error: error.message });
     }
   };

@@ -3,7 +3,21 @@ import { useAuth } from './useAuth';
 
 export function useMeeting() {
   const { token, isAuthenticated } = useAuth();
-  const [meetingToken, setMeetingToken] = useState<string | null>(null);
+  
+  const [meetingToken, setMeetingToken] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('current_meeting_token');
+    }
+    return null;
+  });
+
+  const [roomUrl, setRoomUrl] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('current_meeting_url');
+    }
+    return null;
+  });
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,8 +43,16 @@ export function useMeeting() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to get meeting token');
 
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('current_meeting_token', data.token);
+        localStorage.setItem('current_meeting_url', data.roomUrl || 'ws://localhost:7880');
+      }
+
       setMeetingToken(data.token);
-      window.location.href = `/meet/${meetingId}`; // Navigate to the meeting room
+      setRoomUrl(data.roomUrl || 'ws://localhost:7880');
+      
+      // Perform redirect
+      window.location.href = `/meet/${meetingId}`;
       return data.token;
     } catch (err: any) {
       setError(err.message);
@@ -40,7 +62,12 @@ export function useMeeting() {
   };
 
   const leaveMeeting = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('current_meeting_token');
+      localStorage.removeItem('current_meeting_url');
+    }
     setMeetingToken(null);
+    setRoomUrl(null);
   };
 
   const createMeeting = async (title: string) => {
@@ -70,5 +97,5 @@ export function useMeeting() {
     }
   };
 
-  return { meetingToken, isLoading, error, joinMeeting, leaveMeeting, createMeeting };
+  return { meetingToken, roomUrl, isLoading, error, joinMeeting, leaveMeeting, createMeeting };
 }

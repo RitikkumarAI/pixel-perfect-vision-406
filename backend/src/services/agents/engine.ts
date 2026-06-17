@@ -11,45 +11,25 @@ export class AgentExecutionEngine {
     this.gateway = new AIGateway();
   }
 
-  public async runAgent(agentId: string, userId: string, workspaceId: string, input: string) {
-    const definition = AgentRegistry.find(a => a.id === agentId);
-    if (!definition) throw new Error('Agent not found in registry');
-
-    // Make sure user has an Agent record for this workspace to link to
-    let agentRecord = await prisma.agent.findFirst({
-      where: { workspaceId, name: definition.name }
+  public async run(runId: string, agentRecordId: string, input: string, userId: string) {
+    const run = await prisma.agentRun.findUnique({
+      where: { id: runId },
+      include: { agent: true }
     });
 
-    if (!agentRecord) {
-      agentRecord = await prisma.agent.create({
-        data: {
-          workspaceId,
-          name: definition.name,
-          systemPrompt: AgentPrompts[agentId] || "You are an AI assistant."
-        }
-      });
-    }
-
-    const run = await prisma.agentRun.create({
-      data: {
-        agentId: agentRecord.id,
-        userId,
-        input,
-        status: "RUNNING"
-      }
-    });
+    if (!run) throw new Error('Run not found');
+    const agentRecord = run.agent;
 
     await prisma.auditLog.create({
       data: {
         userId,
         action: 'AGENT_EXECUTION_STARTED',
-        resourceType: 'Agent',
-        resourceId: agentId,
-        metadata: { workspaceId, runId: run.id }
+        resourceId: agentRecord.name,
+        metadata: { workspaceId: agentRecord.workspaceId, runId: run.id }
       }
     });
 
-    await this.logStep(run.id, "INFO", `Starting execution for ${definition.name}`);
+    await this.logStep(run.id, "INFO", `Starting execution for ${agentRecord.name}`);
 
     try {
       const provider = this.gateway.getProvider();
@@ -60,7 +40,27 @@ export class AgentExecutionEngine {
       const memories = await this.retrieveMemory(agentRecord.id, userId);
       const memoryContext = memories.length > 0 ? `\n\nPast Memory Context:\n${memories.join("\n")}` : "";
 
-      const systemPrompt = `${AgentPrompts[agentId] || "You are an AI assistant."}${memoryContext}`;
+      // Semantic Cache Simulation
+      const cacheHit = await prisma.agentMemory.findFirst({
+        where: { agentId: agentRecord.id, userId, key: `cache:${input}` }
+      });
+
+      if (cacheHit) {
+        await this.logStep(run.id, "INFO", "Semantic Cache hit! Returning cached result instantly.");
+        const cachedResult = cacheHit.value;
+        await prisma.agentRun.update({
+          where: { id: run.id },
+          data: { status: "COMPLETED", result: cachedResult }
+        });
+
+        const io = (global as any).io;
+        if (io && agentRecord.workspaceId) {
+          io.to(`workspace:${agentRecord.workspaceId}`).emit('agent.completed', { runId: run.id, result: cachedResult });
+        }
+        return cachedResult;
+      }
+
+      const systemPrompt = `${agentRecord.systemPrompt}${memoryContext}`;
 
       let messages: any[] = [
         { role: 'system', content: systemPrompt },
@@ -72,6 +72,8 @@ export class AgentExecutionEngine {
       let result = "";
       let iterations = 0;
       const MAX_ITERATIONS = 5;
+      let totalTokensUsed = 0;
+      const MAX_TOKEN_BUDGET = 8000; // Circuit breaker limit
 
       while (iterations < MAX_ITERATIONS) {
         iterations++;
@@ -86,6 +88,15 @@ export class AgentExecutionEngine {
         
         if (!responseMessage) {
           throw new Error("Empty response from AI");
+        }
+
+        // Simulate token consumption based on response length for budget tracking
+        const estimatedTokens = JSON.stringify(responseMessage).length / 4;
+        totalTokensUsed += estimatedTokens;
+
+        if (totalTokensUsed > MAX_TOKEN_BUDGET) {
+          await this.logStep(run.id, "ERROR", `CIRCUIT BREAKER: Token budget exceeded (${totalTokensUsed}/${MAX_TOKEN_BUDGET}). Halting execution.`);
+          throw new Error("Token budget exceeded");
         }
 
         messages.push(responseMessage);
@@ -163,6 +174,11 @@ export class AgentExecutionEngine {
 
       await this.logStep(run.id, "INFO", "Execution completed successfully");
 
+      const io = (global as any).io;
+      if (io && agentRecord.workspaceId) {
+        io.to(`workspace:${agentRecord.workspaceId}`).emit('agent.completed', { runId: run.id, result });
+      }
+
       return { runId: run.id, result };
     } catch (error: any) {
       await prisma.agentRun.update({
@@ -203,8 +219,20 @@ export class AgentExecutionEngine {
   }
 
   private async logStep(runId: string, level: string, message: string) {
-    await prisma.agentLog.create({
+    const log = await prisma.agentLog.create({
       data: { runId, level, message }
     });
+    
+    const io = (global as any).io;
+    if (io) {
+      // Find the workspace for this run to broadcast to the correct channel
+      const run = await prisma.agentRun.findUnique({
+        where: { id: runId },
+        include: { agent: true }
+      });
+      if (run && run.agent.workspaceId) {
+        io.to(`workspace:${run.agent.workspaceId}`).emit('agent_updates', log);
+      }
+    }
   }
 }

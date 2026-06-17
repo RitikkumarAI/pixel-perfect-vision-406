@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect, Link } from "@tanstack/react-router";
 import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { Home, MessageSquare, Video, KanbanSquare, FileText, Calendar, Bot, Shield, BarChart, Film, CreditCard } from "lucide-react";
 
@@ -30,6 +30,7 @@ function DashboardLayout() {
     { title: "AI Agents", url: "/dashboard/agents", icon: Bot },
     { title: "Analytics", url: "/dashboard/analytics", icon: BarChart },
     { title: "Security", url: "/dashboard/security", icon: Shield },
+    { title: "Webhooks", url: "/dashboard/webhooks", icon: Shield },
     { title: "Billing", url: "/dashboard/billing", icon: CreditCard },
   ];
 
@@ -45,10 +46,10 @@ function DashboardLayout() {
                   {items.map((item) => (
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
-                        <a href={item.url}>
+                        <Link to={item.url}>
                           <item.icon />
                           <span>{item.title}</span>
-                        </a>
+                        </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}

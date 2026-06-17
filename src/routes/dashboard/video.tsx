@@ -100,7 +100,7 @@ function VideoLibraryPage() {
             ))}
           </div>
         )}
-
+      </main>
     </div>
   );
 }
