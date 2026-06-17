@@ -1,7 +1,13 @@
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef, type ReactNode } from "react";
 
-export function TiltCard({ children, className = "" }: { children: ReactNode; className?: string }) {
+export function TiltCard({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -20,7 +26,10 @@ export function TiltCard({ children, className = "" }: { children: ReactNode; cl
         x.set((e.clientX - r.left) / r.width - 0.5);
         y.set((e.clientY - r.top) / r.height - 0.5);
       }}
-      onMouseLeave={() => { x.set(0); y.set(0); }}
+      onMouseLeave={() => {
+        x.set(0);
+        y.set(0);
+      }}
       style={{ rotateX, rotateY, transformPerspective: 1000 }}
       whileHover={{ y: -6 }}
       className={`relative card-tilt rounded-2xl ${className}`}
@@ -29,8 +38,10 @@ export function TiltCard({ children, className = "" }: { children: ReactNode; cl
         aria-hidden
         className="pointer-events-none absolute inset-0 rounded-2xl opacity-70"
         style={{
-          background: useTransform([glowX, glowY], ([gx, gy]) =>
-            `radial-gradient(420px circle at ${gx} ${gy}, rgba(59,130,246,0.18), transparent 60%)`
+          background: useTransform(
+            [glowX, glowY],
+            ([gx, gy]) =>
+              `radial-gradient(420px circle at ${gx} ${gy}, rgba(59,130,246,0.18), transparent 60%)`,
           ),
         }}
       />

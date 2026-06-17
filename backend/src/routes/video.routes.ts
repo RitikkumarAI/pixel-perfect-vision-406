@@ -1,6 +1,6 @@
-import { Router } from 'express';
-import { VideoController } from '../controllers/video.controller';
-import { authGuard } from '../middlewares/auth.guard';
+import { Router } from "express";
+import { VideoController } from "../controllers/video.controller";
+import { authGuard } from "../middlewares/auth.guard";
 
 const router = Router();
 
@@ -8,15 +8,15 @@ const router = Router();
 const videoController = new VideoController();
 
 // Webhook endpoint (unprotected)
-router.post('/webhook/mux', videoController.handleMuxWebhook as any);
+router.post("/webhook/mux", videoController.handleMuxWebhook as any);
 
 router.use(authGuard);
 
-router.post('/start', videoController.startRecording);
-router.post('/upload', videoController.uploadComplete);
-router.get('/', videoController.getRecordings);
-router.get('/:id', videoController.getRecordingDetails);
-router.post('/:id/comments', videoController.addComment);
+router.post("/start", videoController.startRecording);
+router.post("/upload", videoController.uploadComplete);
+router.get("/", videoController.getRecordings);
+router.get("/:id", videoController.getRecordingDetails);
+router.post("/:id/comments", videoController.addComment);
 
 // Existing/Legacy video socket routes
 export function createVideoRoutes(io: any) {

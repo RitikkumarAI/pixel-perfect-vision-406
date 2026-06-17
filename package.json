@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "echo 'No frontend tests' && exit 0"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^18.0.1",

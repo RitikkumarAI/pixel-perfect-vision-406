@@ -1,4 +1,4 @@
-import prisma from '../utils/prisma';
+import prisma from "../utils/prisma";
 
 export class RetentionService {
   /**
@@ -9,20 +9,20 @@ export class RetentionService {
     const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
     const meetings = await prisma.meeting.count({
-      where: { hostId: userId, createdAt: { gte: lastWeek } }
+      where: { hostId: userId, createdAt: { gte: lastWeek } },
     });
 
     const aiAgentRuns = await prisma.agentRun.count({
-      where: { userId, createdAt: { gte: lastWeek } }
+      where: { userId, createdAt: { gte: lastWeek } },
     });
 
     const documentsCreated = await prisma.document.count({
-      where: { authorId: userId, createdAt: { gte: lastWeek } }
+      where: { authorId: userId, createdAt: { gte: lastWeek } },
     });
 
     // TODO: Send via SendGrid or Postmark
     const emailPayload = {
-      subject: 'Your Nexus Weekly Productivity Report',
+      subject: "Your Nexus Weekly Productivity Report",
       html: `
         <h2>You crushed it this week!</h2>
         <ul>
@@ -31,7 +31,7 @@ export class RetentionService {
           <li>Documents Created: ${documentsCreated}</li>
         </ul>
         <a href="https://nexus-workspace.com/dashboard">View Insights</a>
-      `
+      `,
     };
 
     return emailPayload;
@@ -45,7 +45,7 @@ export class RetentionService {
     return prisma.session.findMany({
       where: { updatedAt: { lt: twoWeeksAgo } },
       select: { userId: true },
-      distinct: ['userId']
+      distinct: ["userId"],
     });
   }
 }

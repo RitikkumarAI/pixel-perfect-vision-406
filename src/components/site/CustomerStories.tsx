@@ -24,7 +24,8 @@ const STORIES: Story[] = [
     brand: "Northwind Athletics",
     image: engagementAsset,
     title: "Northwind Athletics expands the fan and employee experience",
-    quote: "Our platform lets us stay close to fans and our teams without compromising on the production quality our brand stands for.",
+    quote:
+      "Our platform lets us stay close to fans and our teams without compromising on the production quality our brand stands for.",
     author: "Jordan Avery",
     role: "Chief Revenue Officer",
   },
@@ -33,7 +34,8 @@ const STORIES: Story[] = [
     brand: "Lumen Wellness",
     image: meetingsAsset,
     title: "Lumen Wellness scales mental health support with video SDKs",
-    quote: "The flexibility of the SDK helped us deliver a real-world quality session inside a mobile-first product.",
+    quote:
+      "The flexibility of the SDK helped us deliver a real-world quality session inside a mobile-first product.",
     author: "Priya Sharma",
     role: "Founder & CEO",
   },
@@ -42,7 +44,8 @@ const STORIES: Story[] = [
     brand: "Atlas Retail",
     image: contactCenterAsset,
     title: "Atlas Retail cut call abandonment by 90%",
-    quote: "We replaced a stack of disconnected tools with one workflow — every call, transcript, and follow-up lives in one place.",
+    quote:
+      "We replaced a stack of disconnected tools with one workflow — every call, transcript, and follow-up lives in one place.",
     author: "Marcus Lee",
     role: "Member Care QA Specialist",
   },
@@ -51,7 +54,8 @@ const STORIES: Story[] = [
     brand: "Vanta Financial",
     image: salesAsset,
     title: "A connected, collaborative workforce drives innovation at Vanta",
-    quote: "We're people-centered and highly collaborative — the platform reflects the culture we want to build.",
+    quote:
+      "We're people-centered and highly collaborative — the platform reflects the culture we want to build.",
     author: "Noor Patel",
     role: "VP, Tech Talent Acquisition",
   },
@@ -60,7 +64,8 @@ const STORIES: Story[] = [
     brand: "Harbor Studios",
     image: roomsAsset,
     title: "Harbor Studios unifies hybrid production rooms",
-    quote: "Every room feels the same — creatives walk in and start working, no setup, no friction.",
+    quote:
+      "Every room feels the same — creatives walk in and start working, no setup, no friction.",
     author: "Sam Rivera",
     role: "Head of Production Tech",
   },
@@ -135,9 +140,7 @@ export function CustomerStories() {
                         {s.brand}
                       </div>
                       <div className="max-w-2xl space-y-5">
-                        <h3 className="text-2xl font-bold leading-tight md:text-4xl">
-                          {s.title}
-                        </h3>
+                        <h3 className="text-2xl font-bold leading-tight md:text-4xl">{s.title}</h3>
                         <p className="hidden text-white/85 md:block">"{s.quote}"</p>
                         <p className="text-sm text-white/70">
                           — <span className="font-semibold text-white">{s.author}</span>, {s.role}

@@ -1,41 +1,41 @@
-import prisma from '../../utils/prisma';
+import prisma from "../../utils/prisma";
 
 export const AgentTools = {
   createTask: async (workspaceId: string, title: string, description: string) => {
     const t = await prisma.task.create({
-      data: { workspaceId, title, description, status: "TODO" }
+      data: { workspaceId, title, description, status: "TODO" },
     });
     return JSON.stringify({ success: true, taskId: t.id, title: t.title });
   },
-  
+
   searchDocuments: async (workspaceId: string, query: string) => {
     const docs = await prisma.document.findMany({
       where: {
         workspaceId,
-        title: { contains: query, mode: 'insensitive' }
+        title: { contains: query, mode: "insensitive" },
       },
-      take: 5
+      take: 5,
     });
     return JSON.stringify(docs);
   },
 
   getTasks: async (workspaceId: string) => {
     const tasks = await prisma.task.findMany({
-      where: { workspaceId }
+      where: { workspaceId },
     });
     return JSON.stringify(tasks);
   },
 
   getMeetingNotes: async (meetingId: string) => {
     const notes = await prisma.note.findMany({
-      where: { meetingId }
+      where: { meetingId },
     });
     return JSON.stringify(notes);
   },
 
   summarizeMeeting: async (meetingId: string) => {
     const notes = await prisma.note.findMany({ where: { meetingId } });
-    const content = notes.map(n => n.content).join("\n");
+    const content = notes.map((n) => n.content).join("\n");
     // Simulated deep summarization based on content (AI Gateway would normally be used here, but keeping it tool-level deterministic or simple for MVP)
     const summary = `Summary of Meeting ${meetingId}:\nDecisions: Proceed with Phase II.\nAction Items: Setup architecture, Ping engineering.\nRisks: None major detected.\nNotes Context: ${content.substring(0, 100)}...`;
     return JSON.stringify({ summary });
@@ -44,13 +44,20 @@ export const AgentTools = {
   // Scheduling Tools
   findAvailability: async (hostId: string) => {
     const rules = await prisma.availabilityRule.findMany({ where: { userId: hostId } });
-    const bookings = await prisma.booking.findMany({ 
-      where: { hostId, startTime: { gte: new Date() } }
+    const bookings = await prisma.booking.findMany({
+      where: { hostId, startTime: { gte: new Date() } },
     });
     return JSON.stringify({ rules, bookedSlots: bookings });
   },
 
-  scheduleMeeting: async (hostId: string, eventTypeId: string, guestName: string, guestEmail: string, startTime: string, endTime: string) => {
+  scheduleMeeting: async (
+    hostId: string,
+    eventTypeId: string,
+    guestName: string,
+    guestEmail: string,
+    startTime: string,
+    endTime: string,
+  ) => {
     const booking = await prisma.booking.create({
       data: {
         hostId,
@@ -59,8 +66,8 @@ export const AgentTools = {
         guestEmail,
         startTime: new Date(startTime),
         endTime: new Date(endTime),
-        meetingUrl: `https://nexus.local/meet/booking-${Date.now()}`
-      }
+        meetingUrl: `https://nexus.local/meet/booking-${Date.now()}`,
+      },
     });
     return JSON.stringify({ success: true, bookingId: booking.id, url: booking.meetingUrl });
   },
@@ -71,18 +78,27 @@ export const AgentTools = {
       data: {
         startTime: new Date(newStartTime),
         endTime: new Date(newEndTime),
-        status: "RESCHEDULED"
-      }
+        status: "RESCHEDULED",
+      },
     });
     return JSON.stringify({ success: true, bookingId: booking.id });
   },
 
-  createFollowUp: async (workspaceId: string, hostId: string, title: string, description: string) => {
+  createFollowUp: async (
+    workspaceId: string,
+    hostId: string,
+    title: string,
+    description: string,
+  ) => {
     // A macro tool that generates a task and proposes a meeting.
     const task = await prisma.task.create({
-      data: { workspaceId, title, description, status: "TODO" }
+      data: { workspaceId, title, description, status: "TODO" },
     });
-    return JSON.stringify({ success: true, taskId: task.id, message: "Follow-up task created and prepared to schedule." });
+    return JSON.stringify({
+      success: true,
+      taskId: task.id,
+      message: "Follow-up task created and prepared to schedule.",
+    });
   },
 
   // Video Tools
@@ -90,13 +106,13 @@ export const AgentTools = {
     // Simple ILIKE search through video transcripts
     const transcripts = await prisma.recordingTranscript.findMany({
       where: {
-        text: { contains: query, mode: "insensitive" }
+        text: { contains: query, mode: "insensitive" },
       },
       include: { recording: { select: { id: true, title: true } } },
-      take: 5
+      take: 5,
     });
     return JSON.stringify({ results: transcripts });
-  }
+  },
 };
 
 export const AgentToolSchemas = [
@@ -104,16 +120,17 @@ export const AgentToolSchemas = [
     type: "function",
     function: {
       name: "createTask",
-      description: "Creates a new task in the workspace. Use this when instructed to plan, schedule, or create a workflow task.",
+      description:
+        "Creates a new task in the workspace. Use this when instructed to plan, schedule, or create a workflow task.",
       parameters: {
         type: "object",
         properties: {
           title: { type: "string", description: "The task title" },
-          description: { type: "string", description: "The task detailed description" }
+          description: { type: "string", description: "The task detailed description" },
         },
-        required: ["title", "description"]
-      }
-    }
+        required: ["title", "description"],
+      },
+    },
   },
   {
     type: "function",
@@ -123,11 +140,11 @@ export const AgentToolSchemas = [
       parameters: {
         type: "object",
         properties: {
-          query: { type: "string", description: "The search term or concept to look for" }
+          query: { type: "string", description: "The search term or concept to look for" },
         },
-        required: ["query"]
-      }
-    }
+        required: ["query"],
+      },
+    },
   },
   {
     type: "function",
@@ -136,9 +153,9 @@ export const AgentToolSchemas = [
       description: "Retrieves all current tasks in the workspace to analyze progress or blockers.",
       parameters: {
         type: "object",
-        properties: {}
-      }
-    }
+        properties: {},
+      },
+    },
   },
   {
     type: "function",
@@ -148,11 +165,11 @@ export const AgentToolSchemas = [
       parameters: {
         type: "object",
         properties: {
-          meetingId: { type: "string", description: "The UUID of the meeting" }
+          meetingId: { type: "string", description: "The UUID of the meeting" },
         },
-        required: ["meetingId"]
-      }
-    }
+        required: ["meetingId"],
+      },
+    },
   },
   {
     type: "function",
@@ -162,25 +179,26 @@ export const AgentToolSchemas = [
       parameters: {
         type: "object",
         properties: {
-          meetingId: { type: "string", description: "The UUID of the meeting to summarize" }
+          meetingId: { type: "string", description: "The UUID of the meeting to summarize" },
         },
-        required: ["meetingId"]
-      }
-    }
+        required: ["meetingId"],
+      },
+    },
   },
   {
     type: "function",
     function: {
       name: "findAvailability",
-      description: "Finds available times for a specific host by returning their rules and current bookings.",
+      description:
+        "Finds available times for a specific host by returning their rules and current bookings.",
       parameters: {
         type: "object",
         properties: {
-          hostId: { type: "string", description: "The UUID of the host" }
+          hostId: { type: "string", description: "The UUID of the host" },
         },
-        required: ["hostId"]
-      }
-    }
+        required: ["hostId"],
+      },
+    },
   },
   {
     type: "function",
@@ -195,11 +213,11 @@ export const AgentToolSchemas = [
           guestName: { type: "string", description: "Name of the guest" },
           guestEmail: { type: "string", description: "Email of the guest" },
           startTime: { type: "string", description: "ISO string of the start time" },
-          endTime: { type: "string", description: "ISO string of the end time" }
+          endTime: { type: "string", description: "ISO string of the end time" },
         },
-        required: ["hostId", "eventTypeId", "guestName", "guestEmail", "startTime", "endTime"]
-      }
-    }
+        required: ["hostId", "eventTypeId", "guestName", "guestEmail", "startTime", "endTime"],
+      },
+    },
   },
   {
     type: "function",
@@ -211,11 +229,11 @@ export const AgentToolSchemas = [
         properties: {
           bookingId: { type: "string", description: "The UUID of the booking" },
           newStartTime: { type: "string", description: "ISO string of the new start time" },
-          newEndTime: { type: "string", description: "ISO string of the new end time" }
+          newEndTime: { type: "string", description: "ISO string of the new end time" },
         },
-        required: ["bookingId", "newStartTime", "newEndTime"]
-      }
-    }
+        required: ["bookingId", "newStartTime", "newEndTime"],
+      },
+    },
   },
   {
     type: "function",
@@ -228,11 +246,11 @@ export const AgentToolSchemas = [
           workspaceId: { type: "string" },
           hostId: { type: "string" },
           title: { type: "string" },
-          description: { type: "string" }
+          description: { type: "string" },
         },
-        required: ["workspaceId", "hostId", "title", "description"]
-      }
-    }
+        required: ["workspaceId", "hostId", "title", "description"],
+      },
+    },
   },
   {
     type: "function",
@@ -242,10 +260,10 @@ export const AgentToolSchemas = [
       parameters: {
         type: "object",
         properties: {
-          query: { type: "string", description: "The search keyword or phrase" }
+          query: { type: "string", description: "The search keyword or phrase" },
         },
-        required: ["query"]
-      }
-    }
-  }
+        required: ["query"],
+      },
+    },
+  },
 ];

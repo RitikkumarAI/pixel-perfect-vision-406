@@ -1,5 +1,5 @@
-import { Server } from 'socket.io';
-import { PresenceService } from './presence.service';
+import { Server } from "socket.io";
+import { PresenceService } from "./presence.service";
 
 export class NotificationService {
   private io: Server;
@@ -16,7 +16,7 @@ export class NotificationService {
    */
   public async notifyUser(userId: string, event: string, payload: any): Promise<void> {
     const socketIds = await this.presenceService.getUserSockets(userId);
-    
+
     if (socketIds.length === 0) {
       // User is offline. Optionally, you could trigger a push notification or email here.
       return;

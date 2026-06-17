@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -9,8 +9,8 @@ export class RevenueService {
    */
   static async calculateMRR(): Promise<number> {
     const revenue = await prisma.appRevenue.aggregate({
-      where: { status: 'PAID' },
-      _sum: { amount: true }
+      where: { status: "PAID" },
+      _sum: { amount: true },
     });
     // Assuming AppRevenue represents monthly platform cut + direct subscription invoices
     return revenue._sum.amount || 0;
@@ -37,14 +37,14 @@ export class RevenueService {
 
     let activatedCount = 0;
     const workspaces = await prisma.workspace.findMany({ select: { id: true } });
-    
+
     // In production, this would be a complex JOIN query for performance
     for (const w of workspaces) {
       if (await this.checkWorkspaceActivation(w.id)) {
         activatedCount++;
       }
     }
-    
+
     return (activatedCount / totalWorkspaces) * 100;
   }
 
@@ -52,26 +52,27 @@ export class RevenueService {
    * Calculate Churn Risk Score
    * Based on live database activity tracking.
    */
-  static async calculateChurnRisk(workspaceId: string): Promise<'LOW' | 'MEDIUM' | 'HIGH'> {
+  static async calculateChurnRisk(workspaceId: string): Promise<"LOW" | "MEDIUM" | "HIGH"> {
     // Check last active date
     const lastMeeting = await prisma.meeting.findFirst({
       where: { workspaceId },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: "desc" },
     });
 
     const lastDoc = await prisma.document.findFirst({
       where: { workspaceId },
-      orderBy: { updatedAt: 'desc' }
+      orderBy: { updatedAt: "desc" },
     });
 
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-    const isInactive = (!lastMeeting || lastMeeting.createdAt < sevenDaysAgo) && 
-                       (!lastDoc || lastDoc.updatedAt < sevenDaysAgo);
+    const isInactive =
+      (!lastMeeting || lastMeeting.createdAt < sevenDaysAgo) &&
+      (!lastDoc || lastDoc.updatedAt < sevenDaysAgo);
 
-    if (isInactive) return 'HIGH';
-    return 'LOW'; // Expand logic for MEDIUM
+    if (isInactive) return "HIGH";
+    return "LOW"; // Expand logic for MEDIUM
   }
 
   /**
@@ -80,14 +81,17 @@ export class RevenueService {
    */
   static async detectExpansionOpportunities(workspaceId: string) {
     const ledger = await prisma.aIActionLedger.aggregate({
-      where: { workspaceId, createdAt: { gte: new Date(new Date().setMonth(new Date().getMonth() - 1)) } },
-      _sum: { costTokens: true }
+      where: {
+        workspaceId,
+        createdAt: { gte: new Date(new Date().setMonth(new Date().getMonth() - 1)) },
+      },
+      _sum: { costTokens: true },
     });
 
     const tokensUsed = ledger._sum.costTokens || 0;
     // Assume 1M token limit for free tier
     if (tokensUsed > 800000) {
-      return { recommendUpgrade: true, reason: 'AI_USAGE_HIGH' };
+      return { recommendUpgrade: true, reason: "AI_USAGE_HIGH" };
     }
     return { recommendUpgrade: false };
   }

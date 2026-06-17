@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { useAuth } from './useAuth';
+import { useState } from "react";
+import { useAuth } from "./useAuth";
 
 export function useMeeting() {
   const { token, isAuthenticated } = useAuth();
-  
+
   const [meetingToken, setMeetingToken] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('current_meeting_token');
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("current_meeting_token");
     }
     return null;
   });
 
   const [roomUrl, setRoomUrl] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('current_meeting_url');
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("current_meeting_url");
     }
     return null;
   });
@@ -23,7 +23,7 @@ export function useMeeting() {
 
   const joinMeeting = async (meetingId: string) => {
     if (!isAuthenticated) {
-      setError('Must be logged in to join a meeting');
+      setError("Must be logged in to join a meeting");
       return;
     }
 
@@ -31,26 +31,26 @@ export function useMeeting() {
     setError(null);
 
     try {
-      const res = await fetch('/api/v1/meetings/token', {
-        method: 'POST',
+      const res = await fetch("/api/v1/meetings/token", {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ meetingId })
+        body: JSON.stringify({ meetingId }),
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to get meeting token');
+      if (!res.ok) throw new Error(data.error || "Failed to get meeting token");
 
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('current_meeting_token', data.token);
-        localStorage.setItem('current_meeting_url', data.roomUrl || 'ws://localhost:7880');
+      if (typeof window !== "undefined") {
+        localStorage.setItem("current_meeting_token", data.token);
+        localStorage.setItem("current_meeting_url", data.roomUrl || "ws://localhost:7880");
       }
 
       setMeetingToken(data.token);
-      setRoomUrl(data.roomUrl || 'ws://localhost:7880');
-      
+      setRoomUrl(data.roomUrl || "ws://localhost:7880");
+
       // Perform redirect
       window.location.href = `/meet/${meetingId}`;
       return data.token;
@@ -62,9 +62,9 @@ export function useMeeting() {
   };
 
   const leaveMeeting = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('current_meeting_token');
-      localStorage.removeItem('current_meeting_url');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("current_meeting_token");
+      localStorage.removeItem("current_meeting_url");
     }
     setMeetingToken(null);
     setRoomUrl(null);
@@ -77,17 +77,17 @@ export function useMeeting() {
     }
     setIsLoading(true);
     try {
-      const res = await fetch('/api/v1/meetings', {
-        method: 'POST',
+      const res = await fetch("/api/v1/meetings", {
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ title })
+        body: JSON.stringify({ title }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to create meeting');
-      
+      if (!res.ok) throw new Error(data.error || "Failed to create meeting");
+
       // Automatically join the meeting after creation
       await joinMeeting(data.meeting.id);
     } catch (err: any) {

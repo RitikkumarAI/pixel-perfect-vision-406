@@ -25,7 +25,10 @@ export function MagneticButton({
     x.set(((e.clientX - r.left) / r.width - 0.5) * 18);
     y.set(((e.clientY - r.top) / r.height - 0.5) * 12);
   };
-  const reset = () => { x.set(0); y.set(0); };
+  const reset = () => {
+    x.set(0);
+    y.set(0);
+  };
 
   return (
     <motion.div
@@ -36,7 +39,9 @@ export function MagneticButton({
       className="inline-block"
     >
       {as === "a" ? (
-        <a href={href ?? to ?? "#"} className={className}>{children}</a>
+        <a href={href ?? to ?? "#"} className={className}>
+          {children}
+        </a>
       ) : (
         <button className={className}>{children}</button>
       )}

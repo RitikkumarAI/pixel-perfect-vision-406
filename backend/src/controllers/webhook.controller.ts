@@ -1,6 +1,6 @@
-import { Response } from 'express';
-import { AuthRequest } from '../middlewares/auth.guard';
-import { WebhookService } from '../services/webhook.service';
+import { Response } from "express";
+import { AuthRequest } from "../middlewares/auth.guard";
+import { WebhookService } from "../services/webhook.service";
 
 export class WebhookController {
   private webhookService = new WebhookService();

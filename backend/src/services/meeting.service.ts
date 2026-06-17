@@ -1,14 +1,18 @@
-import { AccessToken, RoomServiceClient } from 'livekit-server-sdk';
-import prisma from '../utils/prisma';
+import { AccessToken, RoomServiceClient } from "livekit-server-sdk";
+import prisma from "../utils/prisma";
 
 export class MeetingService {
-  private livekitHost = process.env.LIVEKIT_API_URL || 'ws://localhost:7880';
-  private livekitApiKey = process.env.LIVEKIT_API_KEY || 'devkey';
-  private livekitApiSecret = process.env.LIVEKIT_API_SECRET || 'secret';
+  private livekitHost = process.env.LIVEKIT_API_URL || "ws://localhost:7880";
+  private livekitApiKey = process.env.LIVEKIT_API_KEY || "devkey";
+  private livekitApiSecret = process.env.LIVEKIT_API_SECRET || "secret";
   private roomService: RoomServiceClient;
 
   constructor() {
-    this.roomService = new RoomServiceClient(this.livekitHost, this.livekitApiKey, this.livekitApiSecret);
+    this.roomService = new RoomServiceClient(
+      this.livekitHost,
+      this.livekitApiKey,
+      this.livekitApiSecret,
+    );
   }
 
   public async createMeeting(hostId: string, title: string) {
@@ -17,8 +21,8 @@ export class MeetingService {
         hostId,
         title,
         startTime: new Date(),
-        status: 'SCHEDULED'
-      }
+        status: "SCHEDULED",
+      },
     });
 
     const livekitRoomName = `meeting-${meeting.id}`;
@@ -31,19 +35,22 @@ export class MeetingService {
         maxParticipants: 100,
       });
     } catch (error) {
-      console.error('[LiveKit] Failed to create room on LiveKit server. Proceeding in mock mode.', error);
+      console.error(
+        "[LiveKit] Failed to create room on LiveKit server. Proceeding in mock mode.",
+        error,
+      );
     }
 
     // Update meeting with the room name
     return prisma.meeting.update({
       where: { id: meeting.id },
-      data: { livekitRoom: livekitRoomName, status: 'LIVE' }
+      data: { livekitRoom: livekitRoomName, status: "LIVE" },
     });
   }
 
   public async generateJoinToken(meetingId: string, userId: string, userName: string) {
     const meeting = await prisma.meeting.findUnique({ where: { id: meetingId } });
-    if (!meeting || !meeting.livekitRoom) throw new Error('Meeting not found or not active');
+    if (!meeting || !meeting.livekitRoom) throw new Error("Meeting not found or not active");
 
     const at = new AccessToken(this.livekitApiKey, this.livekitApiSecret, {
       identity: userId,
@@ -52,13 +59,13 @@ export class MeetingService {
 
     const isHost = meeting.hostId === userId;
 
-    at.addGrant({ 
-      roomJoin: true, 
+    at.addGrant({
+      roomJoin: true,
       room: meeting.livekitRoom,
       canPublish: true,
       canSubscribe: true,
       canPublishData: true,
-      roomAdmin: isHost // The host gets admin controls to mute/kick
+      roomAdmin: isHost, // The host gets admin controls to mute/kick
     });
 
     return { token: await at.toJwt(), roomUrl: this.livekitHost };
@@ -66,8 +73,8 @@ export class MeetingService {
 
   public async endMeeting(meetingId: string, userId: string) {
     const meeting = await prisma.meeting.findUnique({ where: { id: meetingId } });
-    if (!meeting) throw new Error('Meeting not found');
-    if (meeting.hostId !== userId) throw new Error('Only the host can end the meeting');
+    if (!meeting) throw new Error("Meeting not found");
+    if (meeting.hostId !== userId) throw new Error("Only the host can end the meeting");
 
     if (meeting.livekitRoom) {
       await this.roomService.deleteRoom(meeting.livekitRoom);
@@ -75,7 +82,7 @@ export class MeetingService {
 
     return prisma.meeting.update({
       where: { id: meetingId },
-      data: { status: 'ENDED', endTime: new Date() }
+      data: { status: "ENDED", endTime: new Date() },
     });
   }
 }

@@ -1,29 +1,29 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuth } from './useAuth';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "./useAuth";
 
 export function useScheduling() {
   const { token, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
   const getEventTypes = useQuery({
-    queryKey: ['eventTypes'],
+    queryKey: ["eventTypes"],
     queryFn: async () => {
       const res = await fetch(`/api/v1/scheduling/event-types`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error('Failed to fetch event types');
+      if (!res.ok) throw new Error("Failed to fetch event types");
       return res.json();
     },
     enabled: isAuthenticated,
   });
 
   const getBookings = useQuery({
-    queryKey: ['bookings'],
+    queryKey: ["bookings"],
     queryFn: async () => {
       const res = await fetch(`/api/v1/scheduling/bookings`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      if (!res.ok) throw new Error('Failed to fetch bookings');
+      if (!res.ok) throw new Error("Failed to fetch bookings");
       return res.json();
     },
     enabled: isAuthenticated,
@@ -32,45 +32,50 @@ export function useScheduling() {
   const connectGoogle = useMutation({
     mutationFn: async (accessToken: string) => {
       const res = await fetch(`/api/v1/scheduling/calendar/connect/google`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ accessToken })
+        body: JSON.stringify({ accessToken }),
       });
-      if (!res.ok) throw new Error('Failed to connect Google Calendar');
+      if (!res.ok) throw new Error("Failed to connect Google Calendar");
       return res.json();
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['calendarAccounts'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["calendarAccounts"] }),
   });
 
   const createEventType = useMutation({
-    mutationFn: async (data: { title: string, description: string, durationMin: number, slug: string }) => {
+    mutationFn: async (data: {
+      title: string;
+      description: string;
+      durationMin: number;
+      slug: string;
+    }) => {
       const res = await fetch(`/api/v1/scheduling/event-types`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error('Failed to create event type');
+      if (!res.ok) throw new Error("Failed to create event type");
       return res.json();
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['eventTypes'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["eventTypes"] }),
   });
 
   const bookPublicly = useMutation({
-    mutationFn: async ({ hostId, data }: { hostId: string, data: any }) => {
+    mutationFn: async ({ hostId, data }: { hostId: string; data: any }) => {
       const res = await fetch(`/api/v1/scheduling/bookings`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error('Failed to book meeting');
+      if (!res.ok) throw new Error("Failed to book meeting");
       return res.json();
-    }
+    },
   });
 
   return {
@@ -80,6 +85,6 @@ export function useScheduling() {
     isLoadingBookings: getBookings.isLoading,
     connectGoogle: connectGoogle.mutateAsync,
     createEventType: createEventType.mutateAsync,
-    bookPublicly: bookPublicly.mutateAsync
+    bookPublicly: bookPublicly.mutateAsync,
   };
 }

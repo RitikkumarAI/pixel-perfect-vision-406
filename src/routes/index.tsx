@@ -15,9 +15,16 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "One platform to connect | Zoom" },
-      { name: "description", content: "Bridge the gap between talking and doing with the AI-first work platform built for you." },
+      {
+        name: "description",
+        content:
+          "Bridge the gap between talking and doing with the AI-first work platform built for you.",
+      },
       { property: "og:title", content: "One platform to connect | Zoom" },
-      { property: "og:description", content: "AI-first work platform for meetings, chat, phone and more." },
+      {
+        property: "og:description",
+        content: "AI-first work platform for meetings, chat, phone and more.",
+      },
     ],
   }),
   component: Index,

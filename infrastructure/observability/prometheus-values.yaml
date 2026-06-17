@@ -5,14 +5,14 @@ server:
     evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'nexus-api'
+  - job_name: "nexus-api"
     kubernetes_sd_configs:
       - role: endpoints
     relabel_configs:
       - source_labels: [__meta_kubernetes_service_name]
         action: keep
         regex: nexus-api-svc
-  - job_name: 'nexus-workers'
+  - job_name: "nexus-workers"
     kubernetes_sd_configs:
       - role: endpoints
     relabel_configs:
@@ -27,11 +27,11 @@ grafana:
     dashboardproviders.yaml:
       apiVersion: 1
       providers:
-      - name: 'default'
-        orgId: 1
-        folder: ''
-        type: file
-        disableDeletion: false
-        editable: true
-        options:
-          path: /var/lib/grafana/dashboards/default
+        - name: "default"
+          orgId: 1
+          folder: ""
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default

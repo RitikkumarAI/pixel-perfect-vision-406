@@ -13,15 +13,15 @@ export default defineConfig({
   vite: {
     server: {
       proxy: {
-        '/api': {
-          target: 'http://localhost:5005',
+        "/api": {
+          target: "http://localhost:5005",
           changeOrigin: true,
         },
-        '/socket.io': {
-          target: 'http://localhost:5005',
+        "/socket.io": {
+          target: "http://localhost:5005",
           ws: true,
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  },
 });

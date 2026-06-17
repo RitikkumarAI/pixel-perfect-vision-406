@@ -1,8 +1,8 @@
-import { Response, Request } from 'express';
-import { AuthRequest } from '../middlewares/auth.guard';
-import { AuditLogService } from '../services/audit.service';
-import { SSOService } from '../services/sso.service';
-import prisma from '../utils/prisma';
+import { Response, Request } from "express";
+import { AuthRequest } from "../middlewares/auth.guard";
+import { AuditLogService } from "../services/audit.service";
+import { SSOService } from "../services/sso.service";
+import prisma from "../utils/prisma";
 
 export class SecurityController {
   private auditLogService = new AuditLogService();
@@ -23,20 +23,20 @@ export class SecurityController {
   public getDashboard = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user!.userId;
-      
+
       const recentEvents = await prisma.auditLog.findMany({
         where: { userId },
-        orderBy: { createdAt: 'desc' },
-        take: 10
+        orderBy: { createdAt: "desc" },
+        take: 10,
       });
 
       const activeAlerts = await prisma.securityAlert.findMany({
         where: { userId, resolvedAt: null },
-        orderBy: { createdAt: 'desc' },
-        take: 5
+        orderBy: { createdAt: "desc" },
+        take: 5,
       });
 
-      let riskScore = 100 - (activeAlerts.length * 20);
+      let riskScore = 100 - activeAlerts.length * 20;
       if (riskScore < 0) riskScore = 0;
 
       res.status(200).json({ recentEvents, activeAlerts, riskScore });

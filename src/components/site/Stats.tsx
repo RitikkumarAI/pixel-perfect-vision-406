@@ -1,15 +1,30 @@
 import { motion, useInView, useMotionValue, useSpring } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
-function Counter({ to, suffix = "", duration = 1.8 }: { to: number; suffix?: string; duration?: number }) {
+function Counter({
+  to,
+  suffix = "",
+  duration = 1.8,
+}: {
+  to: number;
+  suffix?: string;
+  duration?: number;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
   const mv = useMotionValue(0);
   const sv = useSpring(mv, { duration: duration * 1000, bounce: 0 });
   const [val, setVal] = useState(0);
-  useEffect(() => { if (inView) mv.set(to); }, [inView, to, mv]);
+  useEffect(() => {
+    if (inView) mv.set(to);
+  }, [inView, to, mv]);
   useEffect(() => sv.on("change", (v) => setVal(v)), [sv]);
-  return <span ref={ref}>{Math.round(val).toLocaleString()}{suffix}</span>;
+  return (
+    <span ref={ref}>
+      {Math.round(val).toLocaleString()}
+      {suffix}
+    </span>
+  );
 }
 
 export function Stats() {

@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, Sparkles, Headphones, Megaphone, TrendingUp, Heart, MessageSquare, Bot, BarChart3, Award } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  Headphones,
+  Megaphone,
+  TrendingUp,
+  Heart,
+  MessageSquare,
+  Bot,
+  BarChart3,
+  Award,
+} from "lucide-react";
 import aiSuite from "@/assets/ai-suite.webp";
 import contactCenter from "@/assets/contact-center.jpg";
 import webinars from "@/assets/webinars.jpg";
@@ -26,10 +37,22 @@ const TABS: Tab[] = [
     image: aiSuite,
     alt: "AI productivity suite workspace",
     bullets: [
-      { title: "One workspace, less app switching:", body: "Meetings, chat, docs, and tasks live side by side." },
-      { title: "AI that drafts with you:", body: "Turn meeting notes into briefs, decks, and follow-ups in seconds." },
-      { title: "Async by default:", body: "Share video updates and clips so teams move without another call." },
-      { title: "Connected to your stack:", body: "Plays nicely with the tools your team already loves." },
+      {
+        title: "One workspace, less app switching:",
+        body: "Meetings, chat, docs, and tasks live side by side.",
+      },
+      {
+        title: "AI that drafts with you:",
+        body: "Turn meeting notes into briefs, decks, and follow-ups in seconds.",
+      },
+      {
+        title: "Async by default:",
+        body: "Share video updates and clips so teams move without another call.",
+      },
+      {
+        title: "Connected to your stack:",
+        body: "Plays nicely with the tools your team already loves.",
+      },
     ],
     overlays: [
       { label: "Drive meeting", icon: Sparkles, pos: "top-6 left-6" },
@@ -43,11 +66,26 @@ const TABS: Tab[] = [
     image: contactCenter,
     alt: "Customer support agent with AI overlays",
     bullets: [
-      { title: "One platform, full context:", body: "Phone, chat, email, SMS, social, and video unified in a single view." },
-      { title: "Smarter automation:", body: "Virtual Agent handles multi-intent questions so humans focus on high-value cases." },
-      { title: "Better self-service:", body: "Instant answers and proactive resolutions cut friction and drive loyalty." },
-      { title: "AI-powered support:", body: "Real-time suggestions, key action highlights, and task automation keep agents sharp." },
-      { title: "Get more from your data:", body: "CRM integration, real-time analytics, and conversation insights improve CX." },
+      {
+        title: "One platform, full context:",
+        body: "Phone, chat, email, SMS, social, and video unified in a single view.",
+      },
+      {
+        title: "Smarter automation:",
+        body: "Virtual Agent handles multi-intent questions so humans focus on high-value cases.",
+      },
+      {
+        title: "Better self-service:",
+        body: "Instant answers and proactive resolutions cut friction and drive loyalty.",
+      },
+      {
+        title: "AI-powered support:",
+        body: "Real-time suggestions, key action highlights, and task automation keep agents sharp.",
+      },
+      {
+        title: "Get more from your data:",
+        body: "CRM integration, real-time analytics, and conversation insights improve CX.",
+      },
     ],
     overlays: [
       { label: "Automatic Q&A", icon: Sparkles, pos: "top-6 left-6" },
@@ -63,10 +101,22 @@ const TABS: Tab[] = [
     image: webinars,
     alt: "Marketing webinar and event experience",
     bullets: [
-      { title: "Keep audiences engaged:", body: "Capture leads with branded webinars and events that build pipeline." },
-      { title: "Deliver stand-out experiences:", body: "Host polished, interactive events that reflect your brand." },
-      { title: "Broader reach and richer insights:", body: "Extend every event with virtual and hybrid options." },
-      { title: "Put busywork on auto-pilot with AI:", body: "Automate content, personalize outreach, and analyze performance faster." },
+      {
+        title: "Keep audiences engaged:",
+        body: "Capture leads with branded webinars and events that build pipeline.",
+      },
+      {
+        title: "Deliver stand-out experiences:",
+        body: "Host polished, interactive events that reflect your brand.",
+      },
+      {
+        title: "Broader reach and richer insights:",
+        body: "Extend every event with virtual and hybrid options.",
+      },
+      {
+        title: "Put busywork on auto-pilot with AI:",
+        body: "Automate content, personalize outreach, and analyze performance faster.",
+      },
     ],
     overlays: [
       { label: "Live attendees: 4,218", icon: BarChart3, pos: "top-6 left-6" },
@@ -80,14 +130,24 @@ const TABS: Tab[] = [
     image: sales,
     alt: "Sales rep in a meeting with deal insights",
     bullets: [
-      { title: "Make selling easier:", body: "Eliminate admin work so reps can focus on building relationships." },
-      { title: "Boost productivity and win rates:", body: "Auto-summarized meetings, suggested follow-ups, and deal insights keep cycles short." },
-      { title: "Give RevOps deeper visibility:", body: "See pipeline insights and competitor trends for confident forecasting." },
-      { title: "Close with confidence:", body: "Agentic AI flags risks, coaches reps, and automates next steps." },
+      {
+        title: "Make selling easier:",
+        body: "Eliminate admin work so reps can focus on building relationships.",
+      },
+      {
+        title: "Boost productivity and win rates:",
+        body: "Auto-summarized meetings, suggested follow-ups, and deal insights keep cycles short.",
+      },
+      {
+        title: "Give RevOps deeper visibility:",
+        body: "See pipeline insights and competitor trends for confident forecasting.",
+      },
+      {
+        title: "Close with confidence:",
+        body: "Agentic AI flags risks, coaches reps, and automates next steps.",
+      },
     ],
-    overlays: [
-      { label: "Deal Summary", icon: Sparkles, pos: "top-10 left-6" },
-    ],
+    overlays: [{ label: "Deal Summary", icon: Sparkles, pos: "top-10 left-6" }],
   },
   {
     id: "engagement",
@@ -96,11 +156,26 @@ const TABS: Tab[] = [
     image: engagement,
     alt: "Remote employees connecting on a video call",
     bullets: [
-      { title: "Foster community in hybrid teams:", body: "Company-wide updates, recognition, and social feeds that connect remote employees." },
-      { title: "Create immersive experiences:", body: "Host interactive all-hands, learning sessions, and celebrations teams love." },
-      { title: "Communicate on your schedule:", body: "Share video updates asynchronously — no extra meetings." },
-      { title: "Reinforce culture and recognition:", body: "Celebrate wins, milestones, and initiatives with rich media and live events." },
-      { title: "Measure engagement to improve:", body: "Track participation analytics from Events, Clips, and Workvivo." },
+      {
+        title: "Foster community in hybrid teams:",
+        body: "Company-wide updates, recognition, and social feeds that connect remote employees.",
+      },
+      {
+        title: "Create immersive experiences:",
+        body: "Host interactive all-hands, learning sessions, and celebrations teams love.",
+      },
+      {
+        title: "Communicate on your schedule:",
+        body: "Share video updates asynchronously — no extra meetings.",
+      },
+      {
+        title: "Reinforce culture and recognition:",
+        body: "Celebrate wins, milestones, and initiatives with rich media and live events.",
+      },
+      {
+        title: "Measure engagement to improve:",
+        body: "Track participation analytics from Events, Clips, and Workvivo.",
+      },
     ],
     overlays: [
       { label: "Say hi to Eric!", icon: MessageSquare, pos: "top-6 left-6" },
@@ -136,7 +211,9 @@ export function PlatformTabs() {
           transition={{ duration: 0.7 }}
           className="mx-auto max-w-4xl text-center text-4xl font-semibold leading-tight tracking-tight text-navy sm:text-5xl md:text-6xl"
         >
-          One platform.<br />Endless ways to work together.
+          One platform.
+          <br />
+          Endless ways to work together.
         </motion.h2>
 
         {/* Tabs */}

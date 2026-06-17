@@ -1,5 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LiveKitRoom, VideoConference, RoomAudioRenderer, ControlBar, GridLayout, ParticipantTile } from "@livekit/components-react";
+import {
+  LiveKitRoom,
+  VideoConference,
+  RoomAudioRenderer,
+  ControlBar,
+  GridLayout,
+  ParticipantTile,
+} from "@livekit/components-react";
 import "@livekit/components-styles";
 import { useMeeting } from "../../hooks/useMeeting";
 import { Navbar } from "@/components/site/Navbar";
@@ -34,7 +41,7 @@ function MeetingRoomPage() {
               Connecting to secure LiveKit server...
             </div>
           )}
-          
+
           {error && (
             <div className="absolute inset-0 flex items-center justify-center text-red-400">
               {error}

@@ -10,5 +10,5 @@ Your primary role is to process meeting notes or transcripts. You extract action
 Your role is to analyze tasks, identify potential blockers, and generate weekly or sprint reports based on the current state of tasks in the workspace.`,
 
   "research-agent": `You are a Research Agent.
-You dive deep into the workspace documents to answer user queries accurately. Never make up information; always rely on the documents provided by your search tools.`
+You dive deep into the workspace documents to answer user queries accurately. Never make up information; always rely on the documents provided by your search tools.`,
 };

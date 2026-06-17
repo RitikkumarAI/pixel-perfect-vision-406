@@ -17,10 +17,10 @@ function WebhooksRoute() {
 
   const fetchWebhooks = async () => {
     try {
-      const res = await fetch('/api/v1/webhooks', {
+      const res = await fetch("/api/v1/webhooks", {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('nexus_token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("nexus_token")}`,
+        },
       });
       const data = await res.json();
       if (Array.isArray(data)) {
@@ -41,13 +41,13 @@ function WebhooksRoute() {
     e.preventDefault();
     if (!newUrl) return;
     try {
-      const res = await fetch('/api/v1/webhooks', {
-        method: 'POST',
+      const res = await fetch("/api/v1/webhooks", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('nexus_token')}`
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("nexus_token")}`,
         },
-        body: JSON.stringify({ url: newUrl, secret: newSecret })
+        body: JSON.stringify({ url: newUrl, secret: newSecret }),
       });
       if (res.ok) {
         toast.success("Webhook endpoint added successfully");
@@ -65,10 +65,10 @@ function WebhooksRoute() {
   const handleDelete = async (id: string) => {
     try {
       const res = await fetch(`/api/v1/webhooks/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('nexus_token')}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("nexus_token")}`,
+        },
       });
       if (res.ok) {
         toast.success("Webhook removed");
@@ -88,7 +88,9 @@ function WebhooksRoute() {
         <div className="mb-8 flex items-end justify-between">
           <div>
             <h1 className="text-4xl font-black tracking-tight">Outbound Webhooks</h1>
-            <p className="mt-2 text-navy/70">Configure endpoints to receive live events from Nexus.</p>
+            <p className="mt-2 text-navy/70">
+              Configure endpoints to receive live events from Nexus.
+            </p>
           </div>
         </div>
 
@@ -101,7 +103,9 @@ function WebhooksRoute() {
               </div>
               <form onSubmit={handleCreate} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Payload URL</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Payload URL
+                  </label>
                   <input
                     type="url"
                     required
@@ -112,7 +116,9 @@ function WebhooksRoute() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Secret (Optional)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Secret (Optional)
+                  </label>
                   <input
                     type="password"
                     value={newSecret}
@@ -143,15 +149,22 @@ function WebhooksRoute() {
                 <div className="p-12 text-center flex flex-col items-center">
                   <Link className="w-12 h-12 text-slate-300 mb-4" />
                   <h3 className="text-lg font-medium text-slate-700">No webhooks configured</h3>
-                  <p className="text-sm text-slate-500 mt-1">Add your first endpoint to start receiving events.</p>
+                  <p className="text-sm text-slate-500 mt-1">
+                    Add your first endpoint to start receiving events.
+                  </p>
                 </div>
               ) : (
                 <ul className="divide-y divide-slate-200">
                   {webhooks.map((webhook) => (
-                    <li key={webhook.id} className="p-6 flex items-center justify-between hover:bg-slate-50 transition">
+                    <li
+                      key={webhook.id}
+                      className="p-6 flex items-center justify-between hover:bg-slate-50 transition"
+                    >
                       <div>
                         <p className="font-medium text-slate-800">{webhook.url}</p>
-                        <p className="text-xs text-slate-500 mt-1">Added on {new Date(webhook.createdAt).toLocaleDateString()}</p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Added on {new Date(webhook.createdAt).toLocaleDateString()}
+                        </p>
                       </div>
                       <button
                         onClick={() => handleDelete(webhook.id)}

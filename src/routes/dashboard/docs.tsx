@@ -43,7 +43,7 @@ function DocsRoute() {
     try {
       await updateDoc({
         id: activeDocId,
-        content: { text: docContent, type: "doc" }
+        content: { text: docContent, type: "doc" },
       });
     } catch (e) {
       console.error(e);
@@ -66,7 +66,9 @@ function DocsRoute() {
         </div>
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
           {isLoading ? (
-            <div className="flex justify-center p-4"><Loader2 className="w-4 h-4 animate-spin text-slate-400" /></div>
+            <div className="flex justify-center p-4">
+              <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
+            </div>
           ) : docs.length === 0 ? (
             <div className="p-4 text-center text-sm text-slate-500">No documents yet.</div>
           ) : (
@@ -74,7 +76,7 @@ function DocsRoute() {
               <button
                 key={doc.id}
                 onClick={() => setActiveDocId(doc.id)}
-                className={`w-full text-left px-3 py-2 text-sm rounded-lg transition truncate ${activeDocId === doc.id ? 'bg-blue-50 text-blue-700 font-medium' : 'hover:bg-slate-100 text-slate-700'}`}
+                className={`w-full text-left px-3 py-2 text-sm rounded-lg transition truncate ${activeDocId === doc.id ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-slate-100 text-slate-700"}`}
               >
                 {doc.title || "Untitled Document"}
               </button>
@@ -100,7 +102,11 @@ function DocsRoute() {
                 disabled={isSaving}
                 className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition disabled:opacity-50"
               >
-                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                {isSaving ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
                 Save
               </button>
             </div>

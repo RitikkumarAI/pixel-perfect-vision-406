@@ -1,6 +1,6 @@
-import { Response } from 'express';
-import { AuthRequest } from '../middlewares/auth.guard';
-import { AIService } from '../services/ai.service';
+import { Response } from "express";
+import { AuthRequest } from "../middlewares/auth.guard";
+import { AIService } from "../services/ai.service";
 
 export class AIController {
   private aiService = new AIService();

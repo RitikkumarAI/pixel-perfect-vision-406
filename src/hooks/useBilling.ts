@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from "react";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5005/api/v1';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5005/api/v1";
 
 export function useBilling() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,15 +14,15 @@ export function useBilling() {
     try {
       const response = await fetch(`${API_URL}/billing/status/${orgId}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      if (!response.ok) throw new Error('Failed to fetch subscription status');
+      if (!response.ok) throw new Error("Failed to fetch subscription status");
       const data = await response.json();
       setSubscription(data);
       return data;
     } catch (err: any) {
-      setError(err.message || 'Error fetching status');
+      setError(err.message || "Error fetching status");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -34,26 +34,26 @@ export function useBilling() {
     setError(null);
     try {
       const response = await fetch(`${API_URL}/billing/checkout`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ orgId, plan }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create checkout session');
+        throw new Error("Failed to create checkout session");
       }
 
       const data = await response.json();
       if (data.url) {
         window.location.href = data.url; // Redirect to Stripe Checkout or Mock success URL
       } else {
-        throw new Error('Stripe URL not returned');
+        throw new Error("Stripe URL not returned");
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred during checkout');
+      setError(err.message || "An error occurred during checkout");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -65,35 +65,35 @@ export function useBilling() {
     setError(null);
     try {
       const response = await fetch(`${API_URL}/billing/cancel`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({ orgId }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to cancel subscription');
+        throw new Error("Failed to cancel subscription");
       }
 
       const data = await response.json();
       setSubscription(data);
       return data;
     } catch (err: any) {
-      setError(err.message || 'An error occurred during cancellation');
+      setError(err.message || "An error occurred during cancellation");
       console.error(err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { 
-    createCheckoutSession, 
-    cancelSubscription, 
-    fetchSubscriptionStatus, 
-    subscription, 
-    isLoading, 
-    error 
+  return {
+    createCheckoutSession,
+    cancelSubscription,
+    fetchSubscriptionStatus,
+    subscription,
+    isLoading,
+    error,
   };
 }

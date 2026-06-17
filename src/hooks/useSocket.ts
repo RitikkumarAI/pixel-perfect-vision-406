@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { useAuth } from './useAuth';
+import { useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
+import { useAuth } from "./useAuth";
 
 let socketInstance: Socket | null = null;
 
@@ -15,54 +15,55 @@ export function useSocket(channelId?: string) {
     if (!isAuthenticated || !token) return;
 
     if (!socketInstance) {
-      socketInstance = io('http://localhost:3000', {
+      socketInstance = io("http://localhost:3000", {
         auth: { token },
-        transports: ['websocket'],
+        transports: ["websocket"],
       });
 
-      socketInstance.on('connect', () => setIsConnected(true));
-      socketInstance.on('disconnect', () => setIsConnected(false));
+      socketInstance.on("connect", () => setIsConnected(true));
+      socketInstance.on("disconnect", () => setIsConnected(false));
     }
 
     const socket = socketInstance;
 
     // Presence handlers
-    const handleOnline = ({ userId }: { userId: string }) => setOnlineUsers(prev => new Set(prev).add(userId));
+    const handleOnline = ({ userId }: { userId: string }) =>
+      setOnlineUsers((prev) => new Set(prev).add(userId));
     const handleOffline = ({ userId }: { userId: string }) => {
-      setOnlineUsers(prev => {
+      setOnlineUsers((prev) => {
         const next = new Set(prev);
         next.delete(userId);
         return next;
       });
     };
 
-    socket.on('presence:online', handleOnline);
-    socket.on('presence:offline', handleOffline);
+    socket.on("presence:online", handleOnline);
+    socket.on("presence:offline", handleOffline);
 
     // Global typing handlers
-    const handleTypingStart = ({ userId, channelId }: { userId: string, channelId: string }) => {
-      setTypingUsers(prev => ({
+    const handleTypingStart = ({ userId, channelId }: { userId: string; channelId: string }) => {
+      setTypingUsers((prev) => ({
         ...prev,
-        [channelId]: Array.from(new Set([...(prev[channelId] || []), userId]))
-      }));
-    };
-    
-    const handleTypingStop = ({ userId, channelId }: { userId: string, channelId: string }) => {
-      setTypingUsers(prev => ({
-        ...prev,
-        [channelId]: (prev[channelId] || []).filter(id => id !== userId)
+        [channelId]: Array.from(new Set([...(prev[channelId] || []), userId])),
       }));
     };
 
-    socket.on('typing:start', handleTypingStart);
-    socket.on('typing:stop', handleTypingStop);
+    const handleTypingStop = ({ userId, channelId }: { userId: string; channelId: string }) => {
+      setTypingUsers((prev) => ({
+        ...prev,
+        [channelId]: (prev[channelId] || []).filter((id) => id !== userId),
+      }));
+    };
+
+    socket.on("typing:start", handleTypingStart);
+    socket.on("typing:stop", handleTypingStop);
 
     if (channelId) {
-      socket.emit('joinChannel', channelId);
-      
+      socket.emit("joinChannel", channelId);
+
       const handleMessage = (msg: any) => {
         if (msg.channelId === channelId) {
-          setMessages(prev => [...prev, msg]);
+          setMessages((prev) => [...prev, msg]);
         }
       };
 
@@ -70,29 +71,29 @@ export function useSocket(channelId?: string) {
         // If we want to show replies globally or in a thread view
         if (msg.channelId === channelId) {
           // Just broadcast it into the global state, the UI will filter by parentId
-          setMessages(prev => [...prev, msg]);
+          setMessages((prev) => [...prev, msg]);
         }
       };
 
-      socket.on('message:new', handleMessage);
-      socket.on('message:reply', handleReply);
+      socket.on("message:new", handleMessage);
+      socket.on("message:reply", handleReply);
 
       return () => {
-        socket.emit('leaveChannel', channelId);
-        socket.off('message:new', handleMessage);
-        socket.off('message:reply', handleReply);
-        socket.off('presence:online', handleOnline);
-        socket.off('presence:offline', handleOffline);
-        socket.off('typing:start', handleTypingStart);
-        socket.off('typing:stop', handleTypingStop);
+        socket.emit("leaveChannel", channelId);
+        socket.off("message:new", handleMessage);
+        socket.off("message:reply", handleReply);
+        socket.off("presence:online", handleOnline);
+        socket.off("presence:offline", handleOffline);
+        socket.off("typing:start", handleTypingStart);
+        socket.off("typing:stop", handleTypingStop);
       };
     }
 
     return () => {
-      socket.off('presence:online', handleOnline);
-      socket.off('presence:offline', handleOffline);
-      socket.off('typing:start', handleTypingStart);
-      socket.off('typing:stop', handleTypingStop);
+      socket.off("presence:online", handleOnline);
+      socket.off("presence:offline", handleOffline);
+      socket.off("typing:start", handleTypingStart);
+      socket.off("typing:stop", handleTypingStop);
     };
   }, [token, isAuthenticated, channelId]);
 
@@ -102,7 +103,7 @@ export function useSocket(channelId?: string) {
 
   const emitTyping = (cId: string, isTyping: boolean) => {
     if (socketInstance && isConnected) {
-      socketInstance.emit(isTyping ? 'typing:start' : 'typing:stop', cId);
+      socketInstance.emit(isTyping ? "typing:start" : "typing:stop", cId);
     }
   };
 

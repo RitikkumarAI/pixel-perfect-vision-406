@@ -32,7 +32,7 @@ import {
   ChevronRight,
   X,
   Users,
-  Bot
+  Bot,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { useAuth } from "../../hooks/useAuth";
@@ -93,8 +93,7 @@ export function Navbar() {
             onMouseEnter={() => enter("ai")}
             onClick={() => setOpen(open === "ai" ? null : "ai")}
           >
-            <Sparkles className="w-4 h-4 text-blue-300" /> AI{" "}
-            <ChevronDown className="w-4 h-4" />
+            <Sparkles className="w-4 h-4 text-blue-300" /> AI <ChevronDown className="w-4 h-4" />
           </button>
           <button
             className={navItem}
@@ -119,21 +118,27 @@ export function Navbar() {
           >
             Meet <ChevronDown className="w-4 h-4" />
           </button>
-          
+
           {isAuthenticated ? (
             <>
-              <button onClick={logout} className={navItem}>Log Out</button>
+              <button onClick={logout} className={navItem}>
+                Log Out
+              </button>
               <Link
                 to="/"
                 className="ml-2 px-4 py-2 rounded-full text-[14px] font-semibold bg-white text-navy-deep hover:bg-white/90 transition"
               >
-                {activeWorkspace ? `Dashboard (${activeWorkspace.name})` : 'Dashboard'}
+                {activeWorkspace ? `Dashboard (${activeWorkspace.name})` : "Dashboard"}
               </Link>
             </>
           ) : (
             <>
-              <Link to="/signin" className={navItem}>Sign In</Link>
-              <a className={navItem} href="#">Support</a>
+              <Link to="/signin" className={navItem}>
+                Sign In
+              </Link>
+              <a className={navItem} href="#">
+                Support
+              </a>
               <Link
                 to="/contact-sales"
                 className="ml-2 px-4 py-2 rounded-full text-[14px] font-semibold bg-white text-navy-deep hover:bg-white/90 transition"
@@ -178,9 +183,15 @@ export function Navbar() {
         )}
         {open === "meet" && (
           <SmallDropdown onMouseEnter={() => enter("meet")}>
-            <a className="dd-item" href="#">Join a meeting</a>
-            <a className="dd-item" href="#">Host a meeting</a>
-            <a className="dd-item" href="#">Download app</a>
+            <a className="dd-item" href="#">
+              Join a meeting
+            </a>
+            <a className="dd-item" href="#">
+              Host a meeting
+            </a>
+            <a className="dd-item" href="#">
+              Download app
+            </a>
           </SmallDropdown>
         )}
         {open === "launcher" && (
@@ -381,7 +392,11 @@ function AIMega() {
           </p>
           <div className="grid grid-cols-2 gap-x-6 gap-y-2">
             {suite.map((it, i) => (
-              <Link key={i} to={it.link} className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/[0.03]">
+              <Link
+                key={i}
+                to={it.link}
+                className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-black/[0.03]"
+              >
                 <span className="w-8 h-8 rounded-lg bg-zoom-blue text-white grid place-items-center">
                   <it.icon className="w-4 h-4" />
                 </span>
@@ -414,7 +429,9 @@ function SolutionsMega() {
       <h4 className="text-[17px] font-bold flex items-center justify-between border-b border-black/10 pb-3">
         {title} <ChevronRight className="w-4 h-4 opacity-60" />
       </h4>
-      {sub && <div className="text-xs uppercase tracking-wider text-muted-foreground mt-4">{sub}</div>}
+      {sub && (
+        <div className="text-xs uppercase tracking-wider text-muted-foreground mt-4">{sub}</div>
+      )}
       <ul className="mt-3 space-y-2.5">
         {items.map((i) => (
           <li key={i}>
@@ -472,7 +489,14 @@ function SolutionsMega() {
         sub="Build"
         items={["Video SDK", "Co-Browse", "API Services"]}
         extraTitle="Integrate"
-        extra={["Zoom Marketplace", "MCP", "Realtime Media Streams", "APIs", "Zoom Apps", "Meeting SDK"]}
+        extra={[
+          "Zoom Marketplace",
+          "MCP",
+          "Realtime Media Streams",
+          "APIs",
+          "Zoom Apps",
+          "Meeting SDK",
+        ]}
       />
       <Col
         title="For partners"
@@ -547,18 +571,33 @@ function LauncherPanel({
       onMouseEnter={onMouseEnter}
       className="absolute right-6 top-[68px] w-[420px] bg-white rounded-3xl shadow-2xl border border-black/5 overflow-hidden"
     >
-      <button onClick={onClose} className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-black/5">
+      <button
+        onClick={onClose}
+        className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-black/5"
+      >
         <X className="w-4 h-4" />
       </button>
       <div className="p-6 max-h-[80vh] overflow-y-auto">
         <div className="flex items-center justify-between">
           <h4 className="font-bold text-lg">Zoom Workplace</h4>
-          <Link to="/products" onClick={onClose} className="text-zoom-blue text-sm font-semibold hover:underline">View All</Link>
+          <Link
+            to="/products"
+            onClick={onClose}
+            className="text-zoom-blue text-sm font-semibold hover:underline"
+          >
+            View All
+          </Link>
         </div>
         <div className="grid grid-cols-3 gap-3 mt-4">
           {workplace.map((i) => (
-            <Link key={i.label} to={i.link} className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-blue-50 transition">
-              <span className="w-10 h-10 rounded-lg bg-zoom-blue text-white grid place-items-center"><i.icon className="w-5 h-5" /></span>
+            <Link
+              key={i.label}
+              to={i.link}
+              className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-blue-50 transition"
+            >
+              <span className="w-10 h-10 rounded-lg bg-zoom-blue text-white grid place-items-center">
+                <i.icon className="w-5 h-5" />
+              </span>
               <span className="text-xs font-semibold text-center leading-tight">{i.label}</span>
             </Link>
           ))}
@@ -566,13 +605,22 @@ function LauncherPanel({
         <h4 className="font-bold text-lg mt-6">Business Services</h4>
         <div className="grid grid-cols-3 gap-3 mt-4">
           {services.map((i) => (
-            <Link key={i.label} to={i.link} className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-blue-50 transition">
-              <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-500 text-white grid place-items-center"><i.icon className="w-5 h-5" /></span>
+            <Link
+              key={i.label}
+              to={i.link}
+              className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-blue-50 transition"
+            >
+              <span className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-500 text-white grid place-items-center">
+                <i.icon className="w-5 h-5" />
+              </span>
               <span className="text-xs font-semibold text-center leading-tight">{i.label}</span>
             </Link>
           ))}
         </div>
-        <Link to="/contact-sales" className="mt-6 block text-center py-3 rounded-full bg-zoom-blue text-white font-semibold hover:bg-zoom-blue-hover">
+        <Link
+          to="/contact-sales"
+          className="mt-6 block text-center py-3 rounded-full bg-zoom-blue text-white font-semibold hover:bg-zoom-blue-hover"
+        >
           Contact Sales
         </Link>
       </div>

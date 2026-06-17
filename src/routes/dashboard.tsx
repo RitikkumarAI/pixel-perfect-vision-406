@@ -1,6 +1,28 @@
 import { createFileRoute, Outlet, redirect, Link } from "@tanstack/react-router";
-import { SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { Home, MessageSquare, Video, KanbanSquare, FileText, Calendar, Bot, Shield, BarChart, Film, CreditCard } from "lucide-react";
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import {
+  Home,
+  MessageSquare,
+  Video,
+  KanbanSquare,
+  FileText,
+  Calendar,
+  Bot,
+  Shield,
+  BarChart,
+  Film,
+  CreditCard,
+} from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: ({ location }) => {

@@ -1,6 +1,6 @@
-import { Response } from 'express';
-import { AuthRequest } from '../middlewares/auth.guard';
-import { SearchService } from '../services/search.service';
+import { Response } from "express";
+import { AuthRequest } from "../middlewares/auth.guard";
+import { SearchService } from "../services/search.service";
 
 export class SearchController {
   private searchService = new SearchService();
@@ -10,7 +10,7 @@ export class SearchController {
       const { workspaceId } = req.params;
       const { q } = req.query;
 
-      if (!q || typeof q !== 'string') {
+      if (!q || typeof q !== "string") {
         res.status(400).json({ error: 'Search query "q" is required' });
         return;
       }
@@ -27,7 +27,7 @@ export class SearchController {
       const { workspaceId } = req.params;
       const { q } = req.query;
 
-      if (!q || typeof q !== 'string') {
+      if (!q || typeof q !== "string") {
         res.status(400).json({ error: 'Search query "q" is required' });
         return;
       }

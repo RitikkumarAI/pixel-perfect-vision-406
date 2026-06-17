@@ -9,15 +9,38 @@ export function Footer() {
     },
     {
       h: "Download",
-      items: ["Workplace App", "Rooms App", "Rooms Controller", "Browser Extension", "Outlook Plug-in", "iPhone/iPad App", "Android App"],
+      items: [
+        "Workplace App",
+        "Rooms App",
+        "Rooms Controller",
+        "Browser Extension",
+        "Outlook Plug-in",
+        "iPhone/iPad App",
+        "Android App",
+      ],
     },
     {
       h: "Sales",
-      items: ["+1.888.799.9666", "Contact Sales", "Plans & Pricing", "Request a Demo", "Webinars and Events", "Experience Center"],
+      items: [
+        "+1.888.799.9666",
+        "Contact Sales",
+        "Plans & Pricing",
+        "Request a Demo",
+        "Webinars and Events",
+        "Experience Center",
+      ],
     },
     {
       h: "Support",
-      items: ["Test Connection", "Account", "Support Center", "Learning Center", "Community", "Technical Library", "Feedback"],
+      items: [
+        "Test Connection",
+        "Account",
+        "Support Center",
+        "Learning Center",
+        "Community",
+        "Technical Library",
+        "Feedback",
+      ],
     },
   ];
   return (
@@ -65,7 +88,8 @@ export function Footer() {
         </div>
       </div>
       <div className="border-t border-white/10 py-6 text-center text-xs text-white/60">
-        © 2026 · The website is built by <span className="font-semibold text-white">Infinite Technologies</span>.
+        © 2026 · The website is built by{" "}
+        <span className="font-semibold text-white">Infinite Technologies</span>.
       </div>
     </footer>
   );

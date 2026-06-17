@@ -1,18 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export function useAuth() {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     // Read from localStorage on mount
-    const t = localStorage.getItem('token');
+    const t = localStorage.getItem("token");
     if (t) {
       setToken(t);
     }
   }, []);
 
   const logout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     setToken(null);
     window.location.href = "/";
   };
@@ -20,6 +20,6 @@ export function useAuth() {
   return {
     isAuthenticated: !!token,
     token,
-    logout
+    logout,
   };
 }

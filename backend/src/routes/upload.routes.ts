@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import multer from 'multer';
-import { UploadController } from '../controllers/upload.controller';
-import { authGuard } from '../middlewares/auth.guard';
+import { Router } from "express";
+import multer from "multer";
+import { UploadController } from "../controllers/upload.controller";
+import { authGuard } from "../middlewares/auth.guard";
 
 const router = Router();
 const uploadController = new UploadController();
@@ -15,7 +15,7 @@ const upload = multer({
 
 router.use(authGuard);
 
-router.post('/', upload.single('file'), uploadController.uploadFile);
-router.get('/presigned', uploadController.getPresignedUrl);
+router.post("/", upload.single("file"), uploadController.uploadFile);
+router.get("/presigned", uploadController.getPresignedUrl);
 
 export default router;

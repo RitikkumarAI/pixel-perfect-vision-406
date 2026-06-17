@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import Placeholder from '@tiptap/extension-placeholder';
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Placeholder from "@tiptap/extension-placeholder";
 import { useDoc, useDocs } from "../../hooks/useDocs";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
@@ -24,9 +24,9 @@ function DocumentEditorPage() {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Placeholder.configure({ placeholder: 'Start typing or use AI assistant...' }),
+      Placeholder.configure({ placeholder: "Start typing or use AI assistant..." }),
     ],
-    content: '',
+    content: "",
     onUpdate: ({ editor }) => {
       setSaveStatus("Saving...");
       const timer = setTimeout(async () => {
@@ -43,7 +43,7 @@ function DocumentEditorPage() {
 
   useEffect(() => {
     if (doc && editor && editor.isEmpty) {
-      if (typeof doc.content === 'string') {
+      if (typeof doc.content === "string") {
         editor.commands.setContent(DOMPurify.sanitize(doc.content));
       } else {
         editor.commands.setContent(doc.content);
@@ -55,7 +55,7 @@ function DocumentEditorPage() {
     if (!editor) return;
     const currentText = editor.getText();
     const cursor = editor.state.selection.$head.pos;
-    
+
     try {
       setSaveStatus("AI is thinking...");
       const res = await assistWriting("Continue the thought in a professional tone.", currentText);
@@ -77,10 +77,12 @@ function DocumentEditorPage() {
         ) : (
           <div className="bg-white rounded-2xl shadow-xl border border-slate-200 min-h-[600px] flex flex-col overflow-hidden">
             <div className="px-8 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-              <h1 className="text-xl font-bold tracking-tight text-navy">{doc?.title || "Untitled Document"}</h1>
+              <h1 className="text-xl font-bold tracking-tight text-navy">
+                {doc?.title || "Untitled Document"}
+              </h1>
               <div className="flex items-center gap-4">
                 <span className="text-xs font-medium text-slate-400">{saveStatus}</span>
-                <button 
+                <button
                   onClick={handleAIComplete}
                   disabled={isAILoading}
                   className="flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-full text-xs font-semibold transition"
@@ -90,7 +92,7 @@ function DocumentEditorPage() {
                 </button>
               </div>
             </div>
-            
+
             <div className="flex-1 p-8 prose max-w-none focus:outline-none">
               <EditorContent editor={editor} className="min-h-[400px] outline-none" />
             </div>

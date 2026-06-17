@@ -1,8 +1,8 @@
-import 'dotenv/config';
-import { PrismaClient } from '@prisma/client';
+import "dotenv/config";
+import { PrismaClient } from "@prisma/client";
 
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({
@@ -15,12 +15,12 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({
   adapter,
   log: [
-    { level: 'warn', emit: 'event' },
-    { level: 'error', emit: 'event' },
+    { level: "warn", emit: "event" },
+    { level: "error", emit: "event" },
   ],
 });
 
-prisma.$on('warn', (e: any) => {
+prisma.$on("warn", (e: any) => {
   console.warn(`[Prisma Warning] ${e.message}`);
 });
 

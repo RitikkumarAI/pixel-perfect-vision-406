@@ -1,12 +1,14 @@
 # NEXUS PLATFORM - DISASTER RECOVERY PLAYBOOK
 
 ## 1. Core Objectives
+
 - **RPO (Recovery Point Objective)**: 5 Minutes. Data loss should not exceed the last 5 minutes of state (backed by RDS Multi-AZ block replication).
 - **RTO (Recovery Time Objective)**: 1 Hour. We should be able to restore the entire cloud infrastructure from a cold state within 60 minutes.
 
 ## 2. Recovery Playbooks
 
 ### Scenario A: Complete Region Failure (us-east-1 goes down)
+
 1. Export AWS credentials for `us-west-2`.
 2. Update `variables.tf` mapping `aws_region = "us-west-2"`.
 3. Execute Infrastructure rebuild:
@@ -30,6 +32,7 @@
 6. Re-route DNS (Route53) to the new ALB Ingress URL.
 
 ### Scenario B: Accidental Data Deletion (User/DB Drop)
+
 1. Do NOT touch terraform.
 2. Identify the exact time of deletion.
 3. Initiate RDS Point-in-Time Recovery (PITR):
@@ -42,5 +45,6 @@
 4. Hot swap the Database URL in K8s secrets once restored.
 
 ### Scenario C: S3 Object Overwrite
+
 1. S3 Versioning is enabled via Terraform `aws_s3_bucket_versioning`.
 2. If an object is overwritten, fetch the previous Version ID via AWS CLI and restore it.

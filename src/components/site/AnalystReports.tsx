@@ -18,7 +18,8 @@ const REPORTS: Report[] = [
     alt: "Gartner Magic Quadrant leader badge",
     title: (
       <>
-        A Leader in the <span className="text-zoom-blue">Gartner® Magic Quadrant™</span> for UCaaS, Worldwide
+        A Leader in the <span className="text-zoom-blue">Gartner® Magic Quadrant™</span> for UCaaS,
+        Worldwide
       </>
     ),
     cta: "Read the report",

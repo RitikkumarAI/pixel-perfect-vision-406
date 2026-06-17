@@ -1,15 +1,15 @@
-import prisma from '../utils/prisma';
-import * as admin from 'firebase-admin';
+import prisma from "../utils/prisma";
+import * as admin from "firebase-admin";
 
 // Initialize Firebase Admin (Assuming credentials are in ENV)
 if (!admin.apps.length && process.env.FIREBASE_CREDENTIALS) {
   try {
     const serviceAccount = JSON.parse(process.env.FIREBASE_CREDENTIALS);
     admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
+      credential: admin.credential.cert(serviceAccount),
     });
   } catch (e) {
-    console.error('Failed to initialize Firebase Admin');
+    console.error("Failed to initialize Firebase Admin");
   }
 }
 
@@ -17,11 +17,11 @@ export class PushNotificationService {
   /**
    * Registers a device token for a user.
    */
-  public async registerDevice(userId: string, token: string, platform: 'ios' | 'android') {
+  public async registerDevice(userId: string, token: string, platform: "ios" | "android") {
     await prisma.device.upsert({
       where: { token },
       create: { userId, token, platform },
-      update: { userId, lastActive: new Date() }
+      update: { userId, lastActive: new Date() },
     });
   }
 
@@ -30,7 +30,7 @@ export class PushNotificationService {
    */
   public async sendNotification(userId: string, title: string, body: string, dataPayload?: any) {
     const devices = await prisma.device.findMany({ where: { userId } });
-    const tokens = devices.map(d => d.token);
+    const tokens = devices.map((d) => d.token);
 
     if (tokens.length === 0) return;
 
@@ -40,8 +40,8 @@ export class PushNotificationService {
         notification: { title, body },
         data: dataPayload,
         apns: {
-          payload: { aps: { sound: 'default', badge: 1 } }
-        }
+          payload: { aps: { sound: "default", badge: 1 } },
+        },
       });
 
       console.log(`[Push] Sent to ${response.successCount} devices for user ${userId}`);

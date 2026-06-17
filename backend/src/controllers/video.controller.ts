@@ -1,11 +1,11 @@
-import { Response } from 'express';
-import { AuthRequest } from '../middlewares/auth.guard';
-import { VideoService } from '../services/video.service';
-import { UploadService } from '../services/upload.service';
-import { Server } from 'socket.io';
-import prisma from '../utils/prisma';
-import Mux from '@mux/mux-node';
-import { videoQueue } from '../queues/video.queue';
+import { Response } from "express";
+import { AuthRequest } from "../middlewares/auth.guard";
+import { VideoService } from "../services/video.service";
+import { UploadService } from "../services/upload.service";
+import { Server } from "socket.io";
+import prisma from "../utils/prisma";
+import Mux from "@mux/mux-node";
+import { videoQueue } from "../queues/video.queue";
 
 export class VideoController {
   private videoService: VideoService;
@@ -25,17 +25,20 @@ export class VideoController {
   public startRecording = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
       const { title, description } = req.body;
-      const { presignedUrl, fileUrl, key } = await this.uploadService.generatePresignedUrl(`video-${Date.now()}.mp4`, 'video/mp4');
+      const { presignedUrl, fileUrl, key } = await this.uploadService.generatePresignedUrl(
+        `video-${Date.now()}.mp4`,
+        "video/mp4",
+      );
 
       const recording = await prisma.recording.create({
         data: {
           uploaderId: req.user!.userId,
-          title: title || 'Untitled Recording',
+          title: title || "Untitled Recording",
           description,
-          status: 'UPLOADING',
+          status: "UPLOADING",
           s3Key: key,
           url: fileUrl,
-        }
+        },
       });
 
       res.status(200).json({ presignedUrl, recordingId: recording.id, fileUrl });
@@ -55,7 +58,11 @@ export class VideoController {
       }
 
       // Process video (mocks transcode + Whisper AI)
-      const updated = await this.videoService.processVideo(recording.id, req.user!.userId, recording.url!);
+      const updated = await this.videoService.processVideo(
+        recording.id,
+        req.user!.userId,
+        recording.url!,
+      );
 
       res.status(200).json(updated);
     } catch (error: any) {
@@ -67,7 +74,7 @@ export class VideoController {
     try {
       const recordings = await prisma.recording.findMany({
         where: { uploaderId: req.user!.userId, deletedAt: null },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: "desc" },
       });
       res.status(200).json(recordings);
     } catch (error: any) {
@@ -81,10 +88,13 @@ export class VideoController {
       const recording = await prisma.recording.findUnique({
         where: { id: id as string },
         include: {
-          comments: { include: { user: { select: { id: true, name: true, avatarUrl: true } } }, orderBy: { timestamp: 'asc' } },
+          comments: {
+            include: { user: { select: { id: true, name: true, avatarUrl: true } } },
+            orderBy: { timestamp: "asc" },
+          },
           transcripts: true,
-          uploader: { select: { id: true, name: true, avatarUrl: true } }
-        }
+          uploader: { select: { id: true, name: true, avatarUrl: true } },
+        },
       });
 
       if (!recording) {
@@ -108,9 +118,9 @@ export class VideoController {
           recordingId: id as string,
           userId: req.user!.userId,
           content,
-          timestamp: timestamp || 0
+          timestamp: timestamp || 0,
         },
-        include: { user: { select: { id: true, name: true, avatarUrl: true } } }
+        include: { user: { select: { id: true, name: true, avatarUrl: true } } },
       });
 
       res.status(201).json(comment);
@@ -122,7 +132,7 @@ export class VideoController {
   // 6. Mux Webhook
   public handleMuxWebhook = async (req: Request | any, res: Response): Promise<void> => {
     try {
-      const secret = process.env.MUX_WEBHOOK_SECRET || 'mock_secret';
+      const secret = process.env.MUX_WEBHOOK_SECRET || "mock_secret";
       let event;
 
       // 1. Signature Verification & Replay Protection
@@ -143,7 +153,7 @@ export class VideoController {
       console.log(`[VideoController] Received Mux Webhook: ${event.type}`);
 
       // 2. Event Validation
-      if (event.type === 'video.asset.ready') {
+      if (event.type === "video.asset.ready") {
         const playbackId = event.data?.playback_ids?.[0]?.id;
         const durationSec = event.data?.duration;
         const passthrough = event.data?.passthrough; // Recording ID
@@ -151,49 +161,52 @@ export class VideoController {
 
         if (passthrough && playbackId) {
           // 3. Idempotency Check using muxEventId and ProcessingStatus
-          const logCheck = await prisma.webhookLog.findUnique({ where: { muxEventId }});
-          
+          const logCheck = await prisma.webhookLog.findUnique({ where: { muxEventId } });
+
           if (!logCheck) {
-             // 4. Update status to QUEUED and save log
-             await prisma.recording.update({
-               where: { id: passthrough },
-               data: { processingStatus: 'QUEUED' }
-             });
+            // 4. Update status to QUEUED and save log
+            await prisma.recording.update({
+              where: { id: passthrough },
+              data: { processingStatus: "QUEUED" },
+            });
 
-             await prisma.webhookLog.create({
-               data: {
-                 muxEventId,
-                 provider: 'mux',
-                 event: event.type,
-                 payload: event as any,
-                 status: 'SUCCESS' // Initial log is success to prevent re-runs
-               }
-             });
+            await prisma.webhookLog.create({
+              data: {
+                muxEventId,
+                provider: "mux",
+                event: event.type,
+                payload: event as any,
+                status: "SUCCESS", // Initial log is success to prevent re-runs
+              },
+            });
 
-             // 5. Fire background worker job
-             try {
-                await this.videoService.handleWebhook(passthrough, playbackId, 'ready', durationSec);
-                
-                await videoQueue.add('process_ai', {
+            // 5. Fire background worker job
+            try {
+              await this.videoService.handleWebhook(passthrough, playbackId, "ready", durationSec);
+
+              await videoQueue.add(
+                "process_ai",
+                {
                   recordingId: passthrough,
                   playbackId,
-                  muxEventId
-                }, { 
+                  muxEventId,
+                },
+                {
                   jobId: muxEventId,
                   attempts: 5,
-                  backoff: { type: 'exponential', delay: 2000 }
-                });
-
-             } catch (aiError: any) {
-                console.error("[VideoController] Queueing failed:", aiError);
-             }
+                  backoff: { type: "exponential", delay: 2000 },
+                },
+              );
+            } catch (aiError: any) {
+              console.error("[VideoController] Queueing failed:", aiError);
+            }
           } else {
-             console.log(`[VideoController] Ignored Duplicate Webhook: ${muxEventId}`);
+            console.log(`[VideoController] Ignored Duplicate Webhook: ${muxEventId}`);
           }
         }
       }
 
-      res.status(200).send('OK');
+      res.status(200).send("OK");
     } catch (error: any) {
       console.error("[VideoController] Webhook error:", error);
       res.status(500).json({ error: error.message });

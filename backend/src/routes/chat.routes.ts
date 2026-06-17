@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { Server } from 'socket.io';
-import { createChatController } from '../controllers/chat.controller';
-import { ChatService } from '../services/chat.service';
-import { authGuard } from '../middlewares/auth.guard';
+import { Router } from "express";
+import { Server } from "socket.io";
+import { createChatController } from "../controllers/chat.controller";
+import { ChatService } from "../services/chat.service";
+import { authGuard } from "../middlewares/auth.guard";
 
 export const createChatRoutes = (io: Server) => {
   const router = Router();
@@ -12,17 +12,17 @@ export const createChatRoutes = (io: Server) => {
   router.use(authGuard);
 
   // Workspace channels
-  router.get('/workspaces/:workspaceId/channels', chatController.getChannels);
-  router.post('/workspaces/:workspaceId/channels', chatController.createChannel);
-  router.post('/workspaces/:workspaceId/dms', chatController.createDM);
+  router.get("/workspaces/:workspaceId/channels", chatController.getChannels);
+  router.post("/workspaces/:workspaceId/channels", chatController.createChannel);
+  router.post("/workspaces/:workspaceId/dms", chatController.createDM);
 
   // Channel messages
-  router.get('/channels/:channelId/messages', chatController.getMessages);
-  router.post('/channels/:channelId/messages', chatController.sendMessage);
+  router.get("/channels/:channelId/messages", chatController.getMessages);
+  router.post("/channels/:channelId/messages", chatController.sendMessage);
 
   // Message interactions
-  router.post('/messages/:messageId/reactions', chatController.toggleReaction);
-  router.post('/channels/:channelId/read', chatController.markRead);
+  router.post("/messages/:messageId/reactions", chatController.toggleReaction);
+  router.post("/channels/:channelId/read", chatController.markRead);
 
   return router;
 };

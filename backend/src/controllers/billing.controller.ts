@@ -1,6 +1,6 @@
-import { Response, Request } from 'express';
-import { AuthRequest } from '../middlewares/auth.guard';
-import { BillingService } from '../services/billing.service';
+import { Response, Request } from "express";
+import { AuthRequest } from "../middlewares/auth.guard";
+import { BillingService } from "../services/billing.service";
 
 export class BillingController {
   private billingService = new BillingService();
@@ -17,12 +17,12 @@ export class BillingController {
 
   public handleWebhook = async (req: Request, res: Response): Promise<void> => {
     try {
-      const signature = req.headers['stripe-signature'] as string;
+      const signature = req.headers["stripe-signature"] as string;
       // Use rawBody buffer (from Express JSON parser hook in server.ts) or fall back to body
       const payload = req.rawBody || Buffer.from(JSON.stringify(req.body));
-      
+
       await this.billingService.handleWebhook(signature, payload);
-      res.status(200).send('Webhook received');
+      res.status(200).send("Webhook received");
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
@@ -32,7 +32,7 @@ export class BillingController {
     try {
       const { orgId } = req.body;
       if (!orgId) {
-        res.status(400).json({ error: 'orgId is required' });
+        res.status(400).json({ error: "orgId is required" });
         return;
       }
 

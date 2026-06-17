@@ -11,7 +11,7 @@ export function Hero() {
       <div className="absolute inset-x-0 top-[72px] z-10 mx-auto hidden max-w-[1320px] px-6 lg:block">
         <div className="flex items-center justify-center rounded-[20px] bg-white/10 px-6 py-3 text-center text-[17px] font-medium text-white/92 ring-1 ring-white/10 backdrop-blur-sm">
           <span>Introducing ZoomMate, your AI teammate.</span>
-          <button 
+          <button
             onClick={() => createMeeting("Instant Team Meeting")}
             disabled={isLoading}
             className="ml-6 rounded-full bg-[linear-gradient(90deg,#2f72ff_0%,#ff4a84_100%)] px-5 py-1.5 font-semibold hover:opacity-90 transition disabled:opacity-50"
@@ -38,7 +38,8 @@ export function Hero() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="mx-auto mt-6 max-w-[820px] text-base text-white/86 md:text-[18px]"
         >
-          Bring meetings, notes, calls, and workflows into one polished workspace built to move teams from discussion to action.
+          Bring meetings, notes, calls, and workflows into one polished workspace built to move
+          teams from discussion to action.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -46,10 +47,16 @@ export function Hero() {
           transition={{ delay: 0.35, duration: 0.6 }}
           className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
         >
-          <MagneticButton href="#product-carousel" className="inline-block rounded-[18px] bg-navy-deep px-7 py-3.5 text-[15px] font-semibold text-white shadow-[0_16px_40px_-18px_rgba(0,0,0,0.6)]">
+          <MagneticButton
+            href="#product-carousel"
+            className="inline-block rounded-[18px] bg-navy-deep px-7 py-3.5 text-[15px] font-semibold text-white shadow-[0_16px_40px_-18px_rgba(0,0,0,0.6)]"
+          >
             Explore products
           </MagneticButton>
-          <MagneticButton href="/pricing" className="inline-block rounded-[18px] bg-white px-7 py-3.5 text-[15px] font-semibold text-navy-deep shadow-[0_12px_30px_-20px_rgba(7,18,58,0.45)]">
+          <MagneticButton
+            href="/pricing"
+            className="inline-block rounded-[18px] bg-white px-7 py-3.5 text-[15px] font-semibold text-navy-deep shadow-[0_12px_30px_-20px_rgba(7,18,58,0.45)]"
+          >
             Find your plan
           </MagneticButton>
         </motion.div>

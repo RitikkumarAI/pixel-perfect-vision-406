@@ -1,6 +1,6 @@
-import { Response } from 'express';
-import { AuthRequest } from '../middlewares/auth.guard';
-import { DocumentService } from '../services/document.service';
+import { Response } from "express";
+import { AuthRequest } from "../middlewares/auth.guard";
+import { DocumentService } from "../services/document.service";
 
 export class DocumentController {
   private documentService = new DocumentService();
@@ -9,7 +9,12 @@ export class DocumentController {
     try {
       const { workspaceId } = req.params;
       const { title, content, isPublic } = req.body;
-      const doc = await this.documentService.createDocument(workspaceId as string, title, content, isPublic);
+      const doc = await this.documentService.createDocument(
+        workspaceId as string,
+        title,
+        content,
+        isPublic,
+      );
       res.status(201).json(doc);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

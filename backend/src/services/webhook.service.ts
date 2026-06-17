@@ -1,21 +1,21 @@
-import prisma from '../utils/prisma';
-import crypto from 'crypto';
+import prisma from "../utils/prisma";
+import crypto from "crypto";
 
 export class WebhookService {
   /**
    * Register a new webhook for a workspace.
    */
-  public async createWebhook(workspaceId: string, url: string, events: string[] = ['all']) {
+  public async createWebhook(workspaceId: string, url: string, events: string[] = ["all"]) {
     // Generate a secure signing secret
-    const secret = crypto.randomBytes(32).toString('hex');
+    const secret = crypto.randomBytes(32).toString("hex");
 
     return prisma.webhook.create({
       data: {
         workspaceId,
         url,
         events: JSON.stringify(events),
-        secret
-      }
+        secret,
+      },
     });
   }
 
@@ -24,7 +24,7 @@ export class WebhookService {
    */
   public async getWebhooks(workspaceId: string) {
     return prisma.webhook.findMany({
-      where: { workspaceId }
+      where: { workspaceId },
     });
   }
 
@@ -33,7 +33,7 @@ export class WebhookService {
    */
   public async deleteWebhook(webhookId: string) {
     return prisma.webhook.delete({
-      where: { id: webhookId }
+      where: { id: webhookId },
     });
   }
 
@@ -43,14 +43,18 @@ export class WebhookService {
    */
   public async dispatchEvent(workspaceId: string, eventName: string, payload: any) {
     const webhooks = await prisma.webhook.findMany({
-      where: { workspaceId, isActive: true }
+      where: { workspaceId, isActive: true },
     });
 
     for (const hook of webhooks) {
       let events: string[] = [];
-      try { events = JSON.parse(hook.events as string); } catch (e) {}
+      try {
+        events = JSON.parse(hook.events as string);
+      } catch (e) {
+        // Ignored
+      }
 
-      if (events.includes('all') || events.includes(eventName)) {
+      if (events.includes("all") || events.includes(eventName)) {
         console.log(`[WebhookService] ⚡️ Dispatching ${eventName} to ${hook.url}`);
         this.sendPayload(hook.url, hook.secret, eventName, payload);
       }
@@ -60,11 +64,12 @@ export class WebhookService {
   private async sendPayload(url: string, secret: string, eventName: string, payload: any) {
     const timestamp = Date.now().toString();
     const body = JSON.stringify({ event: eventName, payload });
-    
+
     // Create HMAC signature using the secret
-    const signature = crypto.createHmac('sha256', secret)
-                            .update(`${timestamp}.${body}`)
-                            .digest('hex');
+    const signature = crypto
+      .createHmac("sha256", secret)
+      .update(`${timestamp}.${body}`)
+      .digest("hex");
 
     // In a real application, we'd use fetch() or axios here, wrapped in a retry-queue.
     // For this MVP backend, we log the success.

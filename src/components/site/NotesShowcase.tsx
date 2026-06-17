@@ -1,6 +1,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Mic, Video as VideoIcon, Users, MessageSquare, Heart, Share2, Settings, MoreHorizontal, Sparkles } from "lucide-react";
+import {
+  Mic,
+  Video as VideoIcon,
+  Users,
+  MessageSquare,
+  Heart,
+  Share2,
+  Settings,
+  MoreHorizontal,
+  Sparkles,
+} from "lucide-react";
 
 const participants = [
   {
@@ -22,15 +32,43 @@ const participants = [
 ];
 
 const transcript = [
-  { speakerIdx: 0, time: "00:04:18", text: "Just a reminder that we still need to follow up on the event options from last week.", bullet: "Follow up on event theme options" },
-  { speakerIdx: 1, time: "00:05:02", text: "Yeah, especially the customer story angle — that one had the most pull.", bullet: "Strong interest in customer-story format" },
-  { speakerIdx: 2, time: "00:06:41", text: "I can draft a short comparison doc by Friday if that helps the team decide.", bullet: "Draft comparison doc by Friday" },
-  { speakerIdx: 3, time: "00:08:12", text: "Great — let's lock the budget and confirm the launch date in the next sync.", bullet: "Lock budget & confirm launch date" },
+  {
+    speakerIdx: 0,
+    time: "00:04:18",
+    text: "Just a reminder that we still need to follow up on the event options from last week.",
+    bullet: "Follow up on event theme options",
+  },
+  {
+    speakerIdx: 1,
+    time: "00:05:02",
+    text: "Yeah, especially the customer story angle — that one had the most pull.",
+    bullet: "Strong interest in customer-story format",
+  },
+  {
+    speakerIdx: 2,
+    time: "00:06:41",
+    text: "I can draft a short comparison doc by Friday if that helps the team decide.",
+    bullet: "Draft comparison doc by Friday",
+  },
+  {
+    speakerIdx: 3,
+    time: "00:08:12",
+    text: "Great — let's lock the budget and confirm the launch date in the next sync.",
+    bullet: "Lock budget & confirm launch date",
+  },
 ];
 
 const TOTAL_DURATION = 12000; // ms — full transcript scrub length
 
-function ParticipantTile({ p, active, index }: { p: typeof participants[number]; active: boolean; index: number }) {
+function ParticipantTile({
+  p,
+  active,
+  index,
+}: {
+  p: (typeof participants)[number];
+  active: boolean;
+  index: number;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.94, y: 8 }}
@@ -57,13 +95,20 @@ function ParticipantTile({ p, active, index }: { p: typeof participants[number];
               ? { scale: [1, 1.02, 1.005, 1.015, 1], y: [0, -1, 0.5, -0.5, 0] }
               : { scale: [1, 1.008, 1], y: [0, -0.5, 0] }
           }
-          transition={{ duration: active ? 2.2 : 7 + index * 0.6, repeat: Infinity, ease: "easeInOut" }}
+          transition={{
+            duration: active ? 2.2 : 7 + index * 0.6,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
         />
         {/* subtle shimmer */}
         <motion.div
           aria-hidden
           className="pointer-events-none absolute inset-0"
-          style={{ background: "linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%)" }}
+          style={{
+            background:
+              "linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%)",
+          }}
           animate={{ x: ["-50%", "50%"] }}
           transition={{ duration: 6 + index, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -104,7 +149,15 @@ function ParticipantTile({ p, active, index }: { p: typeof participants[number];
   );
 }
 
-function NotesPanel({ lineIdx, typedChars, bulletsVisible }: { lineIdx: number; typedChars: number; bulletsVisible: number }) {
+function NotesPanel({
+  lineIdx,
+  typedChars,
+  bulletsVisible,
+}: {
+  lineIdx: number;
+  typedChars: number;
+  bulletsVisible: number;
+}) {
   const visibleLines = transcript.slice(0, lineIdx + 1);
   return (
     <motion.div
@@ -144,7 +197,12 @@ function NotesPanel({ lineIdx, typedChars, bulletsVisible }: { lineIdx: number; 
             const isCurrent = i === visibleLines.length - 1;
             const shown = isCurrent ? line.text.slice(0, typedChars) : line.text;
             return (
-              <motion.div key={i} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className="space-y-1">
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-1"
+              >
                 <div className="flex items-center gap-1.5 text-[10px] text-slate-500 sm:text-[11px]">
                   <img src={p.img} alt="" className="h-4 w-4 rounded-full object-cover" />
                   <span className="font-medium text-slate-700">{p.name}</span>
@@ -167,7 +225,9 @@ function NotesPanel({ lineIdx, typedChars, bulletsVisible }: { lineIdx: number; 
 
         <div className="flex items-center gap-2 rounded-md bg-indigo-50 px-2.5 py-1.5">
           <Sparkles className="h-3 w-3 text-indigo-500" />
-          <span className="text-[10px] font-medium text-indigo-700 sm:text-[10.5px]">AI generating notes</span>
+          <span className="text-[10px] font-medium text-indigo-700 sm:text-[10.5px]">
+            AI generating notes
+          </span>
           <div className="ml-auto flex gap-0.5">
             {[0, 1, 2].map((i) => (
               <motion.span
@@ -193,7 +253,11 @@ function NotesPanel({ lineIdx, typedChars, bulletsVisible }: { lineIdx: number; 
                 <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-slate-400" />
                 <span>{t.bullet}</span>
                 {i === bulletsVisible - 1 && (
-                  <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="ml-auto text-[10px] font-medium text-emerald-600">
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="ml-auto text-[10px] font-medium text-emerald-600"
+                  >
                     new
                   </motion.span>
                 )}
@@ -327,7 +391,9 @@ export function NotesShowcase() {
                     <span className="h-2.5 w-2.5 rounded-full bg-yellow-500 sm:h-3 sm:w-3" />
                     <span className="h-2.5 w-2.5 rounded-full bg-green-500 sm:h-3 sm:w-3" />
                   </div>
-                  <div className="text-[10px] font-medium text-slate-200 sm:text-xs">ⓘ Q3 Marketing Kickoff</div>
+                  <div className="text-[10px] font-medium text-slate-200 sm:text-xs">
+                    ⓘ Q3 Marketing Kickoff
+                  </div>
                   <div className="w-8 sm:w-12" />
                 </div>
 
@@ -372,7 +438,16 @@ export function NotesShowcase() {
                 </div>
 
                 <div className="flex items-center justify-center gap-3 bg-[#1f2024] py-2 text-slate-400 sm:gap-5 sm:py-3 md:gap-7">
-                  {[Mic, VideoIcon, Users, MessageSquare, Heart, Share2, Settings, MoreHorizontal].map((Icon, i) => (
+                  {[
+                    Mic,
+                    VideoIcon,
+                    Users,
+                    MessageSquare,
+                    Heart,
+                    Share2,
+                    Settings,
+                    MoreHorizontal,
+                  ].map((Icon, i) => (
                     <Icon key={i} className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   ))}
                 </div>
@@ -383,7 +458,11 @@ export function NotesShowcase() {
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                 className="mx-auto mt-4 w-full max-w-[280px] sm:max-w-[300px] md:absolute md:right-0 md:top-12 md:z-10 md:mt-0 md:max-w-[300px] lg:-right-6 lg:top-16 lg:max-w-[320px]"
               >
-                <NotesPanel lineIdx={lineIdx} typedChars={typedChars} bulletsVisible={bulletsVisible} />
+                <NotesPanel
+                  lineIdx={lineIdx}
+                  typedChars={typedChars}
+                  bulletsVisible={bulletsVisible}
+                />
               </motion.div>
             </div>
           </div>

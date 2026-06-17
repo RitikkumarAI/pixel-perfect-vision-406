@@ -1,4 +1,4 @@
-import prisma from '../utils/prisma';
+import prisma from "../utils/prisma";
 
 export class MetricsService {
   /**
@@ -13,7 +13,7 @@ export class MetricsService {
     const [dau, wau, mau] = await Promise.all([
       prisma.session.count({ where: { updatedAt: { gte: oneDayAgo } } }),
       prisma.session.count({ where: { updatedAt: { gte: sevenDaysAgo } } }),
-      prisma.session.count({ where: { updatedAt: { gte: thirtyDaysAgo } } })
+      prisma.session.count({ where: { updatedAt: { gte: thirtyDaysAgo } } }),
     ]);
 
     return { DAU: dau, WAU: wau, MAU: mau };
@@ -29,7 +29,7 @@ export class MetricsService {
     return {
       monthlyAiSpendUSD: 452.12,
       costPerWorkspace: 4.52,
-      costPerAgentRun: 0.012
+      costPerAgentRun: 0.012,
     };
   }
 
@@ -38,15 +38,15 @@ export class MetricsService {
    */
   public async getMeetingCosts() {
     const meetings = await prisma.meeting.count({
-      where: { status: 'COMPLETED' }
+      where: { status: "COMPLETED" },
     });
-    
+
     // Assume average 30m meeting * 3 participants * LiveKit bandwidth = $0.005 / meeting
     const estimatedCost = meetings * 0.005;
-    
+
     return {
       totalCompletedMeetings: meetings,
-      estimatedInfrastructureCostUSD: estimatedCost
+      estimatedInfrastructureCostUSD: estimatedCost,
     };
   }
 
@@ -55,13 +55,13 @@ export class MetricsService {
    */
   public async getCloudCostForecast() {
     return {
-      currentMonthSpend: 1250.00,
-      forecastedMonthEnd: 1450.00,
+      currentMonthSpend: 1250.0,
+      forecastedMonthEnd: 1450.0,
       breakdown: {
         compute: 800,
         database: 300,
-        storage: 150
-      }
+        storage: 150,
+      },
     };
   }
 }

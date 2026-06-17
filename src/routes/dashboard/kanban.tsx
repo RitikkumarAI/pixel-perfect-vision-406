@@ -37,15 +37,15 @@ function KanbanRoute() {
   if (isLoading) return <div>Loading tasks...</div>;
   if (error) return <div>Error loading tasks</div>;
 
-  const columns = ['TODO', 'IN_PROGRESS', 'DONE'];
+  const columns = ["TODO", "IN_PROGRESS", "DONE"];
 
   return (
     <div className="h-full flex flex-col">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">Task Board</h1>
         <form onSubmit={handleCreate} className="flex gap-2">
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={newTaskTitle}
             onChange={(e) => setNewTaskTitle(e.target.value)}
             placeholder="What needs to be done?"
@@ -59,25 +59,39 @@ function KanbanRoute() {
       </div>
 
       <div className="flex-1 grid grid-cols-3 gap-6 overflow-hidden">
-        {columns.map(status => (
-          <div key={status} className="bg-slate-50 rounded-lg p-4 flex flex-col h-full border border-slate-200">
-            <h2 className="font-semibold mb-4 text-slate-700">{status.replace('_', ' ')}</h2>
+        {columns.map((status) => (
+          <div
+            key={status}
+            className="bg-slate-50 rounded-lg p-4 flex flex-col h-full border border-slate-200"
+          >
+            <h2 className="font-semibold mb-4 text-slate-700">{status.replace("_", " ")}</h2>
             <div className="flex-1 overflow-auto space-y-3">
-              {tasks.filter((t: any) => t.status === status).map((task: any) => (
-                <div key={task.id} className="bg-white p-4 rounded-md shadow-sm border border-slate-200 cursor-pointer hover:border-blue-400 transition group">
-                  <div className="flex justify-between items-start gap-2">
-                    <h3 className="font-medium text-sm">{task.title}</h3>
-                    <select 
-                      className="text-xs border rounded p-1 opacity-0 group-hover:opacity-100 transition"
-                      value={task.status}
-                      onChange={(e) => handleStatusChange(task.id, e.target.value)}
-                    >
-                      {columns.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
+              {tasks
+                .filter((t: any) => t.status === status)
+                .map((task: any) => (
+                  <div
+                    key={task.id}
+                    className="bg-white p-4 rounded-md shadow-sm border border-slate-200 cursor-pointer hover:border-blue-400 transition group"
+                  >
+                    <div className="flex justify-between items-start gap-2">
+                      <h3 className="font-medium text-sm">{task.title}</h3>
+                      <select
+                        className="text-xs border rounded p-1 opacity-0 group-hover:opacity-100 transition"
+                        value={task.status}
+                        onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                      >
+                        {columns.map((c) => (
+                          <option key={c} value={c}>
+                            {c}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {task.description && (
+                      <p className="text-xs text-slate-500 mt-2 line-clamp-2">{task.description}</p>
+                    )}
                   </div>
-                  {task.description && <p className="text-xs text-slate-500 mt-2 line-clamp-2">{task.description}</p>}
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         ))}

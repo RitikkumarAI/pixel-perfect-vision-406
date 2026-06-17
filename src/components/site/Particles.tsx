@@ -12,7 +12,7 @@ export function Particles({ count = 40, className = "" }: { count?: number; clas
         duration: 12 + Math.random() * 18,
         opacity: 0.2 + Math.random() * 0.6,
       })),
-    [count]
+    [count],
   );
   return (
     <div className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}>

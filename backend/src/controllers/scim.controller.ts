@@ -1,8 +1,7 @@
-import { Request, Response } from 'express';
-import prisma from '../utils/prisma';
+import { Request, Response } from "express";
+import prisma from "../utils/prisma";
 
 export class SCIMController {
-  
   public createUser = async (req: Request, res: Response): Promise<void> => {
     try {
       const { userName, name, emails } = req.body;
@@ -18,12 +17,18 @@ export class SCIMController {
         user = await prisma.user.create({
           data: {
             email,
-            name: name?.formatted || name?.givenName || email.split('@')[0],
-            ssoProvider: 'scim',
-          }
+            name: name?.formatted || name?.givenName || email.split("@")[0],
+            ssoProvider: "scim",
+          },
         });
         await prisma.auditLog.create({
-          data: { userId: user.id, action: 'SCIM_PROVISION', resourceType: 'User', ipAddress: req.ip, userAgent: req.headers['user-agent'] }
+          data: {
+            userId: user.id,
+            action: "SCIM_PROVISION",
+            resourceType: "User",
+            ipAddress: req.ip,
+            userAgent: req.headers["user-agent"],
+          },
         });
       }
 
@@ -31,7 +36,7 @@ export class SCIMController {
         schemas: ["urn:ietf:params:scim:schemas:core:2.0:User"],
         id: user.id,
         userName: user.email,
-        active: true
+        active: true,
       });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -47,7 +52,7 @@ export class SCIMController {
       let isActive = true;
       if (Operations && Array.isArray(Operations)) {
         for (const op of Operations) {
-          if (op.op === 'replace' && op.value && typeof op.value.active === 'boolean') {
+          if (op.op === "replace" && op.value && typeof op.value.active === "boolean") {
             isActive = op.value.active;
           }
         }
@@ -56,10 +61,16 @@ export class SCIMController {
       if (!isActive) {
         await prisma.user.update({
           where: { id },
-          data: { deletedAt: new Date() } // Soft delete for deprovisioning
+          data: { deletedAt: new Date() }, // Soft delete for deprovisioning
         });
         await prisma.auditLog.create({
-          data: { userId: id, action: 'SCIM_DEPROVISION', resourceType: 'User', ipAddress: req.ip, userAgent: req.headers['user-agent'] }
+          data: {
+            userId: id,
+            action: "SCIM_DEPROVISION",
+            resourceType: "User",
+            ipAddress: req.ip,
+            userAgent: req.headers["user-agent"],
+          },
         });
       }
 
@@ -69,7 +80,7 @@ export class SCIMController {
         schemas: ["urn:ietf:params:scim:schemas:core:2.0:User"],
         id: user?.id,
         userName: user?.email,
-        active: isActive
+        active: isActive,
       });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -81,7 +92,7 @@ export class SCIMController {
       const id = req.params.id as string;
       await prisma.user.update({
         where: { id },
-        data: { deletedAt: new Date() }
+        data: { deletedAt: new Date() },
       });
       res.status(204).send();
     } catch (error: any) {

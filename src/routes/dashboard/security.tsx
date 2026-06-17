@@ -16,10 +16,10 @@ function SecurityRoute() {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const res = await fetch('/api/v1/security/audit-logs', {
+        const res = await fetch("/api/v1/security/audit-logs", {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('nexus_token')}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("nexus_token")}`,
+          },
         });
         const data = await res.json();
         if (data.logs) {
@@ -52,8 +52,12 @@ function SecurityRoute() {
             </div>
             <div>
               <h3 className="font-bold text-slate-800">MFA Status</h3>
-              <p className="text-sm text-slate-500 mt-1">Passkeys are not configured for your account.</p>
-              <button className="mt-3 text-sm text-indigo-600 font-medium">Configure Passkeys &rarr;</button>
+              <p className="text-sm text-slate-500 mt-1">
+                Passkeys are not configured for your account.
+              </p>
+              <button className="mt-3 text-sm text-indigo-600 font-medium">
+                Configure Passkeys &rarr;
+              </button>
             </div>
           </div>
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-4">
@@ -62,8 +66,12 @@ function SecurityRoute() {
             </div>
             <div>
               <h3 className="font-bold text-slate-800">SSO & SCIM</h3>
-              <p className="text-sm text-slate-500 mt-1">Enterprise identity provisioning is inactive.</p>
-              <button className="mt-3 text-sm text-blue-600 font-medium">Setup Okta/SAML &rarr;</button>
+              <p className="text-sm text-slate-500 mt-1">
+                Enterprise identity provisioning is inactive.
+              </p>
+              <button className="mt-3 text-sm text-blue-600 font-medium">
+                Setup Okta/SAML &rarr;
+              </button>
             </div>
           </div>
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-start gap-4">
@@ -100,10 +108,16 @@ function SecurityRoute() {
                 <tbody className="divide-y divide-slate-200">
                   {logs.map((log) => (
                     <tr key={log.id} className="hover:bg-slate-50 transition">
-                      <td className="px-6 py-4 text-slate-500">{new Date(log.createdAt).toLocaleString()}</td>
+                      <td className="px-6 py-4 text-slate-500">
+                        {new Date(log.createdAt).toLocaleString()}
+                      </td>
                       <td className="px-6 py-4 font-medium text-slate-700">{log.action}</td>
-                      <td className="px-6 py-4 text-slate-600">{log.resourceType} ({log.resourceId})</td>
-                      <td className="px-6 py-4 text-slate-500 font-mono text-xs">{JSON.stringify(log.metadata)}</td>
+                      <td className="px-6 py-4 text-slate-600">
+                        {log.resourceType} ({log.resourceId})
+                      </td>
+                      <td className="px-6 py-4 text-slate-500 font-mono text-xs">
+                        {JSON.stringify(log.metadata)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>

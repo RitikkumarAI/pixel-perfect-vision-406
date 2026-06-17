@@ -58,12 +58,19 @@ export function NewsImpact() {
                 Meet the new AI note taker
               </h3>
               <p className="mt-4 max-w-sm text-white/85">
-                Capture insights from your conversations on calls, in person, and across third-party platforms.
+                Capture insights from your conversations on calls, in person, and across third-party
+                platforms.
               </p>
             </div>
             <div className="relative mt-8">
-              <img src={notesAsset} alt="AI note taker preview" className="w-full rounded-xl object-cover" />
-              <div className="absolute bottom-4 right-4"><ArrowChip /></div>
+              <img
+                src={notesAsset}
+                alt="AI note taker preview"
+                className="w-full rounded-xl object-cover"
+              />
+              <div className="absolute bottom-4 right-4">
+                <ArrowChip />
+              </div>
             </div>
           </motion.a>
 
@@ -90,7 +97,9 @@ export function NewsImpact() {
               <div className="grid h-44 w-44 place-items-center rounded-full bg-white/10 backdrop-blur-sm">
                 <span className="text-6xl">🏆</span>
               </div>
-              <div className="absolute bottom-0 right-0"><ArrowChip /></div>
+              <div className="absolute bottom-0 right-0">
+                <ArrowChip />
+              </div>
             </div>
           </motion.a>
 

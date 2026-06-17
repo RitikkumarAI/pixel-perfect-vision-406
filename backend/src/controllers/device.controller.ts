@@ -1,6 +1,6 @@
-import { Response } from 'express';
-import { AuthRequest } from '../middlewares/auth.guard';
-import { DeviceService } from '../services/device.service';
+import { Response } from "express";
+import { AuthRequest } from "../middlewares/auth.guard";
+import { DeviceService } from "../services/device.service";
 
 export class DeviceController {
   private deviceService = new DeviceService();
@@ -9,11 +9,11 @@ export class DeviceController {
     try {
       const { pushToken, platform, deviceModel, appVersion } = req.body;
       const device = await this.deviceService.registerDevice(
-        req.user!.userId, 
-        pushToken, 
-        platform, 
-        deviceModel, 
-        appVersion
+        req.user!.userId,
+        pushToken,
+        platform,
+        deviceModel,
+        appVersion,
       );
       res.status(201).json(device);
     } catch (error: any) {

@@ -65,7 +65,9 @@ export function TrustedBy() {
               transition={{ duration: 0.5, delay: i * 0.12 }}
               className="flex flex-col items-center px-6 text-center"
             >
-              <div className="text-5xl font-bold tracking-tight text-navy sm:text-6xl">{r.score}</div>
+              <div className="text-5xl font-bold tracking-tight text-navy sm:text-6xl">
+                {r.score}
+              </div>
               <div className="mt-3 flex gap-1">
                 {Array.from({ length: 5 }).map((_, s) => (
                   <Star

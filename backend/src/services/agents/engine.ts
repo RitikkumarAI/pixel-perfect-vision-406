@@ -1,8 +1,8 @@
-import prisma from '../../utils/prisma';
-import { AIGateway } from '../ai/ai.gateway';
-import { AgentRegistry } from './registry';
-import { AgentPrompts } from './prompts';
-import { AgentTools, AgentToolSchemas } from './tools';
+import prisma from "../../utils/prisma";
+import { AIGateway } from "../ai/ai.gateway";
+import { AgentRegistry } from "./registry";
+import { AgentPrompts } from "./prompts";
+import { AgentTools, AgentToolSchemas } from "./tools";
 
 export class AgentExecutionEngine {
   private gateway: AIGateway;
@@ -14,57 +14,65 @@ export class AgentExecutionEngine {
   public async run(runId: string, agentRecordId: string, input: string, userId: string) {
     const run = await prisma.agentRun.findUnique({
       where: { id: runId },
-      include: { agent: true }
+      include: { agent: true },
     });
 
-    if (!run) throw new Error('Run not found');
+    if (!run) throw new Error("Run not found");
     const agentRecord = run.agent;
 
     await prisma.auditLog.create({
       data: {
         userId,
-        action: 'AGENT_EXECUTION_STARTED',
+        action: "AGENT_EXECUTION_STARTED",
         resourceId: agentRecord.name,
-        metadata: { workspaceId: agentRecord.workspaceId, runId: run.id }
-      }
+        metadata: { workspaceId: agentRecord.workspaceId, runId: run.id },
+      },
     });
 
     await this.logStep(run.id, "INFO", `Starting execution for ${agentRecord.name}`);
 
     try {
       const provider = this.gateway.getProvider();
-      
+
       await this.logStep(run.id, "THOUGHT", "Analyzing input and determining tool usage...");
 
       // Fetch Memory Context
       const memories = await this.retrieveMemory(agentRecord.id, userId);
-      const memoryContext = memories.length > 0 ? `\n\nPast Memory Context:\n${memories.join("\n")}` : "";
+      const memoryContext =
+        memories.length > 0 ? `\n\nPast Memory Context:\n${memories.join("\n")}` : "";
 
       // Semantic Cache Simulation
       const cacheHit = await prisma.agentMemory.findFirst({
-        where: { agentId: agentRecord.id, userId, key: `cache:${input}` }
+        where: { agentId: agentRecord.id, userId, key: `cache:${input}` },
       });
 
       if (cacheHit) {
-        await this.logStep(run.id, "INFO", "Semantic Cache hit! Returning cached result instantly.");
+        await this.logStep(
+          run.id,
+          "INFO",
+          "Semantic Cache hit! Returning cached result instantly.",
+        );
         const cachedResult = cacheHit.value;
         await prisma.agentRun.update({
           where: { id: run.id },
-          data: { status: "COMPLETED", result: cachedResult }
+          data: { status: "COMPLETED", result: cachedResult },
         });
 
         const io = (global as any).io;
         if (io && agentRecord.workspaceId) {
-          io.to(`workspace:${agentRecord.workspaceId}`).emit('agent.completed', { runId: run.id, result: cachedResult });
+          io.to(`workspace:${agentRecord.workspaceId}`).emit("agent.completed", {
+            runId: run.id,
+            result: cachedResult,
+          });
         }
         return cachedResult;
       }
 
       const systemPrompt = `${agentRecord.systemPrompt}${memoryContext}`;
 
-      let messages: any[] = [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: input }
+      const messages: any[] = [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: input },
       ];
 
       await this.logStep(run.id, "THOUGHT", "Analyzing input and initiating reasoning loop...");
@@ -78,14 +86,14 @@ export class AgentExecutionEngine {
       while (iterations < MAX_ITERATIONS) {
         iterations++;
         // Use OpenAI provider directly to leverage function calling
-        const provider = this.gateway.getProvider('OpenAI') as any; // Cast to access chatWithTools
-        
+        const provider = this.gateway.getProvider("OpenAI") as any; // Cast to access chatWithTools
+
         if (!provider.chatWithTools) {
           throw new Error("Provider does not support chatWithTools");
         }
 
         const responseMessage = await provider.chatWithTools(messages, AgentToolSchemas);
-        
+
         if (!responseMessage) {
           throw new Error("Empty response from AI");
         }
@@ -95,7 +103,11 @@ export class AgentExecutionEngine {
         totalTokensUsed += estimatedTokens;
 
         if (totalTokensUsed > MAX_TOKEN_BUDGET) {
-          await this.logStep(run.id, "ERROR", `CIRCUIT BREAKER: Token budget exceeded (${totalTokensUsed}/${MAX_TOKEN_BUDGET}). Halting execution.`);
+          await this.logStep(
+            run.id,
+            "ERROR",
+            `CIRCUIT BREAKER: Token budget exceeded (${totalTokensUsed}/${MAX_TOKEN_BUDGET}). Halting execution.`,
+          );
           throw new Error("Token budget exceeded");
         }
 
@@ -105,30 +117,54 @@ export class AgentExecutionEngine {
           for (const toolCall of responseMessage.tool_calls) {
             const functionName = toolCall.function.name;
             const functionArgs = JSON.parse(toolCall.function.arguments);
-            
-            await this.logStep(run.id, "ACTION", `Executing tool: ${functionName} with args: ${JSON.stringify(functionArgs)}`);
-            
+
+            await this.logStep(
+              run.id,
+              "ACTION",
+              `Executing tool: ${functionName} with args: ${JSON.stringify(functionArgs)}`,
+            );
+
             let toolResult = "";
             try {
-              if (functionName === 'createTask') {
-                toolResult = await AgentTools.createTask(workspaceId, functionArgs.title, functionArgs.description);
-              } else if (functionName === 'searchDocuments') {
+              if (functionName === "createTask") {
+                toolResult = await AgentTools.createTask(
+                  workspaceId,
+                  functionArgs.title,
+                  functionArgs.description,
+                );
+              } else if (functionName === "searchDocuments") {
                 toolResult = await AgentTools.searchDocuments(workspaceId, functionArgs.query);
-              } else if (functionName === 'getTasks') {
+              } else if (functionName === "getTasks") {
                 toolResult = await AgentTools.getTasks(workspaceId);
-              } else if (functionName === 'getMeetingNotes') {
+              } else if (functionName === "getMeetingNotes") {
                 toolResult = await AgentTools.getMeetingNotes(functionArgs.meetingId);
-              } else if (functionName === 'summarizeMeeting') {
+              } else if (functionName === "summarizeMeeting") {
                 toolResult = await AgentTools.summarizeMeeting(functionArgs.meetingId);
-              } else if (functionName === 'findAvailability') {
+              } else if (functionName === "findAvailability") {
                 toolResult = await AgentTools.findAvailability(functionArgs.hostId);
-              } else if (functionName === 'scheduleMeeting') {
-                toolResult = await AgentTools.scheduleMeeting(functionArgs.hostId, functionArgs.eventTypeId, functionArgs.guestName, functionArgs.guestEmail, functionArgs.startTime, functionArgs.endTime);
-              } else if (functionName === 'rescheduleMeeting') {
-                toolResult = await AgentTools.rescheduleMeeting(functionArgs.bookingId, functionArgs.newStartTime, functionArgs.newEndTime);
-              } else if (functionName === 'createFollowUp') {
-                toolResult = await AgentTools.createFollowUp(workspaceId, functionArgs.hostId, functionArgs.title, functionArgs.description);
-              } else if (functionName === 'searchVideos') {
+              } else if (functionName === "scheduleMeeting") {
+                toolResult = await AgentTools.scheduleMeeting(
+                  functionArgs.hostId,
+                  functionArgs.eventTypeId,
+                  functionArgs.guestName,
+                  functionArgs.guestEmail,
+                  functionArgs.startTime,
+                  functionArgs.endTime,
+                );
+              } else if (functionName === "rescheduleMeeting") {
+                toolResult = await AgentTools.rescheduleMeeting(
+                  functionArgs.bookingId,
+                  functionArgs.newStartTime,
+                  functionArgs.newEndTime,
+                );
+              } else if (functionName === "createFollowUp") {
+                toolResult = await AgentTools.createFollowUp(
+                  workspaceId,
+                  functionArgs.hostId,
+                  functionArgs.title,
+                  functionArgs.description,
+                );
+              } else if (functionName === "searchVideos") {
                 toolResult = await AgentTools.searchVideos(functionArgs.query);
               } else {
                 toolResult = JSON.stringify({ error: "Unknown tool" });
@@ -137,13 +173,17 @@ export class AgentExecutionEngine {
               toolResult = JSON.stringify({ error: err.message });
             }
 
-            await this.logStep(run.id, "THOUGHT", `Observation from ${functionName}: Executed successfully`);
+            await this.logStep(
+              run.id,
+              "THOUGHT",
+              `Observation from ${functionName}: Executed successfully`,
+            );
 
             messages.push({
               tool_call_id: toolCall.id,
               role: "tool",
               name: functionName,
-              content: toolResult
+              content: toolResult,
             });
           }
         } else {
@@ -160,7 +200,12 @@ export class AgentExecutionEngine {
 
       // Save a memory snapshot if significant tasks were done
       if (iterations > 1) {
-        await this.saveMemory(agentRecord.id, userId, `Run Context ${run.id}`, `User asked: ${input}. I performed actions and returned: ${result.substring(0, 50)}...`);
+        await this.saveMemory(
+          agentRecord.id,
+          userId,
+          `Run Context ${run.id}`,
+          `User asked: ${input}. I performed actions and returned: ${result.substring(0, 50)}...`,
+        );
       }
 
       await prisma.agentRun.update({
@@ -168,15 +213,18 @@ export class AgentExecutionEngine {
         data: {
           status: "COMPLETED",
           result,
-          completedAt: new Date()
-        }
+          completedAt: new Date(),
+        },
       });
 
       await this.logStep(run.id, "INFO", "Execution completed successfully");
 
       const io = (global as any).io;
       if (io && agentRecord.workspaceId) {
-        io.to(`workspace:${agentRecord.workspaceId}`).emit('agent.completed', { runId: run.id, result });
+        io.to(`workspace:${agentRecord.workspaceId}`).emit("agent.completed", {
+          runId: run.id,
+          result,
+        });
       }
 
       return { runId: run.id, result };
@@ -186,8 +234,8 @@ export class AgentExecutionEngine {
         data: {
           status: "FAILED",
           error: error.message,
-          completedAt: new Date()
-        }
+          completedAt: new Date(),
+        },
       });
       await this.logStep(run.id, "ERROR", `Execution failed: ${error.message}`);
       throw error;
@@ -197,41 +245,41 @@ export class AgentExecutionEngine {
   public async getHistory(runId: string) {
     return prisma.agentRun.findUnique({
       where: { id: runId },
-      include: { logs: { orderBy: { createdAt: 'asc' } } }
+      include: { logs: { orderBy: { createdAt: "asc" } } },
     });
   }
 
   private async retrieveMemory(agentId: string, userId: string): Promise<string[]> {
     const memories = await prisma.agentMemory.findMany({
       where: { agentId, userId },
-      orderBy: { updatedAt: 'desc' },
-      take: 10
+      orderBy: { updatedAt: "desc" },
+      take: 10,
     });
-    return memories.map(m => `- ${m.key}: ${m.value}`);
+    return memories.map((m) => `- ${m.key}: ${m.value}`);
   }
 
   private async saveMemory(agentId: string, userId: string, key: string, value: string) {
     await prisma.agentMemory.upsert({
       where: { agentId_userId_key: { agentId, userId, key } },
       create: { agentId, userId, key, value },
-      update: { value, updatedAt: new Date() }
+      update: { value, updatedAt: new Date() },
     });
   }
 
   private async logStep(runId: string, level: string, message: string) {
     const log = await prisma.agentLog.create({
-      data: { runId, level, message }
+      data: { runId, level, message },
     });
-    
+
     const io = (global as any).io;
     if (io) {
       // Find the workspace for this run to broadcast to the correct channel
       const run = await prisma.agentRun.findUnique({
         where: { id: runId },
-        include: { agent: true }
+        include: { agent: true },
       });
       if (run && run.agent.workspaceId) {
-        io.to(`workspace:${run.agent.workspaceId}`).emit('agent_updates', log);
+        io.to(`workspace:${run.agent.workspaceId}`).emit("agent_updates", log);
       }
     }
   }

@@ -1,10 +1,17 @@
-import prisma from '../utils/prisma';
+import prisma from "../utils/prisma";
 
 export class AuditLogService {
   /**
    * Logs a critical action to the immutable Postgres AuditLog table for SOC2 compliance.
    */
-  public async logAction(userId: string, action: string, resourceType: string, resourceId?: string, metadata: any = {}, ipAddress?: string) {
+  public async logAction(
+    userId: string,
+    action: string,
+    resourceType: string,
+    resourceId?: string,
+    metadata: any = {},
+    ipAddress?: string,
+  ) {
     return prisma.auditLog.create({
       data: {
         userId,
@@ -13,8 +20,8 @@ export class AuditLogService {
         resourceId,
         metadata: JSON.stringify(metadata),
         ipAddress,
-        userAgent: 'system'
-      }
+        userAgent: "system",
+      },
     });
   }
 
@@ -23,12 +30,12 @@ export class AuditLogService {
    */
   public async getLogs(limit: number = 50, offset: number = 0) {
     return prisma.auditLog.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: limit,
       skip: offset,
       include: {
-        user: { select: { name: true, email: true } }
-      }
+        user: { select: { name: true, email: true } },
+      },
     });
   }
 }

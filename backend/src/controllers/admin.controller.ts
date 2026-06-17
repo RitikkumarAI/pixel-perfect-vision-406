@@ -1,8 +1,8 @@
-import { Response } from 'express';
-import { AuthRequest } from '../middlewares/auth.guard';
-import { AnalyticsService } from '../services/analytics.service';
-import prisma from '../utils/prisma';
-import { videoQueue } from '../queues/video.queue';
+import { Response } from "express";
+import { AuthRequest } from "../middlewares/auth.guard";
+import { AnalyticsService } from "../services/analytics.service";
+import prisma from "../utils/prisma";
+import { videoQueue } from "../queues/video.queue";
 
 export class AdminController {
   private analyticsService = new AnalyticsService();
@@ -32,7 +32,7 @@ export class AdminController {
       const id = req.params.id as string;
 
       const log = await prisma.webhookLog.findUnique({ where: { id } });
-      if (!log || log.provider !== 'mux') {
+      if (!log || log.provider !== "mux") {
         res.status(404).json({ error: "Webhook not found or not replayable" });
         return;
       }
@@ -47,21 +47,25 @@ export class AdminController {
       }
 
       // Re-queue the job and flag as retry
-      await videoQueue.add('process_ai', {
-        recordingId: passthrough,
-        playbackId,
-        muxEventId: log.muxEventId,
-        isReplay: true
-      }, {
-        attempts: 5,
-        backoff: { type: 'exponential', delay: 2000 }
-      });
+      await videoQueue.add(
+        "process_ai",
+        {
+          recordingId: passthrough,
+          playbackId,
+          muxEventId: log.muxEventId,
+          isReplay: true,
+        },
+        {
+          attempts: 5,
+          backoff: { type: "exponential", delay: 2000 },
+        },
+      );
 
       // Update metric
       await prisma.webhookMetric.upsert({
-        where: { name: 'replayed_webhooks' },
+        where: { name: "replayed_webhooks" },
         update: { value: { increment: 1 } },
-        create: { name: 'replayed_webhooks', value: 1 }
+        create: { name: "replayed_webhooks", value: 1 },
       });
 
       res.status(200).json({ success: true, message: "Webhook re-queued for processing" });

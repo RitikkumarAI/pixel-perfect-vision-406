@@ -1,10 +1,16 @@
-import prisma from '../utils/prisma';
+import prisma from "../utils/prisma";
 
 export class DeviceService {
   /**
    * Registers a new device token (APNS/FCM) for a user to receive Push Notifications.
    */
-  public async registerDevice(userId: string, pushToken: string, platform: string, deviceModel?: string, appVersion?: string) {
+  public async registerDevice(
+    userId: string,
+    pushToken: string,
+    platform: string,
+    deviceModel?: string,
+    appVersion?: string,
+  ) {
     console.log(`[DeviceService] Registering ${platform} device for user ${userId}`);
 
     return prisma.device.upsert({
@@ -14,15 +20,15 @@ export class DeviceService {
         pushToken,
         platform,
         deviceModel,
-        appVersion
+        appVersion,
       },
       update: {
         userId, // update ownership just in case
         platform,
         deviceModel,
         appVersion,
-        lastActive: new Date()
-      }
+        lastActive: new Date(),
+      },
     });
   }
 
@@ -34,8 +40,8 @@ export class DeviceService {
     return prisma.device.deleteMany({
       where: {
         userId,
-        pushToken
-      }
+        pushToken,
+      },
     });
   }
 
@@ -44,13 +50,15 @@ export class DeviceService {
    */
   public async sendPushNotification(userId: string, title: string, body: string, data: any = {}) {
     const devices = await prisma.device.findMany({
-      where: { userId }
+      where: { userId },
     });
 
     if (devices.length === 0) return;
 
-    devices.forEach(device => {
-      console.log(`[DeviceService] 📲 Sending Push to ${device.platform} (${device.pushToken}): ${title}`);
+    devices.forEach((device) => {
+      console.log(
+        `[DeviceService] 📲 Sending Push to ${device.platform} (${device.pushToken}): ${title}`,
+      );
       // In production:
       // if (device.platform === 'ios') apnsProvider.send(...)
       // else if (device.platform === 'android') fcmProvider.send(...)
